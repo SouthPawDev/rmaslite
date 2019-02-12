@@ -1,0 +1,7 @@
+.station {
+    border-right: 1px solid black;
+    padding: 20px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}

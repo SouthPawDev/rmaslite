@@ -1,0 +1,273 @@
+{/* <thead className='Table-Header'>
+              <tr key={1}>
+                <th key={'h0'}>Shift</th>
+                <th onClick={e => this.onSort(e, 'flightNbr')} key={'h1'}>
+                  Flight
+                </th>
+                <th onClick={e => this.onSort(e, 'gate')} key={'h2'}>
+                  Gate
+                </th>
+                <th key={'h3'}>GP</th>
+                <th key={'h4'}>AC</th>
+                <th key={'h5'}>SPOT</th>
+                <th key={'h6'}>STD</th>
+                <th key={'h7'}>STA</th>
+                <th key={'h8'}>I/R</th>
+                <th key={'h9'}>ON</th>
+                <th key={'h10'}>IN</th>
+                <th key={'h11'}>NC</th>
+                <th key={'h12'}>ORG</th>
+                <th key={'h13'}>AC TYPE</th>
+                <th key={'h14'}>FGD</th>
+                <th key={'h15'}>NSD</th>
+                <th key={'h16'}>NMD</th>
+                <th key={'h17'}>OB FLT</th>
+                <th key={'h18'}>Payload</th>
+              </tr>
+            </thead>
+            <tbody>
+              {this.state.data &&
+                this.state.data.map((item, i) => (
+                  <tr key={'row' + i}>
+                    <td key={i}>X</td>
+                    <td key={i + 1}>{item.flightNbr}</td>
+                    <td key={i + 2}>{item.gate === null ? '0' : item.gate}</td>
+                    <td key={i + 3}>X</td>
+                    <td key={i + 4}>X</td>
+                    <td key={i + 5}>X</td>
+                    <td key={i + 6}>X</td>
+                    <td key={i + 7}>X</td>
+                    <td key={i + 8}>X</td>
+                    <td key={i + 9}>X</td>
+                    <td key={i + 10}>X</td>
+                    <td key={i + 11}>X</td>
+                    <td key={i + 12}>X</td>
+                    <td key={i + 13}>X</td>
+                    <td key={i + 14}>X</td>
+                    <td key={i + 15}>X</td>
+                    <td key={i + 16}>X</td>
+                    <td key={i + 17}>X</td>
+                    <td key={i + 18}>{item.inboundPayloadWeight}</td>
+                  </tr>
+                ))}
+            </tbody> */}
+
+              onSort (event, i) {
+    const data = this.state.fileLinesContent
+    const columnObjectIndexMap = data.reduce((arr, str, index) => {
+      let obj = {}
+      let value = str.split(',')[i]
+      obj[index] = value
+      arr.push(obj)
+      return arr
+    }, [])
+    const column = data.map(str => str.split(',')[i])
+    const columnCopy = column.slice()
+
+    var reA = /[^a-zA-Z]/g
+    var reN = /[^0-9]/g
+    columnObjectIndexMap.sort((a, b) => {
+      var trimA = a.trim()
+      var trimB = b.trim()
+      var AInt = parseInt(trimA, 10)
+      var BInt = parseInt(trimB, 10)
+
+      if (isNaN(AInt) && isNaN(BInt)) {
+        var aA = a.replace(reA, '')
+        var bA = b.replace(reA, '')
+        if (aA === bA) {
+          var aN = parseInt(a.replace(reN, ''), 10)
+          var bN = parseInt(b.replace(reN, ''), 10)
+          return aN === bN ? 0 : aN > bN ? 1 : -1
+        } else {
+          return aA > bA ? 1 : -1
+        }
+      } else if (isNaN(AInt)) {
+        return 1
+      } else if (isNaN(BInt)) {
+        return -1
+      } else {
+        return AInt > BInt ? 1 : -1
+      }
+    })
+    console.log(columnCopy)
+    console.log(column)
+    console.log(columnObjectIndexMap)
+
+    if (this.state.ascending) {
+      this.setState({ fileLinesContent: data })
+      this.setState({ ascending: false })
+    } else {
+      this.setState({ fileLinesContent: data.reverse() })
+      this.setState({ ascending: true })
+    }
+  }
+
+    // onCheck (name) {
+  //   const shift = this.state[name.slice(0, -4)][0]
+  //   const data = this.state.fileLines
+  //   if (this.state.shiftBools[name]) {
+  //     if (Object.values(this.state.shiftBools).every(i => !i)) {
+  //       this.setState({
+  //         fileLinesContent: [],
+  //         shiftBools: { ...this.state.shiftBools, [name]: false }
+  //       })
+  //     } else {
+  //       this.setState({
+  //         fileLinesContent: data.filter(
+  //           (item, i) => i > 7 && item.match(/^\w/) && !item.startsWith(shift)
+  //         ),
+  //         shiftBools: { ...this.state.shiftBools, [name]: false }
+  //       })
+  //     }
+  //   } else {
+  //     this.setState({
+  //       fileLinesContent: data.filter((item, i) => i > 7 && item.match(/^\w/)),
+  //       shiftBools: { ...this.state.shiftBools, [name]: true }
+  //     })
+  //   }
+  // }
+
+            {/* <div className="header-content-right">
+            <div className="inbound-row">
+              <span className="header-content-right-span">
+                <h2>Inbound</h2>
+              </span>
+              <span
+                onClick={e => this.get("inbound", "1")}
+                className="header-content-right-span"
+              >
+                <p>1</p>
+              </span>
+              <span
+                onClick={e => this.get("inbound", "2")}
+                className="header-content-right-span"
+              >
+                <p>2</p>
+              </span>
+              <span
+                onClick={e => this.get("inbound", "3")}
+                className="header-content-right-span"
+              >
+                <p>3</p>
+              </span>
+            </div>
+            <div className="row">
+              <span className="header-content-right-span">
+                <h2>Outbound</h2>
+              </span>
+              <span
+                onClick={e => this.get("outbound", "1")}
+                className="header-content-right-span"
+              >
+                <p>1</p>
+              </span>
+              <span
+                onClick={e => this.get("outbound", "2")}
+                className="header-content-right-span"
+              >
+                <p>2</p>
+              </span>
+              <span
+                onClick={e => this.get("outbound", "3")}
+                className="header-content-right-span"
+              >
+                <p>3</p>
+              </span>
+            </div>
+            <div className="row">
+              <span className="header-content-right-span">
+                <h2>Snow</h2>
+              </span>
+              <span
+                onClick={e => this.get("snow", "1")}
+                className="header-content-right-span"
+              >
+                <p>1</p>
+              </span>
+              <span
+                onClick={e => this.get("snow", "2")}
+                className="header-content-right-span"
+              >
+                <p>2</p>
+              </span>
+              <span
+                onClick={e => this.get("snow", "3")}
+                className="header-content-right-span"
+              >
+                <p>3</p>
+              </span>
+            </div>
+          </div> */}
+
+            // get(type, n) {
+  //   fetch(
+  //     "http://wtc-275124-w23.corp.ds.fedex.com:9090/parse/serve?file=" +
+  //       type +
+  //       n +
+  //       ".csv"
+  //   ).then(response =>
+  //     response.json().then(data => {
+  //       this.setState({
+  //         flightType: data[1].split(",")[0],
+  //         shiftOne: data[0]
+  //           .split(",")
+  //           .filter((item, i) => i > 1 && item.trim() !== ""),
+  //         shiftTwo: data[1]
+  //           .split(",")
+  //           .filter((item, i) => i > 1 && item.trim() !== ""),
+  //         shiftBools: { shiftOne: true, shiftTwo: true },
+  //         fileLines: data,
+  //         columnTitles: data[4].split(",").filter(item => item !== "NULL"),
+  //         fileLinesContent: data.filter((item, i) => i > 7 && item.match(/^\w/))
+  //       });
+  //     })
+  //   );
+  // }
+
+              {/* <table id="flight-table" className="test">
+              
+              <thead>
+                <tr>
+                  {this.state.columnTitles
+                    ? this.state.columnTitles.map((item, i) => (
+                        <th
+                          className={
+                            item.includes(";") ? item.split(";")[1].trim() : ""
+                          }
+                          onClick={() => this.onSort(item)}
+                          key={i}
+                        >
+                          {item.includes(";")
+                            ? item.split(";")[0].trim()
+                            : item}
+                          <hr />
+                        </th>
+                      ))
+                    : undefined}
+                </tr>
+              </thead>
+              <tbody>
+                {content.map((i, ii) => (
+                  <tr key={"tr" + ii} id={ii}>
+                    {Object.keys(i).map((j, jj) =>
+                      jj < this.state.columnTitles.length ? (
+                        <td
+                          id={`${ii}/${jj}`}
+                          onMouseDown={this.handleClick}
+                          onContextMenu={this.handleRightClick}
+                          key={jj}
+                          className={
+                            i[j].split(";")[i[j].split(";").length - 1]
+                          }
+                        >
+                          {i[j].split(";")[i[j].split(";").length - 2]}
+                        </td>
+                      ) : (
+                        undefined
+                      )
+                    )}
+                  </tr>
+                ))}
+              </tbody>
+            </table> */}
