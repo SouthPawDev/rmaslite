@@ -1,13 +1,7 @@
 import React, { Component } from "react";
 import { NavLink } from "react-router-dom";
 import CheckboxShift from "./Components/Checkbox";
-import {
-  Title,
-  PrintButton,
-  Time,
-  FlightException,
-  Misc
-} from "./Components/Stateless";
+import { Title, Time, FlightException, Misc } from "./Components/Stateless";
 import FlightTable from "./Components/FlightTable";
 import "./App.css";
 
@@ -16,83 +10,37 @@ class App extends Component {
     super(props);
 
     this.state = {
+      direction: true,
       data: [],
       fileLinesContent: [],
       flightStatus: [],
-      shiftBools: {}
+      shiftBools: {},
+      sizing: false,
+      refresh: false
     };
   }
 
   componentDidMount() {
+    this.getFile();
+  }
+
+  componentWillUnmount() {
+    if (this.state.timer) {
+      clearInterval(this.state.timer);
+    }
+  }
+
+  async getFile() {
     let location = this.props.location.pathname;
-    if (location === "/upload") {
-      const data = this.props.location.state
-        ? this.props.location.state["file"]
-        : "";
+    let formatLocation =
+      location.slice(-5) === "INLET" || location.slice(-5) === "DEICE"
+        ? location.slice(1, -6)
+        : location.slice(1);
 
-      if (data) {
-        this.setState({
-          flightType: data ? data[1].split(",")[0] : "",
-          shiftOne: data[0]
-            .split(",")
-            .filter((item, i) => i > 1 && i < 4 && item.trim() !== ""),
-          shiftTwo: data[1]
-            .split(",")
-            .filter((item, i) => i > 1 && i < 4 && item.trim() !== ""),
-          shiftThree: data[2]
-            .split(",")
-            .filter((item, i) => i > 1 && i < 4 && item.trim() !== ""),
-          rmas: [
-            data[0].split(",")[0],
-            data[1].split(",")[0],
-            data[2].split(",")[0]
-          ],
-          misc: data[3]
-            .split(",")
-            .filter(
-              i => i.trim() !== "" && i !== "^^^^^" && i.trim() !== "vvvvv"
-            ),
-          maints: data[2].split(",").filter(i => i.includes("Maint"))[0],
-          spares: data[2].split(",").filter(i => i.includes("Spare"))[0],
-          opens: data[2].split(",").filter(i => i.includes("Open"))[0],
-          shiftBools: {
-            shiftOne: data[0].split(",")[1].slice(0, 1) === "X",
-            shiftTwo: data[1].split(",")[1].slice(0, 1) === "X",
-            shiftThree: data[2].split(",")[1].slice(0, 1) === "X"
-          },
-          fileLines: data,
-          columnTitles: data[4]
-            .split(",")
-            .filter(item => item !== "NULL" || item !== " "),
-          fileLinesContent: data
-            .filter(
-              (item, i) =>
-                i > 5 &&
-                item.match(/^\w/) &&
-                item !== "NULL" &&
-                item.trim() !== ""
-            )
-            .map((j, k) => {
-              if (k === 0) {
-              }
-              let obj = {};
-              for (var h = 0; h < data[4].length; h++) {
-                obj[data[4].split(",")[h]] = j.split(",")[h];
-              }
-              return obj;
-            }),
-          currentTime: data[0].split(",")[6]
-        });
-
-        this.setState({
-          initial: { ...this.state }
-        });
-      }
-    } else {
-      let formatLocation = location.slice(1);
-      fetch(
-        `http://wtc-275124-w23.corp.ds.fedex.com:9090/file/serve?file=${formatLocation}.csv`
-      ).then(response =>
+    fetch(
+      `http://wtc-275124-w23.corp.ds.fedex.com:9091/file/serve?file=${formatLocation}.csv`
+    )
+      .then(response =>
         response.json().then(data => {
           this.setState({
             flightType: data[1].split(",")[0],
@@ -110,11 +58,7 @@ class App extends Component {
               data[1].split(",")[0],
               data[2].split(",")[0]
             ],
-            misc: data[3]
-              .split(",")
-              .filter(
-                i => i.trim() !== "" && i !== "^^^^^" && i.trim() !== "vvvvv"
-              ),
+            misc: data[3].split(","),
             maints: data[2].split(",").filter(i => i.includes("Maint"))[0],
             spares: data[2].split(",").filter(i => i.includes("Spare"))[0],
             opens: data[2].split(",").filter(i => i.includes("Open"))[0],
@@ -146,12 +90,91 @@ class App extends Component {
               }),
             currentTime: data[0].split(",")[6]
           });
-          this.setState({
-            initial: { ...this.state }
-          });
         })
-      );
-    }
+      )
+      .then(() => {
+        let location = this.props.location.pathname.split("/");
+
+        if (location.length === 4) {
+          if (location[3] === "DEICE") {
+            let columns = this.state.columnTitles;
+            let index = columns.indexOf("DILOC;BBW");
+
+            this.onSort(columns[index]);
+          } else {
+            let columns = this.state.columnTitles;
+            let index = columns.indexOf("IREQ;BBW");
+            this.onSort(columns[index]);
+          }
+        } else {
+          let data = this.state.misc;
+          let columns = this.state.columnTitles;
+          let index = data.indexOf("^^^^^");
+          this.onSort(columns[index]);
+        }
+      });
+  }
+
+  refresh() {
+    this.setState(
+      {
+        refresh: !this.state.refresh
+      },
+      () => {
+        if (this.state.refresh) {
+          let location = this.props.location.pathname;
+          let formatLocation =
+            location.slice(-5) === "INLET" || location.slice(-5) === "DEICE"
+              ? location.slice(1, -6)
+              : location.slice(1);
+
+          this.setState({
+            timer: setInterval(() => {
+              fetch(
+                `http://wtc-275124-w23.corp.ds.fedex.com:9091/file/serve?file=${formatLocation}.csv`
+              ).then(response =>
+                response.json().then(data => {
+                  if (
+                    JSON.stringify(data) ===
+                    JSON.stringify(this.state.fileLines)
+                  ) {
+                    console.log("Data unchanged.");
+                  } else {
+                    this.getFile();
+                    console.log("Different Data Detected");
+                  }
+                })
+              );
+            }, 15000)
+          });
+        } else {
+          clearInterval(this.state.timer);
+        }
+      }
+    );
+  }
+
+  sizing() {
+    this.setState(
+      {
+        sizing: !this.state.sizing
+      },
+      () => {
+        if (this.state.sizing) {
+          document.getElementsByClassName("App")[0].style.width = "100%";
+          let c = document.getElementsByTagName("*");
+          for (let i = 0; i < c.length; i++) {
+            c.item(i).classList.add("resizable");
+          }
+        } else {
+          document.getElementsByClassName("App")[0].style.width = "1680px";
+          let c = document.getElementsByTagName("*");
+          for (let i = 0; i < c.length; i++) {
+            c.item(i).classList.remove("resizable");
+          }
+        }
+      }
+    );
   }
 
   reset() {
@@ -191,12 +214,12 @@ class App extends Component {
     for (var i = 1; i < x.length; i++) {
       if (x.item(i).classList.contains("selectedRow")) {
         x.item(i).classList.add("hidden");
+      } else {
       }
     }
   }
 
   handleColumnExceptionSort(column) {
-    console.log("AC, Gate, STA or STD sort...");
     let direction = this.state.direction;
     let sortedData = this.state.fileLinesContent.sort((a, b) => {
       let nameA = a[column]
@@ -250,7 +273,6 @@ class App extends Component {
   }
 
   handleFlightSort() {
-    console.log("Flight Sort...");
     let direction = this.state.direction;
     let sortedData = this.state.fileLinesContent.sort((a, b) => {
       let nameA = a["FLIGHT;BBW"]
@@ -309,9 +331,10 @@ class App extends Component {
       let columnTwo = document.getElementById("GATE");
       let elements = document.getElementsByTagName("th");
       for (let i = 0; i < elements.length; i++) {
-        elements.item(i).style.backgroundColor = "";
+        elements.item(i).style.color = "black";
+        elements.item(i).style.backgroundColor = "white";
       }
-      columnOne.style.backgroundColor = "blue";
+      columnOne.style.color = "blue";
       columnTwo.style.backgroundColor = "lightblue";
 
       this.handleFlightSort();
@@ -325,9 +348,10 @@ class App extends Component {
       let columnTwo = document.getElementById("FLIGHT");
       let elements = document.getElementsByTagName("th");
       for (let i = 0; i < elements.length; i++) {
-        elements.item(i).style.backgroundColor = "";
+        elements.item(i).style.color = "black";
+        elements.item(i).style.backgroundColor = "white";
       }
-      columnOne.style.backgroundColor = "blue";
+      columnOne.style.color = "blue";
       columnTwo.style.backgroundColor = "lightblue";
 
       this.handleColumnExceptionSort(column);
@@ -340,9 +364,10 @@ class App extends Component {
           : document.getElementById("STD");
       let elements = document.getElementsByTagName("th");
       for (let i = 0; i < elements.length; i++) {
-        elements.item(i).style.backgroundColor = "";
+        elements.item(i).style.color = "black";
+        elements.item(i).style.backgroundColor = "white";
       }
-      columnOne.style.backgroundColor = "blue";
+      columnOne.style.color = "blue";
       columnTwo.style.backgroundColor = "lightblue";
 
       let direction = this.state.direction;
@@ -504,6 +529,7 @@ class App extends Component {
       }
     }
   }
+
   handleClick(e) {
     e.preventDefault();
     if (e.button === 0) {
@@ -518,6 +544,13 @@ class App extends Component {
         b.className += " hidden";
       }
     }
+  }
+
+  handlePrint() {
+    document.getElementsByTagName("table")[0].style.height = "100%";
+    document.getElementsByTagName("tbody")[0].style.overflowY = "auto";
+    window.print();
+    document.getElementsByTagName("table")[0].style.height = "800px";
   }
 
   render() {
@@ -612,19 +645,6 @@ class App extends Component {
             </div>
             <div className="header-content-buttons">
               <div className="header-content-buttons-row">
-                <div onClick={() => this.showSelected()} className="">
-                  <span>
-                    <p>Show Selected</p>
-                  </span>
-                </div>
-                <div onClick={() => this.hideSelected()} className="">
-                  <span>
-                    <p>Hide Selected</p>
-                  </span>
-                </div>
-              </div>
-              <br />
-              <div className="header-content-buttons-row">
                 <NavLink to={"/home"}>
                   <div className="">
                     <span>
@@ -638,11 +658,63 @@ class App extends Component {
                   </span>
                 </div>
               </div>
+              <br />
+              <div className="header-content-buttons-row">
+                <div onClick={() => this.showSelected()} className="">
+                  <span>
+                    <p>Show Selected</p>
+                  </span>
+                </div>
+                <div onClick={() => this.hideSelected()} className="">
+                  <span>
+                    <p>Hide Selected</p>
+                  </span>
+                </div>
+              </div>
+            </div>
+            <div className="header-content-buttons-two">
+              <div className="header-content-buttons-row">
+                <div
+                  style={{
+                    border: this.state.sizing ? "1px solid black" : "",
+                    backgroundColor: this.state.sizing ? "lightgreen" : ""
+                  }}
+                  onClick={() => this.sizing()}
+                >
+                  <span>
+                    <p>
+                      {this.state.sizing ? "Auto Sizing On" : "Auto Sizing Off"}
+                    </p>
+                  </span>
+                </div>
+              </div>
+              <div className="header-content-buttons-row">
+                <div
+                  style={{
+                    border: this.state.refresh ? "1px solid black" : "",
+                    backgroundColor: this.state.refresh ? "lightgreen" : ""
+                  }}
+                  onClick={() => this.refresh()}
+                >
+                  <span>
+                    <p>
+                      {this.state.refresh
+                        ? "Auto Refresh On"
+                        : "Auto Refresh Off"}
+                    </p>
+                  </span>
+                </div>
+              </div>
             </div>
 
             <div className="header-content-right">
               <div className="header-content-right-row-1">
-                <PrintButton className="print-span" text="Print" />
+                <span
+                  onClick={() => this.handlePrint()}
+                  className={"print-span"}
+                >
+                  <p>{"Print"}</p>
+                </span>
                 <Time
                   className={currentTime ? currentTime.split(";")[1] : ""}
                   time={currentTime ? currentTime.split(";")[0] : ""}
@@ -671,7 +743,6 @@ class App extends Component {
         </div>
 
         <div className="App-content">
-          {/* <div className="content"> */}
           <FlightTable
             handleClick={this.handleClick.bind(this)}
             handleRightClick={this.handleRightClick.bind(this)}
@@ -680,7 +751,6 @@ class App extends Component {
             columns={columns}
           />
         </div>
-        {/* </div> */}
       </div>
     );
   }

@@ -83,6 +83,7 @@ class Home extends Component {
             onChange={e => this.handleUpload(e)}
             type="file"
             id="fileInput"
+            disabled={true}
           />
         </div>
         <div className="row">
