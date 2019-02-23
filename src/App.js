@@ -12,11 +12,12 @@ class App extends Component {
     this.state = {
       direction: true,
       data: [],
-      fileLinesContent: [],
+      // fileLinesContent: [],
       flightStatus: [],
       shiftBools: {},
       sizing: false,
-      refresh: false
+      refresh: false,
+      selected: false
     };
   }
 
@@ -88,31 +89,68 @@ class App extends Component {
                 }
                 return obj;
               }),
-            currentTime: data[0].split(",")[6]
+            currentTime: data[0].split(",")[6],
+            direction: true
           });
         })
       )
       .then(() => {
+        this.filter();
+      })
+      .then(() => {
         let location = this.props.location.pathname.split("/");
-
         if (location.length === 4) {
           if (location[3] === "DEICE") {
-            let columns = this.state.columnTitles;
+            let columns = this.state.currentColumnTitles;
             let index = columns.indexOf("DILOC;BBW");
-
             this.onSort(columns[index]);
           } else {
-            let columns = this.state.columnTitles;
+            let columns = this.state.currentColumnTitles;
             let index = columns.indexOf("IREQ;BBW");
             this.onSort(columns[index]);
           }
         } else {
           let data = this.state.misc;
-          let columns = this.state.columnTitles;
+          let columns = this.state.currentColumnTitles;
           let index = data.indexOf("^^^^^");
           this.onSort(columns[index]);
         }
       });
+  }
+
+  filter() {
+    this.setState({
+      currentColumnTitles: this.state.columnTitles,
+      currentFileLinesContent: this.state.fileLinesContent.reduce(
+        (acc, c, i) => {
+          let shiftOneDay = this.state.shiftOne ? this.state.shiftOne[0] : "";
+          let shiftTwoDay = this.state.shiftTwo ? this.state.shiftTwo[0] : "";
+          let shiftThreeDay = this.state.shiftThree
+            ? this.state.shiftThree[0]
+            : "";
+          let weekDay = c["SHIFT;BBW"].split(";")[0].replace("_", "-");
+
+          if (this.state.shiftBools["shiftOne"]) {
+            if (shiftOneDay.includes(weekDay)) {
+              acc.push(c);
+            }
+          }
+          if (this.state.shiftBools["shiftTwo"]) {
+            if (shiftTwoDay.includes(weekDay)) {
+              acc.push(c);
+            }
+          }
+          if (this.state.shiftBools["shiftThree"]) {
+            if (shiftThreeDay.includes(weekDay)) {
+              acc.push(c);
+            }
+          }
+
+          return acc;
+        },
+        []
+      )
+    });
   }
 
   refresh() {
@@ -178,25 +216,23 @@ class App extends Component {
   }
 
   reset() {
-    let x = document.getElementsByTagName("tr");
-    for (let i = 0; i < x.length; i++) {
-      if (
-        x.item(i).classList.contains("hidden") ||
-        x.item(i).classList.contains("selectedRow")
-      ) {
-        x.item(i).classList.remove("hidden");
-        x.item(i).classList.remove("selectedRow");
-      }
+    this.getFile();
+    let y = document.getElementsByTagName("tr");
+    for (let i = 0; i < y.length; i++) {
+      y.item(i).classList.remove("selected");
+      y.item(i).classList.remove("hidden");
     }
   }
 
   showSelected() {
     let x = document.getElementsByTagName("tr");
-    let y = document.getElementsByClassName("selectedRow");
+    let y = document.getElementsByClassName("selected");
+
+    console.log(y);
 
     if (y.length > 0) {
       for (var i = 1; i < x.length; i++) {
-        if (!x.item(i).classList.contains("selectedRow")) {
+        if (!x.item(i).classList.contains("selected")) {
           x.item(i).classList.add("hidden");
         } else {
           if (x.item(i).classList.contains("hidden")) {
@@ -212,16 +248,19 @@ class App extends Component {
     // let y = document.getElementsByClassName("selectedRow");
 
     for (var i = 1; i < x.length; i++) {
-      if (x.item(i).classList.contains("selectedRow")) {
+      if (x.item(i).classList.contains("selected")) {
         x.item(i).classList.add("hidden");
       } else {
+        if (x.item(i).classList.contains("hidden")) {
+          x.item(i).classList.remove("hidden");
+        }
       }
     }
   }
 
   handleColumnExceptionSort(column) {
     let direction = this.state.direction;
-    let sortedData = this.state.fileLinesContent.sort((a, b) => {
+    let sortedData = this.state.currentFileLinesContent.sort((a, b) => {
       let nameA = a[column]
         .split(";")[0]
         .toUpperCase()
@@ -241,22 +280,24 @@ class App extends Component {
       }
 
       if (nameA === nameB) {
-        nameA = a["FLIGHT;BBW"]
-          .split(";")[0]
-          .toUpperCase()
-          .trim();
-        nameB = b["FLIGHT;BBW"]
-          .split(";")[0]
-          .toUpperCase()
-          .trim();
-        if (nameA === "") {
-          return 1;
-        }
-        if (nameA < nameB) {
-          return -1;
-        }
-        if (nameA > nameB) {
-          return 1;
+        if (a["FLIGHT;BBW"]) {
+          nameA = a["FLIGHT;BBW"]
+            .split(";")[0]
+            .toUpperCase()
+            .trim();
+          nameB = b["FLIGHT;BBW"]
+            .split(";")[0]
+            .toUpperCase()
+            .trim();
+          if (nameA === "") {
+            return 1;
+          }
+          if (nameA < nameB) {
+            return -1;
+          }
+          if (nameA > nameB) {
+            return 1;
+          }
         }
       }
       return 0;
@@ -267,14 +308,14 @@ class App extends Component {
     }
 
     this.setState({
-      fileLinesContent: sortedData,
+      currentFileLinesContent: sortedData,
       direction: !this.state.direction
     });
   }
 
   handleFlightSort() {
     let direction = this.state.direction;
-    let sortedData = this.state.fileLinesContent.sort((a, b) => {
+    let sortedData = this.state.currentFileLinesContent.sort((a, b) => {
       let nameA = a["FLIGHT;BBW"]
         .split(";")[0]
         .toUpperCase()
@@ -294,22 +335,24 @@ class App extends Component {
       }
 
       if (nameA === nameB) {
-        nameA = a["GATE;BBW"]
-          .split(";")[0]
-          .toUpperCase()
-          .trim();
-        nameB = b["GATE;BBW"]
-          .split(";")[0]
-          .toUpperCase()
-          .trim();
-        if (nameA === "") {
-          return 1;
-        }
-        if (nameA < nameB) {
-          return -1;
-        }
-        if (nameA > nameB) {
-          return 1;
+        if (a["GATE;BBW"]) {
+          nameA = a["GATE;BBW"]
+            .split(";")[0]
+            .toUpperCase()
+            .trim();
+          nameB = b["GATE;BBW"]
+            .split(";")[0]
+            .toUpperCase()
+            .trim();
+          if (nameA === "") {
+            return 1;
+          }
+          if (nameA < nameB) {
+            return -1;
+          }
+          if (nameA > nameB) {
+            return 1;
+          }
         }
       }
       return 0;
@@ -320,12 +363,14 @@ class App extends Component {
     }
 
     this.setState({
-      fileLinesContent: sortedData,
+      currentFileLinesContent: sortedData,
       direction: !this.state.direction
     });
   }
 
   onSort(column) {
+    console.log(column);
+
     if (column === "FLIGHT;BBW") {
       let columnOne = document.getElementById("FLIGHT");
       let columnTwo = document.getElementById("GATE");
@@ -334,8 +379,12 @@ class App extends Component {
         elements.item(i).style.color = "black";
         elements.item(i).style.backgroundColor = "white";
       }
-      columnOne.style.color = "blue";
-      columnTwo.style.backgroundColor = "lightblue";
+      if (columnOne !== null) {
+        columnOne.style.color = "blue";
+      }
+      if (columnTwo !== null) {
+        columnTwo.style.backgroundColor = "lightblue";
+      }
 
       this.handleFlightSort();
     } else if (
@@ -351,8 +400,12 @@ class App extends Component {
         elements.item(i).style.color = "black";
         elements.item(i).style.backgroundColor = "white";
       }
-      columnOne.style.color = "blue";
-      columnTwo.style.backgroundColor = "lightblue";
+      if (columnOne !== null) {
+        columnOne.style.color = "blue";
+      }
+      if (columnTwo !== null) {
+        columnTwo.style.backgroundColor = "lightblue";
+      }
 
       this.handleColumnExceptionSort(column);
     } else {
@@ -367,12 +420,16 @@ class App extends Component {
         elements.item(i).style.color = "black";
         elements.item(i).style.backgroundColor = "white";
       }
-      columnOne.style.color = "blue";
-      columnTwo.style.backgroundColor = "lightblue";
+      if (columnOne !== null) {
+        columnOne.style.color = "blue";
+      }
+      if (columnTwo !== null) {
+        columnTwo.style.backgroundColor = "lightblue";
+      }
 
       let direction = this.state.direction;
 
-      let sortedData = this.state.fileLinesContent.sort((a, b) => {
+      let sortedData = this.state.currentFileLinesContent.sort((a, b) => {
         let nameA = a[column]
           .split(";")[0]
           .toUpperCase()
@@ -394,40 +451,44 @@ class App extends Component {
 
         if (nameA === nameB) {
           if (type === "INBOUND") {
-            nameA = a["STA;BBW"]
-              .split(";")[0]
-              .toUpperCase()
-              .trim();
-            nameB = b["STA;BBW"]
-              .split(";")[0]
-              .toUpperCase()
-              .trim();
-            if (nameA === "") {
-              return 1;
-            }
-            if (nameA < nameB) {
-              return -1;
-            }
-            if (nameA > nameB) {
-              return 1;
+            if (a["STA;BBW"]) {
+              nameA = a["STA;BBW"]
+                .split(";")[0]
+                .toUpperCase()
+                .trim();
+              nameB = b["STA;BBW"]
+                .split(";")[0]
+                .toUpperCase()
+                .trim();
+              if (nameA === "") {
+                return 1;
+              }
+              if (nameA < nameB) {
+                return -1;
+              }
+              if (nameA > nameB) {
+                return 1;
+              }
             }
           } else {
-            nameA = a["STD;BBW"]
-              .split(";")[0]
-              .toUpperCase()
-              .trim();
-            nameB = b["STD;BBW"]
-              .split(";")[0]
-              .toUpperCase()
-              .trim();
-            if (nameA === "") {
-              return 1;
-            }
-            if (nameA < nameB) {
-              return -1;
-            }
-            if (nameA > nameB) {
-              return 1;
+            if (a["STD;BBW"]) {
+              nameA = a["STD;BBW"]
+                .split(";")[0]
+                .toUpperCase()
+                .trim();
+              nameB = b["STD;BBW"]
+                .split(";")[0]
+                .toUpperCase()
+                .trim();
+              if (nameA === "") {
+                return 1;
+              }
+              if (nameA < nameB) {
+                return -1;
+              }
+              if (nameA > nameB) {
+                return 1;
+              }
             }
           }
         }
@@ -456,40 +517,44 @@ class App extends Component {
           }
           if (nameA === nameB) {
             if (type === "INBOUND") {
-              nameA = a["STA;BBW"]
-                .split(";")[0]
-                .toUpperCase()
-                .trim();
-              nameB = b["STA;BBW"]
-                .split(";")[0]
-                .toUpperCase()
-                .trim();
-              if (nameA === "") {
-                return 1;
-              }
-              if (nameA < nameB) {
-                return -1;
-              }
-              if (nameA > nameB) {
-                return 1;
+              if (a["STA;BBW"]) {
+                nameA = a["STA;BBW"]
+                  .split(";")[0]
+                  .toUpperCase()
+                  .trim();
+                nameB = b["STA;BBW"]
+                  .split(";")[0]
+                  .toUpperCase()
+                  .trim();
+                if (nameA === "") {
+                  return 1;
+                }
+                if (nameA < nameB) {
+                  return -1;
+                }
+                if (nameA > nameB) {
+                  return 1;
+                }
               }
             } else {
-              nameA = a["STD;BBW"]
-                .split(";")[0]
-                .toUpperCase()
-                .trim();
-              nameB = b["STD;BBW"]
-                .split(";")[0]
-                .toUpperCase()
-                .trim();
-              if (nameA === "") {
-                return 1;
-              }
-              if (nameA < nameB) {
-                return -1;
-              }
-              if (nameA > nameB) {
-                return 1;
+              if (a["STD;BBW"]) {
+                nameA = a["STD;BBW"]
+                  .split(";")[0]
+                  .toUpperCase()
+                  .trim();
+                nameB = b["STD;BBW"]
+                  .split(";")[0]
+                  .toUpperCase()
+                  .trim();
+                if (nameA === "") {
+                  return 1;
+                }
+                if (nameA < nameB) {
+                  return -1;
+                }
+                if (nameA > nameB) {
+                  return 1;
+                }
               }
             }
           }
@@ -498,36 +563,42 @@ class App extends Component {
       }
 
       this.setState({
-        fileLinesContent: sortedData,
+        currentFileLinesContent: sortedData,
         direction: !this.state.direction
       });
     }
   }
 
   onCheck(name) {
-    this.setState({
-      shiftBools: {
-        ...this.state.shiftBools,
-        [name]: !this.state.shiftBools[name]
-      }
-    });
+    this.setState(
+      {
+        shiftBools: {
+          ...this.state.shiftBools,
+          [name]: !this.state.shiftBools[name]
+        }
+      },
+      () => this.filter()
+    );
   }
 
-  handleRightClick(e) {
-    if (e.button === 2) {
-      e.preventDefault();
-      let x = e.target.id;
-      let y = document.getElementById(x.split("/")[0]);
-      if (y.classList) {
-        if (y.classList.contains("selectedRow")) {
-          y.classList.remove("selectedRow");
-        } else {
-          y.classList.add("selectedRow");
-        }
-      } else {
-        y.classList.add("selectedRow");
-      }
-    }
+  // handleRightClick(e) {
+  //   if (e.button === 2) {
+  //     e.preventDefault();
+  //     let x = e.target.id;
+  //     let y = document.getElementById(x.split("/")[0]);
+
+  // }
+  handleRightClickTh(e, column) {
+    e.preventDefault();
+    this.setState({
+      currentColumnTitles: this.state.currentColumnTitles.filter(
+        title => title !== column
+      ),
+      currentFileLinesContent: this.state.currentFileLinesContent.map(obj => {
+        delete obj[column];
+        return obj;
+      })
+    });
   }
 
   handleClick(e) {
@@ -536,13 +607,27 @@ class App extends Component {
       console.log("Hello There");
     }
     if (e.button === 1) {
-      let a = e.target.id;
-      let b = document.getElementById(a.split("/")[0]);
-      if (b.classList) {
-        b.classList.add("hidden");
-      } else {
-        b.className += " hidden";
-      }
+      let x = e.target.parentElement.id;
+      console.log(x);
+
+      this.setState({
+        currentFileLinesContent: this.state.currentFileLinesContent.filter(
+          (i, j) => j !== parseInt(x)
+        )
+      });
+
+      // this.setState({
+      //   currentFileLinesContent: this.state.currentFileLinesContent.filter(
+      //     (i, j) => j !== x
+      //   )
+      // });
+      // let a = e.target.id;
+      // let b = document.getElementById(a.split("/")[0]);
+      // if (b.classList) {
+      //   b.classList.add("hidden");
+      // } else {
+      //   b.className += " hidden";
+      // }
     }
   }
 
@@ -554,35 +639,12 @@ class App extends Component {
   }
 
   render() {
-    const content = this.state.fileLinesContent
-      ? this.state.fileLinesContent.reduce((acc, c, i) => {
-          let shiftOneDay = this.state.shiftOne ? this.state.shiftOne[0] : "";
-          let shiftTwoDay = this.state.shiftTwo ? this.state.shiftTwo[0] : "";
-          let shiftThreeDay = this.state.shiftThree
-            ? this.state.shiftThree[0]
-            : "";
-          let weekDay = c["SHIFT;BBW"].split(";")[0].replace("_", "-");
-
-          if (this.state.shiftBools["shiftOne"]) {
-            if (shiftOneDay.includes(weekDay)) {
-              acc.push(c);
-            }
-          }
-          if (this.state.shiftBools["shiftTwo"]) {
-            if (shiftTwoDay.includes(weekDay)) {
-              acc.push(c);
-            }
-          }
-          if (this.state.shiftBools["shiftThree"]) {
-            if (shiftThreeDay.includes(weekDay)) {
-              acc.push(c);
-            }
-          }
-
-          return acc;
-        }, [])
-      : "";
-    const columns = this.state.columnTitles ? this.state.columnTitles : [];
+    const content = this.state.currentFileLinesContent
+      ? this.state.currentFileLinesContent
+      : [];
+    const columns = this.state.currentColumnTitles
+      ? this.state.currentColumnTitles
+      : [];
     const misc = this.state.misc ? this.state.misc : "";
     const maints = this.state.maints ? this.state.maints : "";
     const spares = this.state.spares ? this.state.spares : "";
@@ -645,29 +707,25 @@ class App extends Component {
             </div>
             <div className="header-content-buttons">
               <div className="header-content-buttons-row">
-                <NavLink to={"/home"}>
-                  <div className="">
-                    <span>
-                      <p>Home</p>
-                    </span>
-                  </div>
-                </NavLink>
-                <div onClick={() => this.reset()} className="">
-                  <span>
-                    <p>Reset</p>
-                  </span>
-                </div>
-              </div>
-              <br />
-              <div className="header-content-buttons-row">
                 <div onClick={() => this.showSelected()} className="">
                   <span>
                     <p>Show Selected</p>
                   </span>
                 </div>
+              </div>
+              <div className="header-content-buttons-row">
                 <div onClick={() => this.hideSelected()} className="">
                   <span>
                     <p>Hide Selected</p>
+                  </span>
+                </div>
+              </div>
+            </div>
+            <div className="header-content-buttons-reset">
+              <div className="header-content-buttons-row">
+                <div onClick={() => this.reset()} className="">
+                  <span>
+                    <p>Reset</p>
                   </span>
                 </div>
               </div>
@@ -677,7 +735,7 @@ class App extends Component {
                 <div
                   style={{
                     border: this.state.sizing ? "1px solid black" : "",
-                    backgroundColor: this.state.sizing ? "lightgreen" : ""
+                    backgroundColor: this.state.sizing ? "springgreen" : ""
                   }}
                   onClick={() => this.sizing()}
                 >
@@ -692,7 +750,7 @@ class App extends Component {
                 <div
                   style={{
                     border: this.state.refresh ? "1px solid black" : "",
-                    backgroundColor: this.state.refresh ? "lightgreen" : ""
+                    backgroundColor: this.state.refresh ? "springgreen" : ""
                   }}
                   onClick={() => this.refresh()}
                 >
@@ -706,7 +764,17 @@ class App extends Component {
                 </div>
               </div>
             </div>
-
+            <div className="header-content-buttons-three">
+              <div className="header-content-buttons-row">
+                <div className="home">
+                  <NavLink to={"/home"}>
+                    <span>
+                      <p>Home</p>
+                    </span>
+                  </NavLink>
+                </div>
+              </div>
+            </div>
             <div className="header-content-right">
               <div className="header-content-right-row-1">
                 <span
@@ -744,8 +812,9 @@ class App extends Component {
 
         <div className="App-content">
           <FlightTable
+            handleRightClickTh={this.handleRightClickTh.bind(this)}
             handleClick={this.handleClick.bind(this)}
-            handleRightClick={this.handleRightClick.bind(this)}
+            // handleRightClick={this.handleRightClick.bind(this)}
             onSort={this.onSort.bind(this)}
             content={content}
             columns={columns}

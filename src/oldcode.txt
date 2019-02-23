@@ -271,3 +271,67 @@
                 ))}
               </tbody>
             </table> */}
+
+
+
+
+                if (location === "/upload") {
+      const data = this.props.location.state
+        ? this.props.location.state["file"]
+        : "";
+
+      if (data) {
+        this.setState({
+          flightType: data ? data[1].split(",")[0] : "",
+          shiftOne: data[0]
+            .split(",")
+            .filter((item, i) => i > 1 && i < 4 && item.trim() !== ""),
+          shiftTwo: data[1]
+            .split(",")
+            .filter((item, i) => i > 1 && i < 4 && item.trim() !== ""),
+          shiftThree: data[2]
+            .split(",")
+            .filter((item, i) => i > 1 && i < 4 && item.trim() !== ""),
+          rmas: [
+            data[0].split(",")[0],
+            data[1].split(",")[0],
+            data[2].split(",")[0]
+          ],
+          misc: data[3]
+            .split(",")
+            .filter(
+              i => i.trim() !== "" && i !== "^^^^^" && i.trim() !== "vvvvv"
+            ),
+          maints: data[2].split(",").filter(i => i.includes("Maint"))[0],
+          spares: data[2].split(",").filter(i => i.includes("Spare"))[0],
+          opens: data[2].split(",").filter(i => i.includes("Open"))[0],
+          shiftBools: {
+            shiftOne: data[0].split(",")[1].slice(0, 1) === "X",
+            shiftTwo: data[1].split(",")[1].slice(0, 1) === "X",
+            shiftThree: data[2].split(",")[1].slice(0, 1) === "X"
+          },
+          fileLines: data,
+          columnTitles: data[4]
+            .split(",")
+            .filter(item => item !== "NULL" || item !== " "),
+          fileLinesContent: data
+            .filter(
+              (item, i) =>
+                i > 5 &&
+                item.match(/^\w/) &&
+                item !== "NULL" &&
+                item.trim() !== ""
+            )
+            .map((j, k) => {
+              if (k === 0) {
+              }
+              let obj = {};
+              for (var h = 0; h < data[4].length; h++) {
+                obj[data[4].split(",")[h]] = j.split(",")[h];
+              }
+              return obj;
+            }),
+          currentTime: data[0].split(",")[6]
+        });
+      }
+    }

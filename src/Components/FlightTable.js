@@ -1,23 +1,29 @@
 import React, { Component } from "react";
+import TableRow from "./TableRow";
 
 class FlightTable extends Component {
   constructor(props) {
     super(props);
     this.sortHandler = this.sortHandler.bind(this);
     this.onMouseDownHandler = this.onMouseDownHandler.bind(this);
-    this.onContextMenuHandler = this.onContextMenuHandler.bind(this);
+    // this.onContextMenuHandler = this.onContextMenuHandler.bind(this);
+    this.onContextMenuHandlerTh = this.onContextMenuHandlerTh.bind(this);
   }
 
   sortHandler(item) {
     this.props.onSort(item);
   }
 
-  onContextMenuHandler(e) {
-    this.props.handleRightClick(e);
-  }
+  // onContextMenuHandler(e) {
+  //   this.props.handleRightClick(e);
+  // }
 
   onMouseDownHandler(e) {
     this.props.handleClick(e);
+  }
+
+  onContextMenuHandlerTh(e, item) {
+    this.props.handleRightClickTh(e, item);
   }
 
   render() {
@@ -31,6 +37,10 @@ class FlightTable extends Component {
                 key={i}
                 className={item.includes(";") ? item.split(";")[1].trim() : ""}
                 onClick={() => this.sortHandler(item)}
+                onContextMenu={e => this.onContextMenuHandlerTh(e, item)}
+                // style={{
+                //   textAlign: i < 6 ? "left" : i < 12 ? "center" : "right"
+                // }}
               >
                 {item.includes(";") ? item.split(";")[0].trim() : item}
                 <hr />
@@ -40,23 +50,27 @@ class FlightTable extends Component {
         </thead>
         <tbody>
           {this.props.content.map((i, ii) => (
-            <tr key={"tr" + ii} id={ii}>
-              {Object.keys(i).map((j, jj) =>
+            <TableRow
+              key={"tr" + ii}
+              id={ii}
+              children={Object.keys(i).map((j, jj) =>
                 jj < this.props.columns.length ? (
                   <td
                     id={`${ii}/${jj}`}
-                    onContextMenu={this.onContextMenuHandler}
+                    // onContextMenu={this.onContextMenuHandler}
                     onMouseDown={this.onMouseDownHandler}
                     key={jj}
-                    className={i[j].split(";")[i[j].split(";").length - 1]}
+                    className={
+                      i[j] ? i[j].split(";")[i[j].split(";").length - 1] : ""
+                    }
                   >
-                    {i[j].split(";")[i[j].split(";").length - 2]}
+                    {i[j] ? i[j].split(";")[i[j].split(";").length - 2] : ""}
                   </td>
                 ) : (
-                  undefined
+                  []
                 )
               )}
-            </tr>
+            />
           ))}
         </tbody>
       </table>
