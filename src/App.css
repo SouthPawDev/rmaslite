@@ -54,19 +54,19 @@
 }
 
 .header-content-buttons-row > div {
-  margin: 0 10px 0 10px;
+  /* margin: 0 10px 0 10px;
   cursor: pointer;
   box-shadow: 1px 3px #888888;
   border-radius: 15px;
-  padding: 10px;
+  padding: 10px; */
 }
 
 .header-content-buttons-row > a {
-  margin: 0 10px 0 10px;
+  /* margin: 0 10px 0 10px;
   cursor: pointer;
   box-shadow: 1px 3px #888888;
   border-radius: 15px;
-  padding: 10px;
+  padding: 10px; */
 }
 
 a {
@@ -106,11 +106,23 @@ a {
 
 .shift {
   display: flex;
-  flex-direction: row;
+  /* flex-direction: row; */
+}
+
+#shiftOne label {
+  margin: 0;
+}
+
+#shiftTwo label {
+  margin: 0;
+}
+
+#shiftThree label {
+  margin: 0;
 }
 
 .shift p {
-  margin: 0 0 0 20px;
+  margin: 0 0 0 10px;
 }
 
 .PBg {
@@ -202,40 +214,28 @@ input {
 table {
   overflow: hidden;
   width: 100%;
-  height: 800px;
+  height: 90vh;
   table-layout: fixed;
   display: flex;
   flex-direction: column;
   align-items: center;
   overflow-y: scroll;
-  /* padding-right: 18px; */
 }
 
 thead {
   width: 100%;
-  sposition: fixed;
-  /* padding-right: 17px; */
 }
 
 tbody {
-  flex: 1;
-  /* position: fixed; */
   width: 100%;
-  /* padding-right: 17px; */
-  /* box-sizing: content-box; */
 }
 
 th {
   cursor: pointer;
 }
 
-td,
-th {
-  padding: 0;
-}
-
 tr {
-  width: 100%;
+  /* width: 100%; */
   display: flex;
 }
 
@@ -249,4 +249,12 @@ tr td {
 
 td:hover {
   background-color: lightgrey;
+}
+
+#override th {
+  padding: 0.015rem;
+}
+
+#override td {
+  padding: 0.015rem;
 }

@@ -2,7 +2,8 @@ import React, { Component } from "react";
 import { NavLink } from "react-router-dom";
 import CheckboxShift from "./Components/Checkbox";
 import { Title, Time, FlightException, Misc } from "./Components/Stateless";
-import FlightTable from "./Components/FlightTable";
+import FlightTableB from "./Components/FlightTableB";
+import Button from "react-bootstrap/Button";
 import "./App.css";
 
 class App extends Component {
@@ -12,7 +13,6 @@ class App extends Component {
     this.state = {
       direction: true,
       data: [],
-      // fileLinesContent: [],
       flightStatus: [],
       shiftBools: {},
       sizing: false,
@@ -228,8 +228,6 @@ class App extends Component {
     let x = document.getElementsByTagName("tr");
     let y = document.getElementsByClassName("selected");
 
-    console.log(y);
-
     if (y.length > 0) {
       for (var i = 1; i < x.length; i++) {
         if (!x.item(i).classList.contains("selected")) {
@@ -369,22 +367,9 @@ class App extends Component {
   }
 
   onSort(column) {
-    console.log(column);
-
+    this.setState({ isSorted: column });
     if (column === "FLIGHT;BBW") {
-      let columnOne = document.getElementById("FLIGHT");
-      let columnTwo = document.getElementById("GATE");
-      let elements = document.getElementsByTagName("th");
-      for (let i = 0; i < elements.length; i++) {
-        elements.item(i).style.color = "black";
-        elements.item(i).style.backgroundColor = "white";
-      }
-      if (columnOne !== null) {
-        columnOne.style.color = "blue";
-      }
-      if (columnTwo !== null) {
-        columnTwo.style.backgroundColor = "lightblue";
-      }
+      this.setState({ isSecondarySorted: "GATE;BBW" });
 
       this.handleFlightSort();
     } else if (
@@ -393,39 +378,14 @@ class App extends Component {
       column === "STA;BBW" ||
       column === "STD;BBW"
     ) {
-      let columnOne = document.getElementById(column.split(";")[0]);
-      let columnTwo = document.getElementById("FLIGHT");
-      let elements = document.getElementsByTagName("th");
-      for (let i = 0; i < elements.length; i++) {
-        elements.item(i).style.color = "black";
-        elements.item(i).style.backgroundColor = "white";
-      }
-      if (columnOne !== null) {
-        columnOne.style.color = "blue";
-      }
-      if (columnTwo !== null) {
-        columnTwo.style.backgroundColor = "lightblue";
-      }
+      this.setState({ isSecondarySorted: "FLIGHT;BBW" });
 
       this.handleColumnExceptionSort(column);
     } else {
       let type = this.state.rmas[1].split(";")[0];
-      let columnOne = document.getElementById(column.split(";")[0]);
-      let columnTwo =
-        type === "INBOUND"
-          ? document.getElementById("STA")
-          : document.getElementById("STD");
-      let elements = document.getElementsByTagName("th");
-      for (let i = 0; i < elements.length; i++) {
-        elements.item(i).style.color = "black";
-        elements.item(i).style.backgroundColor = "white";
-      }
-      if (columnOne !== null) {
-        columnOne.style.color = "blue";
-      }
-      if (columnTwo !== null) {
-        columnTwo.style.backgroundColor = "lightblue";
-      }
+      type === "INBOUND"
+        ? this.setState({ isSecondarySorted: "STA;BBW" })
+        : this.setState({ isSecondarySorted: "STD;BBW" });
 
       let direction = this.state.direction;
 
@@ -581,59 +541,104 @@ class App extends Component {
     );
   }
 
-  // handleRightClick(e) {
-  //   if (e.button === 2) {
-  //     e.preventDefault();
-  //     let x = e.target.id;
-  //     let y = document.getElementById(x.split("/")[0]);
+  handleOnMouseDownTh(e, column) {
+    e.preventDefault();
+    if (e.button === 1) {
+      this.setState({
+        currentColumnTitles: this.state.currentColumnTitles.filter(
+          title => title !== column
+        ),
+        currentFileLinesContent: this.state.currentFileLinesContent.map(obj => {
+          delete obj[column];
+          return obj;
+        })
+      });
+    }
+  }
 
-  // }
   handleRightClickTh(e, column) {
     e.preventDefault();
+    document.getElementsByClassName("App")[0].focus();
     this.setState({
-      currentColumnTitles: this.state.currentColumnTitles.filter(
-        title => title !== column
-      ),
-      currentFileLinesContent: this.state.currentFileLinesContent.map(obj => {
-        delete obj[column];
-        return obj;
-      })
+      selectedColumn: this.state.selectedColumn === column ? "" : column
     });
+  }
+
+  handleKeyPress(e) {
+    if (this.state.selectedColumn) {
+      if (e.keyCode === 37 || e.keyCode === 39) {
+        e.preventDefault();
+        let columns = this.state.currentColumnTitles;
+        let columnsLength = columns.length;
+        let selectedColumn = this.state.selectedColumn;
+        let index = columns.indexOf(selectedColumn);
+        let rows = this.state.currentFileLinesContent;
+
+        if (e.keyCode === 37) {
+          if (index > 0) {
+            let tmp = columns[index];
+            columns[index] = columns[index - 1];
+            columns[index - 1] = tmp;
+
+            let newRows = rows.map(obj => {
+              let keys = Object.keys(obj);
+              let keyTmp = keys[index];
+              keys[index] = keys[index - 1];
+              keys[index - 1] = keyTmp;
+              let newObj = keys.reduce((o, c) => {
+                o[c] = obj[c];
+                return o;
+              }, {});
+              return newObj;
+            });
+            this.setState({
+              currentColumnTitles: columns,
+              currentFileLinesContent: newRows
+            });
+          }
+        } else {
+          if (index < columnsLength - 1) {
+            let tmp = columns[index];
+            columns[index] = columns[index + 1];
+            columns[index + 1] = tmp;
+
+            let newRows = rows.map(obj => {
+              let keys = Object.keys(obj);
+              let keyTmp = keys[index];
+              keys[index] = keys[index + 1];
+              keys[index + 1] = keyTmp;
+              let newObj = keys.reduce((o, c) => {
+                o[c] = obj[c];
+                return o;
+              }, {});
+              return newObj;
+            });
+            this.setState({
+              currentColumnTitles: columns,
+              currentFileLinesContent: newRows
+            });
+          }
+        }
+      }
+    }
   }
 
   handleClick(e) {
     e.preventDefault();
     if (e.button === 0) {
-      console.log("Hello There");
     }
     if (e.button === 1) {
       let x = e.target.parentElement.id;
-      console.log(x);
-
       this.setState({
         currentFileLinesContent: this.state.currentFileLinesContent.filter(
           (i, j) => j !== parseInt(x)
         )
       });
-
-      // this.setState({
-      //   currentFileLinesContent: this.state.currentFileLinesContent.filter(
-      //     (i, j) => j !== x
-      //   )
-      // });
-      // let a = e.target.id;
-      // let b = document.getElementById(a.split("/")[0]);
-      // if (b.classList) {
-      //   b.classList.add("hidden");
-      // } else {
-      //   b.className += " hidden";
-      // }
     }
   }
 
   handlePrint() {
     document.getElementsByTagName("table")[0].style.height = "100%";
-    document.getElementsByTagName("tbody")[0].style.overflowY = "auto";
     window.print();
     document.getElementsByTagName("table")[0].style.height = "800px";
   }
@@ -657,7 +662,11 @@ class App extends Component {
     const shiftThree = this.state.shiftThree ? this.state.shiftThree : "";
 
     return (
-      <div className="App">
+      <div
+        className="App"
+        tabIndex="0"
+        onKeyDown={this.handleKeyPress.bind(this)}
+      >
         <div className="App-header">
           <div className="header-content">
             <div className="header-content-left">
@@ -677,6 +686,7 @@ class App extends Component {
             <div className="header-content-middle">
               <div className="shifts">
                 <CheckboxShift
+                  id="shiftOne"
                   lClassName={shiftOne ? shiftOne[0].slice(-3) : ""}
                   name={"shiftOne"}
                   checked={shiftBools.shiftOne}
@@ -686,6 +696,7 @@ class App extends Component {
                   pText={shiftOne ? shiftOne[1].slice(0, -4) : ""}
                 />
                 <CheckboxShift
+                  id="shiftTwo"
                   lClassName={shiftTwo ? shiftTwo[0].slice(-3) : ""}
                   name={"shiftTwo"}
                   checked={shiftBools.shiftTwo}
@@ -695,6 +706,7 @@ class App extends Component {
                   pText={shiftTwo ? shiftTwo[1].slice(0, -4) : ""}
                 />
                 <CheckboxShift
+                  id="shiftThree"
                   lClassName={shiftThree ? shiftThree[0].slice(-3) : ""}
                   name={"shiftThree"}
                   checked={shiftBools.shiftThree}
@@ -707,82 +719,71 @@ class App extends Component {
             </div>
             <div className="header-content-buttons">
               <div className="header-content-buttons-row">
-                <div onClick={() => this.showSelected()} className="">
-                  <span>
-                    <p>Show Selected</p>
-                  </span>
-                </div>
+                <Button
+                  variant="outline-primary"
+                  onClick={() => this.showSelected()}
+                  className=""
+                >
+                  Show Selected
+                </Button>
               </div>
               <div className="header-content-buttons-row">
-                <div onClick={() => this.hideSelected()} className="">
-                  <span>
-                    <p>Hide Selected</p>
-                  </span>
-                </div>
+                <Button
+                  variant="outline-primary"
+                  onClick={() => this.hideSelected()}
+                  className=""
+                >
+                  Hide Selected
+                </Button>
               </div>
             </div>
             <div className="header-content-buttons-reset">
               <div className="header-content-buttons-row">
-                <div onClick={() => this.reset()} className="">
-                  <span>
-                    <p>Reset</p>
-                  </span>
-                </div>
+                <Button
+                  variant="outline-danger"
+                  onClick={() => this.reset()}
+                  className=""
+                >
+                  Reset
+                </Button>
               </div>
             </div>
             <div className="header-content-buttons-two">
               <div className="header-content-buttons-row">
-                <div
-                  style={{
-                    border: this.state.sizing ? "1px solid black" : "",
-                    backgroundColor: this.state.sizing ? "springgreen" : ""
-                  }}
+                <Button
+                  variant={this.state.sizing ? "success" : "outline-success"}
                   onClick={() => this.sizing()}
                 >
-                  <span>
-                    <p>
-                      {this.state.sizing ? "Auto Sizing On" : "Auto Sizing Off"}
-                    </p>
-                  </span>
-                </div>
+                  {this.state.sizing ? "Auto Sizing On" : "Auto Sizing Off"}
+                </Button>
               </div>
               <div className="header-content-buttons-row">
-                <div
-                  style={{
-                    border: this.state.refresh ? "1px solid black" : "",
-                    backgroundColor: this.state.refresh ? "springgreen" : ""
-                  }}
+                <Button
+                  variant={this.state.refresh ? "success" : "outline-success"}
                   onClick={() => this.refresh()}
                 >
-                  <span>
-                    <p>
-                      {this.state.refresh
-                        ? "Auto Refresh On"
-                        : "Auto Refresh Off"}
-                    </p>
-                  </span>
-                </div>
+                  {this.state.refresh ? "Auto Refresh On" : "Auto Refresh Off"}
+                </Button>
               </div>
             </div>
             <div className="header-content-buttons-three">
               <div className="header-content-buttons-row">
-                <div className="home">
-                  <NavLink to={"/home"}>
-                    <span>
-                      <p>Home</p>
-                    </span>
-                  </NavLink>
-                </div>
+                <NavLink to={"/home"}>
+                  <Button variant="outline-secondary" className="home">
+                    Home
+                  </Button>
+                </NavLink>
               </div>
             </div>
             <div className="header-content-right">
               <div className="header-content-right-row-1">
-                <span
+                <Button
+                  variant="outline-success"
                   onClick={() => this.handlePrint()}
                   className={"print-span"}
                 >
-                  <p>{"Print"}</p>
-                </span>
+                  {"Print"}
+                </Button>
                 <Time
                   className={currentTime ? currentTime.split(";")[1] : ""}
                   time={currentTime ? currentTime.split(";")[0] : ""}
@@ -811,8 +812,12 @@ class App extends Component {
         </div>
 
         <div className="App-content">
-          <FlightTable
+          <FlightTableB
+            sorted={this.state.isSorted}
+            secondarySorted={this.state.isSecondarySorted}
+            selected={this.state.selectedColumn}
             handleRightClickTh={this.handleRightClickTh.bind(this)}
+            handleOnMouseDownTh={this.handleOnMouseDownTh.bind(this)}
             handleClick={this.handleClick.bind(this)}
             // handleRightClick={this.handleRightClick.bind(this)}
             onSort={this.onSort.bind(this)}

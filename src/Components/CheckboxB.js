@@ -1,6 +1,7 @@
 import React, { Component } from "react";
+import InputGroup from "react-bootstrap/InputGroup";
 
-class CheckboxShift extends Component {
+class CheckboxShiftB extends Component {
   constructor(props) {
     super(props);
     this.handler = this.handler.bind(this);
@@ -15,17 +16,18 @@ class CheckboxShift extends Component {
 
   render() {
     return (
-      <div id={this.props.id} className={"shift"}>
-        <label className={this.props.lClassName}>
-          <input
-            type="checkbox"
+      <div className={"shift"}>
+        <InputGroup size="sm" className={this.props.lClassName}>
+          {/* <InputGroup.Prepend> */}
+          <InputGroup.Checkbox
             name={this.props.name}
             checked={this.props.checked}
             onChange={this.handler}
           />
           {this.props.inputText}
-        </label>
-        <p className={this.props.pClassName}>{this.props.pText}</p>
+          {/* </InputGroup.Prepend> */}
+          <p className={this.props.pClassName}>{this.props.pText}</p>
+        </InputGroup>
       </div>
     );
   }
@@ -47,4 +49,4 @@ class CheckboxShift extends Component {
 //   );
 // }
 
-export default CheckboxShift;
+export default CheckboxShiftB;
