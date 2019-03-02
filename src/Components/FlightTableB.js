@@ -1,7 +1,7 @@
 import React, { Component } from "react";
 import TableRow from "./TableRow";
 import Table from "react-bootstrap/Table";
-import styled, { css } from "styled-components";
+import styled from "styled-components";
 import "../../node_modules/bootstrap/dist/css/bootstrap.min.css";
 
 const Th = styled.th`
@@ -10,6 +10,8 @@ const Th = styled.th`
   background-color: ${props =>
     props.isSecondarySorted ? "lightblue" : ""} !important;
 `;
+
+const Td = styled.td``;
 
 class FlightTableB extends Component {
   constructor(props) {
@@ -71,6 +73,13 @@ class FlightTableB extends Component {
               children={Object.keys(i).map((j, jj) =>
                 jj < this.props.columns.length ? (
                   <td
+                    style={{
+                      textAlign: j.startsWith("AC TYPE")
+                        ? "left"
+                        : j.startsWith("PAYLOAD")
+                        ? "right"
+                        : ""
+                    }}
                     id={`${ii}/${jj}`}
                     // onContextMenu={this.onContextMenuHandler}
                     onMouseDown={this.onMouseDownHandler}

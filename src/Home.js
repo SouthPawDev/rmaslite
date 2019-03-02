@@ -51,12 +51,12 @@ class Home extends Component {
       <div className="Home">
         <div className="row">
           <h1>
-            RMAS <i>'Lite'</i>
+            RMAS <i>Lite</i>
           </h1>
         </div>
-        <div className="row">
+        {/* <div className="row">
           <h1>Stations:</h1>
-        </div>
+        </div> */}
 
         <div className="row">
           <Station station="MEM" />
@@ -72,7 +72,7 @@ class Home extends Component {
           <Station station="GSO" />
         </div>
 
-        <div className="row">
+        {/* <div className="row">
           <h1>Or...</h1>
         </div>
         <div className="row">
@@ -102,7 +102,7 @@ class Home extends Component {
               <p>Load</p>
             </Link>
           </span>
-        </div>
+        </div> */}
       </div>
     );
   }

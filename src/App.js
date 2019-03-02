@@ -33,10 +33,13 @@ class App extends Component {
 
   async getFile() {
     let location = this.props.location.pathname;
+
     let formatLocation =
       location.slice(-5) === "INLET" || location.slice(-5) === "DEICE"
         ? location.slice(1, -6)
         : location.slice(1);
+
+    console.log(location.slice(-5));
 
     fetch(
       `http://wtc-275124-w23.corp.ds.fedex.com:9091/file/serve?file=${formatLocation}.csv`
@@ -60,9 +63,18 @@ class App extends Component {
               data[2].split(",")[0]
             ],
             misc: data[3].split(","),
-            maints: data[2].split(",").filter(i => i.includes("Maint"))[0],
-            spares: data[2].split(",").filter(i => i.includes("Spare"))[0],
-            opens: data[2].split(",").filter(i => i.includes("Open"))[0],
+            maints:
+              location.slice(-5) === "INLET" || location.slice(-5) === "DEICE"
+                ? ""
+                : data[2].split(",").filter(i => i.includes("Maint"))[0],
+            spares:
+              location.slice(-5) === "INLET" || location.slice(-5) === "DEICE"
+                ? ""
+                : data[2].split(",").filter(i => i.includes("Spare"))[0],
+            opens:
+              location.slice(-5) === "INLET" || location.slice(-5) === "DEICE"
+                ? ""
+                : data[2].split(",").filter(i => i.includes("Open"))[0],
             shiftBools: {
               shiftOne: data[0].split(",")[1].slice(0, 1) === "X",
               shiftTwo: data[1].split(",")[1].slice(0, 1) === "X",
@@ -89,6 +101,7 @@ class App extends Component {
                 }
                 return obj;
               }),
+            currentDate: data[0].split(",")[4],
             currentTime: data[0].split(",")[6],
             direction: true
           });
@@ -655,6 +668,7 @@ class App extends Component {
     const spares = this.state.spares ? this.state.spares : "";
     const opens = this.state.opens ? this.state.opens : "";
     const currentTime = this.state.currentTime ? this.state.currentTime : "";
+    const currentDate = this.state.currentDate ? this.state.currentDate : "";
     const shiftBools = this.state.shiftBools ? this.state.shiftBools : "";
     const title = this.state.rmas ? this.state.rmas : "";
     const shiftOne = this.state.shiftOne ? this.state.shiftOne : "";
@@ -778,6 +792,7 @@ class App extends Component {
             <div className="header-content-right">
               <div className="header-content-right-row-1">
                 <Button
+                  style={{ marginRight: "20px" }}
                   variant="outline-success"
                   onClick={() => this.handlePrint()}
                   className={"print-span"}
@@ -785,8 +800,14 @@ class App extends Component {
                   {"Print"}
                 </Button>
                 <Time
-                  className={currentTime ? currentTime.split(";")[1] : ""}
-                  time={currentTime ? currentTime.split(";")[0] : ""}
+                  className={title ? title[0].slice(-3) : ""}
+                  time={
+                    currentTime
+                      ? currentDate.split(";")[0] +
+                        " at " +
+                        currentTime.split(";")[0]
+                      : ""
+                  }
                 />
               </div>
               <br />

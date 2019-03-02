@@ -25,7 +25,11 @@ export function Misc(props) {
   return (
     <div className={props.className}>
       {props.misc.map((i, ii) => (
-        <p key={"misc" + ii} className={i.split(";")[i.split(";").length - 1]}>
+        <p
+          style={{ marginRight: "20px" }}
+          key={"misc" + ii}
+          className={i.split(";")[i.split(";").length - 1]}
+        >
           {i.split(";")[i.split(";").length - 2]}
         </p>
       ))}
