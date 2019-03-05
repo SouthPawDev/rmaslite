@@ -138,6 +138,12 @@ a {
   background-color: yellow;
 }
 
+.BPW {
+  font-weight: bold;
+  color: purple;
+  background-color: white;
+}
+
 .PRW {
   font-weight: normal;
   color: red;
@@ -209,31 +215,34 @@ input {
 .App-content {
   width: 100%;
   height: 100%;
-  overflow: hidden;
+  /* overflow: hidden; */
 }
 
 table {
   overflow: hidden;
   width: 100%;
-  overflow-y: scroll;
+  height: 100%;
   /* table-layout: fixed; */
   display: flex;
   flex-direction: column;
   align-items: center;
+  overflow: hidden;
 }
 
 thead {
   width: 100%;
-  z-index: 100;
-
-  position: fixed;
+  padding-right: 17px;
+  /* z-index: 100; */
+  /* position: relative; */
+  /* overflow-y: hidden; */
 }
 
 tbody {
-  margin-top: 25px;
+  /* margin-top: 25px; */
   /* position: fixed; */
   width: 100%;
   height: 90vh;
+  overflow-y: scroll;
 }
 
 th {

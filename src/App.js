@@ -12,7 +12,7 @@ class App extends Component {
 
     this.state = {
       direction: true,
-      data: [],
+
       flightStatus: [],
       shiftBools: {},
       sizing: false,
@@ -38,8 +38,6 @@ class App extends Component {
       location.slice(-5) === "INLET" || location.slice(-5) === "DEICE"
         ? location.slice(1, -6)
         : location.slice(1);
-
-    console.log(location.slice(-5));
 
     fetch(
       `http://wtc-275124-w23.corp.ds.fedex.com:9091/file/serve?file=${formatLocation}.csv`
@@ -75,6 +73,9 @@ class App extends Component {
               location.slice(-5) === "INLET" || location.slice(-5) === "DEICE"
                 ? ""
                 : data[2].split(",").filter(i => i.includes("Open"))[0],
+            maintBool: true,
+            spareBool: true,
+            openBool: true,
             shiftBools: {
               shiftOne: data[0].split(",")[1].slice(0, 1) === "X",
               shiftTwo: data[1].split(",")[1].slice(0, 1) === "X",
@@ -87,7 +88,24 @@ class App extends Component {
             fileLinesContent: data
               .filter(
                 (item, i) =>
-                  i > 5 &&
+                  i > 3 &&
+                  item.match(/^\w/) &&
+                  item !== "NULL" &&
+                  item.trim() !== ""
+              )
+              .map((j, k) => {
+                if (k === 0) {
+                }
+                let obj = {};
+                for (var h = 0; h < data[4].length; h++) {
+                  obj[data[4].split(",")[h]] = j.split(",")[h];
+                }
+                return obj;
+              }),
+            fileLinesContentCopy: data
+              .filter(
+                (item, i) =>
+                  i > 3 &&
                   item.match(/^\w/) &&
                   item !== "NULL" &&
                   item.trim() !== ""
@@ -132,19 +150,34 @@ class App extends Component {
   }
 
   filter() {
+    let shiftOneDay = this.state.shiftOne ? this.state.shiftOne[0] : "";
+    let shiftTwoDay = this.state.shiftTwo ? this.state.shiftTwo[0] : "";
+    let shiftThreeDay = this.state.shiftThree ? this.state.shiftThree[0] : "";
+    let maintBool = this.state.maintBool ? this.state.maintBool : "";
+    let spareBool = this.state.spareBool ? this.state.spareBool : "";
+    let openBool = this.state.openBool ? this.state.openBool : "";
+
     this.setState({
       currentColumnTitles: this.state.columnTitles,
-      currentFileLinesContent: this.state.fileLinesContent.reduce(
-        (acc, c, i) => {
-          let shiftOneDay = this.state.shiftOne ? this.state.shiftOne[0] : "";
-          let shiftTwoDay = this.state.shiftTwo ? this.state.shiftTwo[0] : "";
-          let shiftThreeDay = this.state.shiftThree
-            ? this.state.shiftThree[0]
-            : "";
+      currentFileLinesContent: this.state.fileLinesContent
+        .reduce((acc, c, i) => {
           let weekDay = c["SHIFT;BBW"].split(";")[0].replace("_", "-");
 
           if (this.state.shiftBools["shiftOne"]) {
             if (shiftOneDay.includes(weekDay)) {
+              // if (maintBool && flightType === "MAINT") {
+              //   acc.push(c);
+              // } else if (spareBool && flightType === "SPARE") {
+              //   acc.push(c);
+              // } else if (openBool && flightType === "OPEN") {
+              //   acc.push(c);
+              // } else if (
+              //   flightType !== "MAINT" ||
+              //   flightType !== "SPARE" ||
+              //   flightType !== "OPEN"
+              // ) {
+              //   acc.push(c);
+              // }
               acc.push(c);
             }
           }
@@ -160,9 +193,26 @@ class App extends Component {
           }
 
           return acc;
-        },
-        []
-      )
+        }, [])
+        .filter(obj => {
+          let flightType = obj["FLIGHT;BBW"].split(";")[0].trim();
+          if (!maintBool) {
+            if (flightType === "MAINT") {
+              return false;
+            }
+          }
+          if (!spareBool) {
+            if (flightType === "SPARE") {
+              return false;
+            }
+          }
+          if (!openBool) {
+            if (flightType === "OPEN") {
+              return false;
+            }
+          }
+          return true;
+        })
     });
   }
 
@@ -226,6 +276,13 @@ class App extends Component {
         }
       }
     );
+  }
+
+  resetColumns() {
+    this.setState({
+      currentColumnTitles: this.state.columnTitles,
+      currentFileLinesContent: this.state.fileLinesContentCopy
+    });
   }
 
   reset() {
@@ -554,6 +611,31 @@ class App extends Component {
     );
   }
 
+  onCheckException(exception) {
+    if (exception.trim().startsWith("Maint")) {
+      this.setState(
+        {
+          maintBool: !this.state.maintBool
+        },
+        () => this.filter()
+      );
+    } else if (exception.trim().startsWith("Spare")) {
+      this.setState(
+        {
+          spareBool: !this.state.spareBool
+        },
+        () => this.filter()
+      );
+    } else if (exception.trim().startsWith("Open")) {
+      this.setState(
+        {
+          openBool: !this.state.openBool
+        },
+        () => this.filter()
+      );
+    }
+  }
+
   handleOnMouseDownTh(e, column) {
     e.preventDefault();
     if (e.button === 1) {
@@ -565,6 +647,20 @@ class App extends Component {
           delete obj[column];
           return obj;
         })
+        // currentFileLinesContent: currentFileLinesContent.map(obj =>
+        //   Object.keys(obj)
+        //     .filter(key => key !== column)
+        //     .reduce((result, current) => {
+        //       result[current] = currentFileLinesContent[current];
+        //       return result;
+        //     }, {})
+        // )
+        // currentFileLinesContent: Object.keys(currentFileLinesContent)
+        //   .filter(key => key !== column)
+        //   .reduce((result, current) => {
+        //     result[current] = currentFileLinesContent[current];
+        //     return result;
+        //   }, {})
       });
     }
   }
@@ -641,7 +737,60 @@ class App extends Component {
     if (e.button === 0) {
     }
     if (e.button === 1) {
+      let currentFileLinesContent = this.state.currentFileLinesContent;
       let x = e.target.parentElement.id;
+      let shift = currentFileLinesContent[x]["SHIFT;BBW"].split(";")[0].trim();
+      let shiftFlight = currentFileLinesContent[x]["FLIGHT;BBW"]
+        .split(";")[0]
+        .trim();
+      let shiftOne = this.state.shiftOne;
+      let shiftTwo = this.state.shiftTwo;
+      let shiftThree = this.state.shiftThree;
+
+      if (shiftOne[0].split(" ")[0] === shift) {
+        if (
+          !parseInt(shiftOne[1].replace(/\D/g, "") - 1 < 0) &&
+          (shiftFlight !== "OPEN" &&
+            shiftFlight !== "MAINT" &&
+            shiftFlight !== "SPARE")
+        ) {
+          let decrement = parseInt(shiftOne[1].replace(/\D/g, "")) - 1;
+          shiftOne = [
+            shiftOne[0],
+            "Flights  " + decrement + ";" + shiftOne[1].split(";")[1]
+          ];
+        }
+        this.setState({ shiftOne: shiftOne });
+      } else if (shiftTwo[0].split(" ")[0] === shift) {
+        if (
+          !parseInt(shiftTwo[1].replace(/\D/g, "") - 1 < 0) &&
+          (shiftFlight !== "OPEN" &&
+            shiftFlight !== "MAINT" &&
+            shiftFlight !== "SPARE")
+        ) {
+          let decrement = parseInt(shiftTwo[1].replace(/\D/g, "")) - 1;
+          shiftTwo = [
+            shiftTwo[0],
+            "Flights  " + decrement + ";" + shiftTwo[1].split(";")[1]
+          ];
+        }
+        this.setState({ shiftTwo: shiftTwo });
+      } else if (shiftThree[0].split(" ")[0] === shift) {
+        if (
+          !parseInt(shiftThree[1].replace(/\D/g, "") - 1 < 0) &&
+          (shiftFlight !== "OPEN" &&
+            shiftFlight !== "MAINT" &&
+            shiftFlight !== "SPARE")
+        ) {
+          let decrement = parseInt(shiftThree[1].replace(/\D/g, "")) - 1;
+          shiftThree = [
+            shiftThree[0],
+            "Flights  " + decrement + ";" + shiftThree[1].split(";")[1]
+          ];
+        }
+        this.setState({ shiftThree: shiftThree });
+      }
+
       this.setState({
         currentFileLinesContent: this.state.currentFileLinesContent.filter(
           (i, j) => j !== parseInt(x)
@@ -674,7 +823,12 @@ class App extends Component {
     const shiftOne = this.state.shiftOne ? this.state.shiftOne : "";
     const shiftTwo = this.state.shiftTwo ? this.state.shiftTwo : "";
     const shiftThree = this.state.shiftThree ? this.state.shiftThree : "";
-
+    const maintBool = this.state.maintBool ? this.state.maintBool : "";
+    const spareBool = this.state.spareBool ? this.state.spareBool : "";
+    const openBool = this.state.openBool ? this.state.openBool : "";
+    const all = this.state.fileLinesContentCopy
+      ? this.state.fileLinesContentCopy
+      : [];
     return (
       <div
         className="App"
@@ -755,10 +909,19 @@ class App extends Component {
               <div className="header-content-buttons-row">
                 <Button
                   variant="outline-danger"
+                  onClick={() => this.resetColumns()}
+                  className=""
+                >
+                  Reset Columns
+                </Button>
+              </div>
+              <div className="header-content-buttons-row">
+                <Button
+                  variant="outline-danger"
                   onClick={() => this.reset()}
                   className=""
                 >
-                  Reset
+                  Reset Flights
                 </Button>
               </div>
             </div>
@@ -813,16 +976,22 @@ class App extends Component {
               <br />
               <div className="header-content-right-row-2">
                 <FlightException
+                  checked={maintBool}
+                  onCheckException={this.onCheckException.bind(this)}
                   style={{ margin: "0 10px 0 0" }}
                   className={maints ? maints.split(";")[1] : ""}
                   exception={maints ? maints.split(";")[0] : ""}
                 />
                 <FlightException
+                  checked={spareBool}
+                  onCheckException={this.onCheckException.bind(this)}
                   style={{ margin: "0 10px 0 0" }}
                   className={spares ? spares.split(";")[1] : ""}
                   exception={spares ? spares.split(";")[0] : ""}
                 />
                 <FlightException
+                  checked={openBool}
+                  onCheckException={this.onCheckException.bind(this)}
                   className={opens ? opens.split(";")[1] : ""}
                   exception={opens ? opens.split(";")[0] : ""}
                 />

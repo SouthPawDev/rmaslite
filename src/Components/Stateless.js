@@ -14,10 +14,20 @@ export function Time(props) {
 }
 
 export function FlightException(props) {
+  const handler = props => {
+    props.onCheckException(props.exception);
+  };
   return (
-    <p style={props.style} className={props.className}>
-      {props.exception}
-    </p>
+    <React.Fragment>
+      <input
+        type="checkbox"
+        onChange={() => handler(props)}
+        checked={props.checked}
+      />
+      <p style={props.style} className={props.className}>
+        {props.exception}
+      </p>
+    </React.Fragment>
   );
 }
 
