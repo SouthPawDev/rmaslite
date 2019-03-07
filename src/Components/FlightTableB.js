@@ -22,16 +22,16 @@ class FlightTableB extends Component {
     this.onMouseDownHandlerTh = this.onMouseDownHandlerTh.bind(this);
   }
 
-  sortHandler(item) {
-    this.props.onSort(item);
+  sortHandler(item, content) {
+    this.props.onSort(item, content);
   }
 
   // onContextMenuHandler(e) {
   //   this.props.handleRightClick(e);
   // }
 
-  onMouseDownHandler(e) {
-    this.props.handleClick(e);
+  onMouseDownHandler(e, i) {
+    this.props.handleClick(e, i);
   }
 
   onContextMenuHandlerTh(e, item) {
@@ -47,72 +47,61 @@ class FlightTableB extends Component {
       <Table hover bordered striped size="sm" id="override">
         <thead>
           <tr>
-            {this.props.columns.map((item, i) => (
-              <Th
-                isSelected={this.props.selected === item}
-                isSorted={this.props.sorted === item}
-                isSecondarySorted={this.props.secondarySorted === item}
-                key={i}
-                className={item.includes(";") ? item.split(";")[1].trim() : ""}
-                onClick={() => this.sortHandler(item)}
-                onContextMenu={e => this.onContextMenuHandlerTh(e, item)}
-                onMouseDown={e => this.onMouseDownHandlerTh(e, item)}
-              >
-                {item.includes(";") ? item.split(";")[0].trim() : item}
-                <hr />
-              </Th>
-            ))}
-            {/* {Object.keys(this.props.flightInfo[0]).map((item, i) => (
-              <Th
-                isSelected={this.props.selected === item}
-                isSorted={this.props.sorted === item}
-                isSecondarySorted={this.props.secondarySorted === item}
-                key={i}
-                className={item.includes(";") ? item.split(";")[1].trim() : ""}
-                onClick={() => this.sortHandler(item)}
-                onContextMenu={e => this.onContextMenuHandlerTh(e, item)}
-                onMouseDown={e => this.onMouseDownHandlerTh(e, item)}
-              >
-                {item.includes(";") ? item.split(";")[0].trim() : item}
-                <hr />
-              </Th>
-            ))} */}
+            {Object.keys(this.props.content[0] || {})
+              .filter(i => i !== "undefined")
+              .map((item, i) => (
+                <Th
+                  isSelected={this.props.selected === item}
+                  isSorted={this.props.sorted === item}
+                  isSecondarySorted={this.props.secondarySorted === item}
+                  key={i}
+                  className={
+                    item.includes(";") ? item.split(";")[1].trim() : ""
+                  }
+                  onClick={() => this.sortHandler(item, this.props.content)}
+                  onContextMenu={e => this.onContextMenuHandlerTh(e, item)}
+                  onMouseDown={e => this.onMouseDownHandlerTh(e, item)}
+                >
+                  {item.includes(";") ? item.split(";")[0].trim() : ""}
+                </Th>
+              ))}
           </tr>
         </thead>
-
         <tbody>
           {this.props.content
-            .filter((x, y) => y > 0)
-            .map((i, ii) => (
-              <TableRow
-                key={"tr" + ii}
-                id={ii}
-                children={Object.keys(i).map((j, jj) =>
-                  jj < this.props.columns.length ? (
-                    <td
-                      style={{
-                        textAlign: j.startsWith("AC TYPE")
-                          ? "left"
-                          : j.startsWith("PAYLOAD")
-                          ? "right"
-                          : ""
-                      }}
-                      id={`${ii}/${jj}`}
-                      // onContextMenu={this.onContextMenuHandler}
-                      onMouseDown={this.onMouseDownHandler}
-                      key={jj}
-                      className={
-                        i[j] ? i[j].split(";")[i[j].split(";").length - 1] : ""
-                      }
-                    >
-                      {i[j] ? i[j].split(";")[i[j].split(";").length - 2] : ""}
-                    </td>
-                  ) : (
-                    []
-                  )
-                )}
-              />
-            ))}
+            ? this.props.content.map((i, ii) => (
+                <TableRow
+                  key={"tr" + ii}
+                  id={ii}
+                  children={Object.keys(i)
+                    .filter(i => i !== "undefined")
+                    .map((j, jj) => (
+                      <td
+                        style={{
+                          textAlign: j.startsWith("AC TYPE")
+                            ? "left"
+                            : j.startsWith("PAYLOAD")
+                            ? "right"
+                            : ""
+                        }}
+                        id={`${ii}/${jj}`}
+                        // onContextMenu={this.onContextMenuHandler}
+                        onMouseDown={e => this.onMouseDownHandler(e, i)}
+                        key={jj}
+                        className={
+                          i[j]
+                            ? i[j].split(";")[i[j].split(";").length - 1]
+                            : ""
+                        }
+                      >
+                        {i[j]
+                          ? i[j].split(";")[i[j].split(";").length - 2]
+                          : ""}
+                      </td>
+                    ))}
+                />
+              ))
+            : []}
         </tbody>
       </Table>
     );

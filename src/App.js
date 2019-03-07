@@ -12,7 +12,9 @@ class App extends Component {
 
     this.state = {
       direction: true,
-
+      columnOrder: [],
+      deletedColumns: [],
+      deletedRows: [],
       flightStatus: [],
       shiftBools: {},
       sizing: false,
@@ -41,112 +43,95 @@ class App extends Component {
 
     fetch(
       `http://wtc-275124-w23.corp.ds.fedex.com:9091/file/serve?file=${formatLocation}.csv`
-    )
-      .then(response =>
-        response.json().then(data => {
-          this.setState({
-            flightType: data[1].split(",")[0],
-            shiftOne: data[0]
-              .split(",")
-              .filter((item, i) => i > 1 && i < 4 && item.trim() !== ""),
-            shiftTwo: data[1]
-              .split(",")
-              .filter((item, i) => i > 1 && i < 4 && item.trim() !== ""),
-            shiftThree: data[2]
-              .split(",")
-              .filter((item, i) => i > 1 && i < 4 && item.trim() !== ""),
-            rmas: [
-              data[0].split(",")[0],
-              data[1].split(",")[0],
-              data[2].split(",")[0]
-            ],
-            misc: data[3].split(","),
-            maints:
-              location.slice(-5) === "INLET" || location.slice(-5) === "DEICE"
-                ? ""
-                : data[2].split(",").filter(i => i.includes("Maint"))[0],
-            spares:
-              location.slice(-5) === "INLET" || location.slice(-5) === "DEICE"
-                ? ""
-                : data[2].split(",").filter(i => i.includes("Spare"))[0],
-            opens:
-              location.slice(-5) === "INLET" || location.slice(-5) === "DEICE"
-                ? ""
-                : data[2].split(",").filter(i => i.includes("Open"))[0],
-            maintBool: true,
-            spareBool: true,
-            openBool: true,
-            shiftBools: {
-              shiftOne: data[0].split(",")[1].slice(0, 1) === "X",
-              shiftTwo: data[1].split(",")[1].slice(0, 1) === "X",
-              shiftThree: data[2].split(",")[1].slice(0, 1) === "X"
-            },
-            fileLines: data,
-            columnTitles: data[4]
-              .split(",")
-              .filter(item => item !== "NULL" || item !== " "),
-            fileLinesContent: data
-              .filter(
-                (item, i) =>
-                  i > 3 &&
-                  item.match(/^\w/) &&
-                  item !== "NULL" &&
-                  item.trim() !== ""
-              )
-              .map((j, k) => {
-                if (k === 0) {
-                }
-                let obj = {};
-                for (var h = 0; h < data[4].length; h++) {
-                  obj[data[4].split(",")[h]] = j.split(",")[h];
-                }
-                return obj;
-              }),
-            fileLinesContentCopy: data
-              .filter(
-                (item, i) =>
-                  i > 3 &&
-                  item.match(/^\w/) &&
-                  item !== "NULL" &&
-                  item.trim() !== ""
-              )
-              .map((j, k) => {
-                if (k === 0) {
-                }
-                let obj = {};
-                for (var h = 0; h < data[4].length; h++) {
-                  obj[data[4].split(",")[h]] = j.split(",")[h];
-                }
-                return obj;
-              }),
-            currentDate: data[0].split(",")[4],
-            currentTime: data[0].split(",")[6],
-            direction: true
-          });
-        })
-      )
-      .then(() => {
-        this.filter();
-      })
-      .then(() => {
-        let location = this.props.location.pathname.split("/");
-        if (location.length === 4) {
-          if (location[3] === "DEICE") {
-            let columns = this.state.currentColumnTitles;
-            let index = columns.indexOf("DILOC;BBW");
-            this.onSort(columns[index]);
-          } else {
-            let columns = this.state.currentColumnTitles;
-            let index = columns.indexOf("IREQ;BBW");
-            this.onSort(columns[index]);
-          }
-        } else {
-          let data = this.state.misc;
-          let columns = this.state.currentColumnTitles;
-          let index = data.indexOf("^^^^^");
-          this.onSort(columns[index]);
-        }
-      });
+    ).then(
+      response =>
+        response
+          .json()
+          .then(data => {
+            this.setState({
+              flightType: data[1].split(",")[0],
+              shiftOne: data[0]
+                .split(",")
+                .filter((item, i) => i > 1 && i < 4 && item.trim() !== ""),
+              shiftTwo: data[1]
+                .split(",")
+                .filter((item, i) => i > 1 && i < 4 && item.trim() !== ""),
+              shiftThree: data[2]
+                .split(",")
+                .filter((item, i) => i > 1 && i < 4 && item.trim() !== ""),
+              rmas: [
+                data[0].split(",")[0],
+                data[1].split(",")[0],
+                data[2].split(",")[0]
+              ],
+              misc: data[3].split(","),
+              maints:
+                location.slice(-5) === "INLET" || location.slice(-5) === "DEICE"
+                  ? ""
+                  : data[2].split(",").filter(i => i.includes("Maint"))[0],
+              spares:
+                location.slice(-5) === "INLET" || location.slice(-5) === "DEICE"
+                  ? ""
+                  : data[2].split(",").filter(i => i.includes("Spare"))[0],
+              opens:
+                location.slice(-5) === "INLET" || location.slice(-5) === "DEICE"
+                  ? ""
+                  : data[2].split(",").filter(i => i.includes("Open"))[0],
+              maintBool: true,
+              spareBool: true,
+              openBool: true,
+              otherBool: true,
+              shiftBools: {
+                shiftOne: data[0].split(",")[1].slice(0, 1) === "X",
+                shiftTwo: data[1].split(",")[1].slice(0, 1) === "X",
+                shiftThree: data[2].split(",")[1].slice(0, 1) === "X"
+              },
+              fileLines: data,
+              // columnTitles: data[4]
+              //   .split(",")
+              //   .filter(item => item !== "NULL" || item !== " "),
+              fileLinesContent: data
+                .filter(
+                  (item, i) =>
+                    i > 3 &&
+                    item.match(/^\w/) &&
+                    item !== "NULL" &&
+                    item.trim() !== ""
+                )
+                .map((j, k) => {
+                  if (k === 0) {
+                  }
+                  let obj = {};
+                  for (var h = 0; h < data[4].length; h++) {
+                    obj[data[4].split(",")[h]] = j.split(",")[h];
+                  }
+                  return obj;
+                }),
+              currentDate: data[0].split(",")[4],
+              currentTime: data[0].split(",")[6],
+              direction: true
+            });
+          })
+          .then(() => this.filter())
+          .then(() => this.setState({ initialState: this.state }))
+      // .then(() => {
+      //   let location = this.props.location.pathname.split("/");
+      //   let columns = Object.keys(this.state.fileLinesContent[0]);
+      //   if (location.length === 4) {
+      //     if (location[3] === "DEICE") {
+      //       let index = columns.indexOf("DILOC;BBW");
+      //       this.onSort(columns[index]);
+      //     } else {
+      //       let index = columns.indexOf("IREQ;BBW");
+      //       this.onSort(columns[index]);
+      //     }
+      //   } else {
+      //     let data = this.state.misc;
+      //     let index = data.indexOf("^^^^^");
+      //     this.onSort(columns[index]);
+      //   }
+      // })
+    );
   }
 
   filter() {
@@ -156,64 +141,90 @@ class App extends Component {
     let maintBool = this.state.maintBool ? this.state.maintBool : "";
     let spareBool = this.state.spareBool ? this.state.spareBool : "";
     let openBool = this.state.openBool ? this.state.openBool : "";
+    let otherBool = this.state.otherBool ? this.state.otherBool : "";
+    let deletedColumns = this.state.deletedColumns
+      ? this.state.deletedColumns
+      : [];
+    let deletedRows = this.state.deletedRows
+      ? this.state.deletedRows.map(i => i["FLIGHT;BBW"] + " " + i["GATE;BBW"])
+      : [];
+    let columnOrder = this.state.columnOrder ? this.state.columnOrder : [];
 
-    this.setState({
-      currentColumnTitles: this.state.columnTitles,
-      currentFileLinesContent: this.state.fileLinesContent
-        .reduce((acc, c, i) => {
-          let weekDay = c["SHIFT;BBW"].split(";")[0].replace("_", "-");
+    let content = this.state.fileLinesContent
+      ? this.state.fileLinesContent
+          .reduce((acc, c) => {
+            let weekDay = c["SHIFT;BBW"]
+              ? c["SHIFT;BBW"].split(";")[0].replace("_", "-")
+              : "";
+            if (!deletedRows.includes(c["FLIGHT;BBW"] + " " + c["GATE;BBW"])) {
+              let newObj = Object.keys(c).reduce((newObj, key) => {
+                if (!deletedColumns.includes(key)) {
+                  newObj[key] = c[key];
+                }
+                return newObj;
+              }, {});
 
-          if (this.state.shiftBools["shiftOne"]) {
-            if (shiftOneDay.includes(weekDay)) {
-              // if (maintBool && flightType === "MAINT") {
-              //   acc.push(c);
-              // } else if (spareBool && flightType === "SPARE") {
-              //   acc.push(c);
-              // } else if (openBool && flightType === "OPEN") {
-              //   acc.push(c);
-              // } else if (
-              //   flightType !== "MAINT" ||
-              //   flightType !== "SPARE" ||
-              //   flightType !== "OPEN"
-              // ) {
-              //   acc.push(c);
-              // }
-              acc.push(c);
+              if (this.state.shiftBools["shiftOne"]) {
+                if (shiftOneDay.includes(weekDay)) {
+                  acc.push(newObj);
+                }
+              }
+              if (this.state.shiftBools["shiftTwo"]) {
+                if (shiftTwoDay.includes(weekDay)) {
+                  acc.push(newObj);
+                }
+              }
+              if (this.state.shiftBools["shiftThree"]) {
+                if (shiftThreeDay.includes(weekDay)) {
+                  acc.push(newObj);
+                }
+              }
             }
-          }
-          if (this.state.shiftBools["shiftTwo"]) {
-            if (shiftTwoDay.includes(weekDay)) {
-              acc.push(c);
+            return acc;
+          }, [])
+          .filter(obj => {
+            let flightType = obj["FLIGHT;BBW"]
+              ? obj["FLIGHT;BBW"].split(";")[0].trim()
+              : "";
+            if (!maintBool) {
+              if (flightType === "MAINT") {
+                return false;
+              }
             }
-          }
-          if (this.state.shiftBools["shiftThree"]) {
-            if (shiftThreeDay.includes(weekDay)) {
-              acc.push(c);
+            if (!spareBool) {
+              if (flightType === "SPARE") {
+                return false;
+              }
             }
-          }
-
-          return acc;
-        }, [])
-        .filter(obj => {
-          let flightType = obj["FLIGHT;BBW"].split(";")[0].trim();
-          if (!maintBool) {
-            if (flightType === "MAINT") {
-              return false;
+            if (!openBool) {
+              if (flightType === "OPEN") {
+                return false;
+              }
             }
-          }
-          if (!spareBool) {
-            if (flightType === "SPARE") {
-              return false;
+            if (!otherBool) {
+              if (
+                flightType !== "MAINT" &&
+                flightType !== "SPARE" &&
+                flightType !== "OPEN"
+              ) {
+                return false;
+              }
             }
-          }
-          if (!openBool) {
-            if (flightType === "OPEN") {
-              return false;
+            return true;
+          })
+          .reduce((arr, obj) => {
+            if (columnOrder.length > 0) {
+              let newObj = {};
+              columnOrder.forEach(k => (newObj[k] = obj[k]));
+              arr.push(newObj);
+              return arr;
+            } else {
+              arr.push(obj);
+              return arr;
             }
-          }
-          return true;
-        })
-    });
+          }, [])
+      : "";
+    this.setState({ currentContent: content });
   }
 
   refresh() {
@@ -279,10 +290,28 @@ class App extends Component {
   }
 
   resetColumns() {
-    this.setState({
-      currentColumnTitles: this.state.columnTitles,
-      currentFileLinesContent: this.state.fileLinesContentCopy
-    });
+    this.setState(
+      {
+        deletedColumns: [],
+        columnOrder: []
+      },
+      () => this.filter()
+    );
+  }
+
+  resetFlights() {
+    this.setState(
+      {
+        deletedRows: [],
+        shiftOne: this.state.initialState.shiftOne,
+        shiftTwo: this.state.initialState.shiftTwo,
+        shiftThree: this.state.initialState.shiftThree,
+        maints: this.state.initialState.maints,
+        spares: this.state.initialState.spares,
+        opens: this.state.initialState.opens
+      },
+      () => this.filter()
+    );
   }
 
   reset() {
@@ -326,9 +355,9 @@ class App extends Component {
     }
   }
 
-  handleColumnExceptionSort(column) {
+  handleColumnExceptionSort(column, content) {
     let direction = this.state.direction;
-    let sortedData = this.state.currentFileLinesContent.sort((a, b) => {
+    let sortedData = content.sort((a, b) => {
       let nameA = a[column]
         .split(";")[0]
         .toUpperCase()
@@ -376,14 +405,14 @@ class App extends Component {
     }
 
     this.setState({
-      currentFileLinesContent: sortedData,
+      // currentFileLinesContent: sortedData,
       direction: !this.state.direction
     });
   }
 
-  handleFlightSort() {
+  handleFlightSort(column, content) {
     let direction = this.state.direction;
-    let sortedData = this.state.currentFileLinesContent.sort((a, b) => {
+    let sortedData = content.sort((a, b) => {
       let nameA = a["FLIGHT;BBW"]
         .split(";")[0]
         .toUpperCase()
@@ -431,17 +460,15 @@ class App extends Component {
     }
 
     this.setState({
-      currentFileLinesContent: sortedData,
       direction: !this.state.direction
     });
   }
 
-  onSort(column) {
+  onSort(column, content) {
     this.setState({ isSorted: column });
     if (column === "FLIGHT;BBW") {
       this.setState({ isSecondarySorted: "GATE;BBW" });
-
-      this.handleFlightSort();
+      this.handleFlightSort(column, content);
     } else if (
       column === "AC;BBW" ||
       column === "GATE;BBW" ||
@@ -449,8 +476,7 @@ class App extends Component {
       column === "STD;BBW"
     ) {
       this.setState({ isSecondarySorted: "FLIGHT;BBW" });
-
-      this.handleColumnExceptionSort(column);
+      this.handleColumnExceptionSort(column, content);
     } else {
       let type = this.state.rmas[1].split(";")[0];
       type === "INBOUND"
@@ -459,7 +485,7 @@ class App extends Component {
 
       let direction = this.state.direction;
 
-      let sortedData = this.state.currentFileLinesContent.sort((a, b) => {
+      let sortedData = content.sort((a, b) => {
         let nameA = a[column]
           .split(";")[0]
           .toUpperCase()
@@ -593,7 +619,7 @@ class App extends Component {
       }
 
       this.setState({
-        currentFileLinesContent: sortedData,
+        // fileLinesContent: sortedData,
         direction: !this.state.direction
       });
     }
@@ -633,34 +659,36 @@ class App extends Component {
         },
         () => this.filter()
       );
+    } else if (exception === "Flights") {
+      this.setState(
+        {
+          otherBool: !this.state.otherBool
+        },
+        () => this.filter()
+      );
     }
   }
 
   handleOnMouseDownTh(e, column) {
     e.preventDefault();
+
     if (e.button === 1) {
+      let deletedColumns = this.state.deletedColumns;
+      deletedColumns.push(column);
+      let currentContent = this.state.currentContent.map(i => {
+        return Object.keys(i).reduce((newObj, k) => {
+          if (k !== column) {
+            newObj[k] = i[k];
+          } else if (column.startsWith("FLIGHT") || column.startsWith("GATE")) {
+            newObj[k] = i[k];
+          }
+          return newObj;
+        }, {});
+      });
       this.setState({
-        currentColumnTitles: this.state.currentColumnTitles.filter(
-          title => title !== column
-        ),
-        currentFileLinesContent: this.state.currentFileLinesContent.map(obj => {
-          delete obj[column];
-          return obj;
-        })
-        // currentFileLinesContent: currentFileLinesContent.map(obj =>
-        //   Object.keys(obj)
-        //     .filter(key => key !== column)
-        //     .reduce((result, current) => {
-        //       result[current] = currentFileLinesContent[current];
-        //       return result;
-        //     }, {})
-        // )
-        // currentFileLinesContent: Object.keys(currentFileLinesContent)
-        //   .filter(key => key !== column)
-        //   .reduce((result, current) => {
-        //     result[current] = currentFileLinesContent[current];
-        //     return result;
-        //   }, {})
+        currentContent: currentContent,
+        deletedColumns: deletedColumns,
+        columnOrder: Object.keys(currentContent[0])
       });
     }
   }
@@ -677,11 +705,12 @@ class App extends Component {
     if (this.state.selectedColumn) {
       if (e.keyCode === 37 || e.keyCode === 39) {
         e.preventDefault();
-        let columns = this.state.currentColumnTitles;
-        let columnsLength = columns.length;
         let selectedColumn = this.state.selectedColumn;
+        let currentContent = this.state.currentContent;
+        let columns = Object.keys(currentContent[0]);
+        let columnsLength = columns.length;
+
         let index = columns.indexOf(selectedColumn);
-        let rows = this.state.currentFileLinesContent;
 
         if (e.keyCode === 37) {
           if (index > 0) {
@@ -689,7 +718,7 @@ class App extends Component {
             columns[index] = columns[index - 1];
             columns[index - 1] = tmp;
 
-            let newRows = rows.map(obj => {
+            let newRows = currentContent.map(obj => {
               let keys = Object.keys(obj);
               let keyTmp = keys[index];
               keys[index] = keys[index - 1];
@@ -701,8 +730,8 @@ class App extends Component {
               return newObj;
             });
             this.setState({
-              currentColumnTitles: columns,
-              currentFileLinesContent: newRows
+              currentContent: newRows,
+              columnOrder: Object.keys(newRows[0])
             });
           }
         } else {
@@ -711,7 +740,7 @@ class App extends Component {
             columns[index] = columns[index + 1];
             columns[index + 1] = tmp;
 
-            let newRows = rows.map(obj => {
+            let newRows = currentContent.map(obj => {
               let keys = Object.keys(obj);
               let keyTmp = keys[index];
               keys[index] = keys[index + 1];
@@ -723,8 +752,8 @@ class App extends Component {
               return newObj;
             });
             this.setState({
-              currentColumnTitles: columns,
-              currentFileLinesContent: newRows
+              currentContent: newRows,
+              columnOrder: Object.keys(newRows[0])
             });
           }
         }
@@ -732,20 +761,25 @@ class App extends Component {
     }
   }
 
-  handleClick(e) {
+  handleClick(e, i) {
     e.preventDefault();
     if (e.button === 0) {
     }
     if (e.button === 1) {
-      let currentFileLinesContent = this.state.currentFileLinesContent;
-      let x = e.target.parentElement.id;
-      let shift = currentFileLinesContent[x]["SHIFT;BBW"].split(";")[0].trim();
-      let shiftFlight = currentFileLinesContent[x]["FLIGHT;BBW"]
-        .split(";")[0]
-        .trim();
+      let currentRow = Object.values(i).join("");
+      let shift = i["SHIFT;BBW"] ? i["SHIFT;BBW"].split(";")[0].trim() : "";
+      let shiftFlight = i["FLIGHT;BBW"]
+        ? i["FLIGHT;BBW"].split(";")[0].trim()
+        : "";
+
       let shiftOne = this.state.shiftOne;
       let shiftTwo = this.state.shiftTwo;
       let shiftThree = this.state.shiftThree;
+      let maints = this.state.maints;
+      let spares = this.state.spares;
+      let opens = this.state.opens;
+
+      let deletedRows = this.state.deletedRows;
 
       if (shiftOne[0].split(" ")[0] === shift) {
         if (
@@ -759,8 +793,22 @@ class App extends Component {
             shiftOne[0],
             "Flights  " + decrement + ";" + shiftOne[1].split(";")[1]
           ];
+          this.setState({ shiftOne: shiftOne });
+        } else {
+          if (shiftFlight === "OPEN") {
+            let decrement = parseInt(opens.replace(/\D/g, "")) - 1;
+            opens = "Open " + decrement + opens.slice(-4);
+            this.setState({ opens: opens });
+          } else if (shiftFlight === "MAINT") {
+            let decrement = parseInt(maints.replace(/\D/g, "")) - 1;
+            maints = "Maint " + decrement + maints.slice(-4);
+            this.setState({ maints: maints });
+          } else if (shiftFlight === "SPARE") {
+            let decrement = parseInt(spares.replace(/\D/g, "")) - 1;
+            spares = "Spare " + decrement + spares.slice(-4);
+            this.setState({ spares: spares });
+          }
         }
-        this.setState({ shiftOne: shiftOne });
       } else if (shiftTwo[0].split(" ")[0] === shift) {
         if (
           !parseInt(shiftTwo[1].replace(/\D/g, "") - 1 < 0) &&
@@ -773,8 +821,22 @@ class App extends Component {
             shiftTwo[0],
             "Flights  " + decrement + ";" + shiftTwo[1].split(";")[1]
           ];
+          this.setState({ shiftTwo: shiftTwo });
+        } else {
+          if (shiftFlight === "OPEN") {
+            let decrement = parseInt(opens.replace(/\D/g, "")) - 1;
+            opens = "Open " + decrement + opens.slice(-4);
+            this.setState({ opens: opens });
+          } else if (shiftFlight === "MAINT") {
+            let decrement = parseInt(maints.replace(/\D/g, "")) - 1;
+            maints = "Maint " + decrement + maints.slice(-4);
+            this.setState({ maints: maints });
+          } else if (shiftFlight === "SPARE") {
+            let decrement = parseInt(spares.replace(/\D/g, "")) - 1;
+            spares = "Spare " + decrement + spares.slice(-4);
+            this.setState({ spares: spares });
+          }
         }
-        this.setState({ shiftTwo: shiftTwo });
       } else if (shiftThree[0].split(" ")[0] === shift) {
         if (
           !parseInt(shiftThree[1].replace(/\D/g, "") - 1 < 0) &&
@@ -787,14 +849,34 @@ class App extends Component {
             shiftThree[0],
             "Flights  " + decrement + ";" + shiftThree[1].split(";")[1]
           ];
+          this.setState({ shiftThree: shiftThree });
+        } else {
+          if (shiftFlight === "OPEN") {
+            let decrement = parseInt(opens.replace(/\D/g, "")) - 1;
+            opens = "Open " + decrement + opens.slice(-4);
+            this.setState({ opens: opens });
+          } else if (shiftFlight === "MAINT") {
+            let decrement = parseInt(maints.replace(/\D/g, "")) - 1;
+            maints = "Maint " + decrement + maints.slice(-4);
+            this.setState({ maints: maints });
+          } else if (shiftFlight === "SPARE") {
+            let decrement = parseInt(spares.replace(/\D/g, "")) - 1;
+            spares = "Spare " + decrement + spares.slice(-4);
+            this.setState({ spares: spares });
+          }
         }
-        this.setState({ shiftThree: shiftThree });
       }
 
       this.setState({
-        currentFileLinesContent: this.state.currentFileLinesContent.filter(
-          (i, j) => j !== parseInt(x)
-        )
+        currentContent: this.state.currentContent.reduce((arr, obj) => {
+          let row = Object.values(obj).join("");
+          if (!(row === currentRow)) {
+            arr.push(obj);
+          } else {
+            deletedRows.push(obj);
+          }
+          return arr;
+        }, [])
       });
     }
   }
@@ -806,12 +888,11 @@ class App extends Component {
   }
 
   render() {
-    const content = this.state.currentFileLinesContent
-      ? this.state.currentFileLinesContent
-      : [];
-    const columns = this.state.currentColumnTitles
-      ? this.state.currentColumnTitles
-      : [];
+    const maintBool = this.state.maintBool ? this.state.maintBool : "";
+    const spareBool = this.state.spareBool ? this.state.spareBool : "";
+    const openBool = this.state.openBool ? this.state.openBool : "";
+    const otherBool = this.state.otherBool ? this.state.otherBool : "";
+    const content = this.state.currentContent ? this.state.currentContent : "";
     const misc = this.state.misc ? this.state.misc : "";
     const maints = this.state.maints ? this.state.maints : "";
     const spares = this.state.spares ? this.state.spares : "";
@@ -823,12 +904,8 @@ class App extends Component {
     const shiftOne = this.state.shiftOne ? this.state.shiftOne : "";
     const shiftTwo = this.state.shiftTwo ? this.state.shiftTwo : "";
     const shiftThree = this.state.shiftThree ? this.state.shiftThree : "";
-    const maintBool = this.state.maintBool ? this.state.maintBool : "";
-    const spareBool = this.state.spareBool ? this.state.spareBool : "";
-    const openBool = this.state.openBool ? this.state.openBool : "";
-    const all = this.state.fileLinesContentCopy
-      ? this.state.fileLinesContentCopy
-      : [];
+    const location = this.props.location.pathname;
+
     return (
       <div
         className="App"
@@ -918,7 +995,7 @@ class App extends Component {
               <div className="header-content-buttons-row">
                 <Button
                   variant="outline-danger"
-                  onClick={() => this.reset()}
+                  onClick={() => this.resetFlights()}
                   className=""
                 >
                   Reset Flights
@@ -928,6 +1005,7 @@ class App extends Component {
             <div className="header-content-buttons-two">
               <div className="header-content-buttons-row">
                 <Button
+                  style={{ width: "100%" }}
                   variant={this.state.sizing ? "success" : "outline-success"}
                   onClick={() => this.sizing()}
                 >
@@ -936,6 +1014,7 @@ class App extends Component {
               </div>
               <div className="header-content-buttons-row">
                 <Button
+                  style={{ width: "100%" }}
                   variant={this.state.refresh ? "success" : "outline-success"}
                   onClick={() => this.refresh()}
                 >
@@ -973,28 +1052,50 @@ class App extends Component {
                   }
                 />
               </div>
-              <br />
+              <div
+                style={{
+                  display: "flex",
+                  flexDirection: "row",
+                  justifyContent: "flex-start",
+                  margin: "6px 0 6px 0"
+                }}
+              >
+                <FlightException
+                  checked={otherBool}
+                  onCheckException={this.onCheckException.bind(this)}
+                  className={"BBW"}
+                  exception={"Flights"}
+                />
+              </div>
+
               <div className="header-content-right-row-2">
-                <FlightException
-                  checked={maintBool}
-                  onCheckException={this.onCheckException.bind(this)}
-                  style={{ margin: "0 10px 0 0" }}
-                  className={maints ? maints.split(";")[1] : ""}
-                  exception={maints ? maints.split(";")[0] : ""}
-                />
-                <FlightException
-                  checked={spareBool}
-                  onCheckException={this.onCheckException.bind(this)}
-                  style={{ margin: "0 10px 0 0" }}
-                  className={spares ? spares.split(";")[1] : ""}
-                  exception={spares ? spares.split(";")[0] : ""}
-                />
-                <FlightException
-                  checked={openBool}
-                  onCheckException={this.onCheckException.bind(this)}
-                  className={opens ? opens.split(";")[1] : ""}
-                  exception={opens ? opens.split(";")[0] : ""}
-                />
+                {location.slice(-5) === "INLET" ||
+                location.slice(-5) === "DEICE" ? (
+                  ""
+                ) : (
+                  <React.Fragment>
+                    <FlightException
+                      checked={maintBool}
+                      onCheckException={this.onCheckException.bind(this)}
+                      style={{ margin: "0 10px 0 0" }}
+                      className={maints ? maints.split(";")[1] : ""}
+                      exception={maints ? maints.split(";")[0] : ""}
+                    />
+                    <FlightException
+                      checked={spareBool}
+                      onCheckException={this.onCheckException.bind(this)}
+                      style={{ margin: "0 10px 0 0" }}
+                      className={spares ? spares.split(";")[1] : ""}
+                      exception={spares ? spares.split(";")[0] : ""}
+                    />
+                    <FlightException
+                      checked={openBool}
+                      onCheckException={this.onCheckException.bind(this)}
+                      className={opens ? opens.split(";")[1] : ""}
+                      exception={opens ? opens.split(";")[0] : ""}
+                    />
+                  </React.Fragment>
+                )}
               </div>
             </div>
           </div>
@@ -1012,7 +1113,7 @@ class App extends Component {
             // handleRightClick={this.handleRightClick.bind(this)}
             onSort={this.onSort.bind(this)}
             content={content}
-            columns={columns}
+            // columns={columns}
           />
         </div>
       </div>
