@@ -11,6 +11,11 @@ const Th = styled.th`
     props.isSecondarySorted ? "lightblue" : ""} !important;
 `;
 
+const Tr = styled.tr`
+  border-bottom: ${props =>
+    props.isSelectedRow ? "1px solid black" : ""} !important;
+`;
+
 class FlightTableB extends Component {
   constructor(props) {
     super(props);
@@ -42,6 +47,9 @@ class FlightTableB extends Component {
   }
 
   render() {
+    const selectedRowsPK = this.props.selectedRows.map(
+      i => i["FLIGHT;BBW"] + i["GATE;BBW"]
+    );
     return (
       <Table hover bordered striped size="sm" id="override">
         <thead>
@@ -74,7 +82,10 @@ class FlightTableB extends Component {
         <tbody>
           {this.props.content
             ? this.props.content.map((i, ii) => (
-                <tr
+                <Tr
+                  isSelectedRow={selectedRowsPK.includes(
+                    i["FLIGHT;BBW"] + i["GATE;BBW"]
+                  )}
                   key={"tr" + ii}
                   id={ii}
                   children={Object.keys(i)

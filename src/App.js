@@ -21,7 +21,9 @@ class App extends Component {
       sizing: false,
       refresh: false,
       selected: false,
-      help: true
+      help: true,
+      showSelectedOnly: false,
+      hideSelectedOnly: false
     };
   }
 
@@ -46,98 +48,94 @@ class App extends Component {
     fetch(
       `http://wtc-275124-w23.corp.ds.fedex.com:9091/file/serve?file=${formatLocation}.csv`
     )
-      .then(
-        response =>
-          response
-            .json()
-            .then(data => {
-              this.setState({
-                flightType: data[1].split(",")[0],
-                shiftOne: data[0]
-                  .split(",")
-                  .filter((item, i) => i > 1 && i < 4 && item.trim() !== ""),
-                shiftTwo: data[1]
-                  .split(",")
-                  .filter((item, i) => i > 1 && i < 4 && item.trim() !== ""),
-                shiftThree: data[2]
-                  .split(",")
-                  .filter((item, i) => i > 1 && i < 4 && item.trim() !== ""),
-                rmas: [
-                  data[0].split(",")[0],
-                  data[1].split(",")[0],
-                  data[2].split(",")[0]
-                ],
-                misc: data[3].split(","),
-                maints:
-                  location.slice(-5) === "INLET" ||
-                  location.slice(-5) === "DEICE"
-                    ? ""
-                    : data[2].split(",").filter(i => i.includes("Maint"))[0],
-                spares:
-                  location.slice(-5) === "INLET" ||
-                  location.slice(-5) === "DEICE"
-                    ? ""
-                    : data[2].split(",").filter(i => i.includes("Spare"))[0],
-                opens:
-                  location.slice(-5) === "INLET" ||
-                  location.slice(-5) === "DEICE"
-                    ? ""
-                    : data[2].split(",").filter(i => i.includes("Open"))[0],
-                maintBool: true,
-                spareBool: true,
-                openBool: true,
-                otherBool: true,
-                shiftBools: {
-                  shiftOne: data[0].split(",")[1].slice(0, 1) === "X",
-                  shiftTwo: data[1].split(",")[1].slice(0, 1) === "X",
-                  shiftThree: data[2].split(",")[1].slice(0, 1) === "X"
-                },
-                fileLines: data,
-                // columnTitles: data[4]
-                //   .split(",")
-                //   .filter(item => item !== "NULL" || item !== " "),
-                fileLinesContent: data
-                  .filter(
-                    (item, i) =>
-                      i > 3 &&
-                      item.match(/^\w/) &&
-                      item !== "NULL" &&
-                      item.trim() !== ""
-                  )
-                  .map((j, k) => {
-                    if (k === 0) {
-                    }
-                    let obj = {};
-                    for (var h = 0; h < data[4].length; h++) {
-                      obj[data[4].split(",")[h]] = j.split(",")[h];
-                    }
-                    return obj;
-                  }),
-                currentDate: data[0].split(",")[4],
-                currentTime: data[0].split(",")[6],
-                direction: true
-              });
-            })
-            .then(() => this.filter())
-            .then(() => this.setState({ initialState: this.state }))
-        // .then(() => {
-        //   let location = this.props.location.pathname.split("/");
-        //   let columns = Object.keys(this.state.fileLinesContent[0]);
-        //   if (location.length === 4) {
-        //     if (location[3] === "DEICE") {
-        //       let index = columns.indexOf("DILOC;BBW");
-        //       this.onSort(columns[index]);
-        //     } else {
-        //       let index = columns.indexOf("IREQ;BBW");
-        //       this.onSort(columns[index]);
-        //     }
-        //   } else {
-        //     let data = this.state.misc;
-        //     let index = data.indexOf("^^^^^");
-        //     this.onSort(columns[index]);
-        //   }
-        // })
-      )
+      .then(response => response.json())
+      .then(data => {
+        this.setState({
+          flightType: data[1].split(",")[0],
+          shiftOne: data[0]
+            .split(",")
+            .filter((item, i) => i > 1 && i < 4 && item.trim() !== ""),
+          shiftTwo: data[1]
+            .split(",")
+            .filter((item, i) => i > 1 && i < 4 && item.trim() !== ""),
+          shiftThree: data[2]
+            .split(",")
+            .filter((item, i) => i > 1 && i < 4 && item.trim() !== ""),
+          rmas: [
+            data[0].split(",")[0],
+            data[1].split(",")[0],
+            data[2].split(",")[0]
+          ],
+          misc: data[3].split(","),
+          maints:
+            location.slice(-5) === "INLET" || location.slice(-5) === "DEICE"
+              ? ""
+              : data[2].split(",").filter(i => i.includes("Maint"))[0],
+          spares:
+            location.slice(-5) === "INLET" || location.slice(-5) === "DEICE"
+              ? ""
+              : data[2].split(",").filter(i => i.includes("Spare"))[0],
+          opens:
+            location.slice(-5) === "INLET" || location.slice(-5) === "DEICE"
+              ? ""
+              : data[2].split(",").filter(i => i.includes("Open"))[0],
+          maintBool: true,
+          spareBool: true,
+          openBool: true,
+          otherBool: true,
+          shiftBools: {
+            shiftOne: data[0].split(",")[1].slice(0, 1) === "X",
+            shiftTwo: data[1].split(",")[1].slice(0, 1) === "X",
+            shiftThree: data[2].split(",")[1].slice(0, 1) === "X"
+          },
+          fileLines: data,
+          fileLinesContent: data
+            .filter(
+              (item, i) =>
+                i > 3 &&
+                item.match(/^\w/) &&
+                item !== "NULL" &&
+                item.trim() !== ""
+            )
+            .map((j, k) => {
+              if (k === 0) {
+              }
+              let obj = {};
+              for (var h = 0; h < data[4].length; h++) {
+                obj[data[4].split(",")[h]] = j.split(",")[h];
+              }
+              return obj;
+            }),
+          currentDate: data[0].split(",")[4],
+          currentTime: data[0].split(",")[6],
+          direction: true
+        });
+      })
+      .then(() => this.filter())
+      .then(() => this.setState({ initialState: this.state }))
+      .then(() => {
+        let location = this.props.location.pathname.split("/");
+        let content = this.state.currentContent;
+        let columns = this.state.currentContent
+          ? Object.keys(this.state.currentContent[0])
+          : "";
+
+        if (columns) {
+          if (location.length === 4) {
+            if (location[3] === "DEICE") {
+              let index = columns.indexOf("DILOC;BBW");
+              this.onSort(columns[index], content);
+            } else {
+              let index = columns.indexOf("IREQ;BBW");
+              this.onSort(columns[index], content);
+            }
+          } else {
+            let data = this.state.misc;
+            let index = data.indexOf("^^^^^");
+            this.onSort(columns[index], content);
+          }
+        }
+      })
       .catch(() => this.setState({ noFile: true }));
   }
 
@@ -156,6 +154,15 @@ class App extends Component {
       ? this.state.deletedRows.map(i => i["FLIGHT;BBW"] + " " + i["GATE;BBW"])
       : [];
     let columnOrder = this.state.columnOrder ? this.state.columnOrder : [];
+    let selectedRows = this.state.selectedRows
+      ? this.state.selectedRows.map(i => i["FLIGHT;BBW"] + i["GATE;BBW"])
+      : [];
+    let showSelectedOnly = this.state.showSelectedOnly
+      ? this.state.showSelectedOnly
+      : "";
+    let hideSelectedOnly = this.state.hideSelectedOnly
+      ? this.state.hideSelectedOnly
+      : "";
 
     let content = this.state.fileLinesContent
       ? this.state.fileLinesContent
@@ -230,6 +237,21 @@ class App extends Component {
               return arr;
             }
           }, [])
+          .filter(i => {
+            if (hideSelectedOnly) {
+              if (selectedRows.includes(i["FLIGHT;BBW"] + i["GATE;BBW"])) {
+                return false;
+              }
+              return true;
+            }
+            if (showSelectedOnly) {
+              if (selectedRows.includes(i["FLIGHT;BBW"] + i["GATE;BBW"])) {
+                return true;
+              }
+              return false;
+            }
+            return true;
+          })
       : "";
     this.setState({ currentContent: content });
   }
@@ -300,6 +322,7 @@ class App extends Component {
     this.setState(
       {
         deletedColumns: [],
+        selectedColumn: [],
         columnOrder: []
       },
       () => this.filter()
@@ -319,51 +342,25 @@ class App extends Component {
         maintBool: true,
         spareBool: true,
         openBool: true,
-        otherBool: true
+        otherBool: true,
+        showSelectedOnly: false,
+        hideSelectedOnly: false,
+        selectedRows: []
       },
       () => this.filter()
     );
   }
 
-  // reset() {
-  //   this.getFile();
-  //   let y = document.getElementsByTagName("tr");
-  //   for (let i = 0; i < y.length; i++) {
-  //     y.item(i).classList.remove("selected");
-  //     y.item(i).classList.remove("hidden");
-  //   }
-  // }
-
   showSelected() {
-    let x = document.getElementsByTagName("tr");
-    let y = document.getElementsByClassName("selected");
-
-    if (y.length > 0) {
-      for (var i = 1; i < x.length; i++) {
-        if (!x.item(i).classList.contains("selected")) {
-          x.item(i).classList.add("hidden");
-        } else {
-          if (x.item(i).classList.contains("hidden")) {
-            x.item(i).classList.remove("hidden");
-          }
-        }
-      }
-    }
+    this.setState({ showSelectedOnly: true, hideSelectedOnly: false }, () =>
+      this.filter()
+    );
   }
 
   hideSelected() {
-    let x = document.getElementsByTagName("tr");
-    // let y = document.getElementsByClassName("selectedRow");
-
-    for (var i = 1; i < x.length; i++) {
-      if (x.item(i).classList.contains("selected")) {
-        x.item(i).classList.add("hidden");
-      } else {
-        if (x.item(i).classList.contains("hidden")) {
-          x.item(i).classList.remove("hidden");
-        }
-      }
-    }
+    this.setState({ showSelectedOnly: false, hideSelectedOnly: true }, () =>
+      this.filter()
+    );
   }
 
   handleColumnExceptionSort(column, content) {
@@ -776,15 +773,19 @@ class App extends Component {
     e.preventDefault();
 
     let selectedRows = this.state.selectedRows;
-    selectedRows.includes(i)
-      ? selectedRows.filter(
-          j =>
-            j["FLIGHT;BBW"] + " " + j["GATE;BBW"] ===
-            i["FLIGHT;BBW"] + " " + i["GATE;BBW"]
-        )
-      : selectedRows.push(i);
+    let selectedRowsPK = selectedRows.map(j => j["FLIGHT;BBW"] + j["GATE;BBW"]);
 
-    this.setState({ selectedRows: selectedRows });
+    if (selectedRowsPK.includes(i["FLIGHT;BBW"] + i["GATE;BBW"])) {
+      this.setState({
+        selectedRows: selectedRows.filter(
+          k =>
+            k["FLIGHT;BBW"] + k["GATE;BBW"] !== i["FLIGHT;BBW"] + i["GATE;BBW"]
+        )
+      });
+    } else {
+      selectedRows.push(i);
+      this.setState({ selectedRows: selectedRows });
+    }
   }
 
   handleClick(e, i) {
@@ -937,6 +938,7 @@ class App extends Component {
     const location = this.props.location.pathname;
     const noFile = this.state.noFile ? this.state.noFile : "";
     const help = this.state.help ? this.state.help : "";
+    const selectedRows = this.state.selectedRows ? this.state.selectedRows : "";
     return noFile ? (
       <div
         style={{
@@ -1189,6 +1191,7 @@ class App extends Component {
             handleRightClickRow={this.handleRightClickRow.bind(this)}
             onSort={this.onSort.bind(this)}
             content={content}
+            selectedRows={selectedRows}
           />
         </div>
       </div>
