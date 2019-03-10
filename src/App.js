@@ -694,7 +694,9 @@ class App extends Component {
 
     if (e.button === 1) {
       let deletedColumns = this.state.deletedColumns;
-      deletedColumns.push(column);
+      if (!column.startsWith("FLIGHT") && !column.startsWith("GATE")) {
+        deletedColumns.push(column);
+      }
       let currentContent = this.state.currentContent.map(i => {
         return Object.keys(i).reduce((newObj, k) => {
           if (k !== column) {
