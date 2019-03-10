@@ -1,5 +1,6 @@
 import React from "react";
 import Button from "react-bootstrap/Button";
+import styled from "styled-components";
 
 export default function Hello(props) {
   return <h1>Hello World!</h1>;
@@ -31,18 +32,75 @@ export function FlightException(props) {
   );
 }
 
+const StyledMisc = styled.div`
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  margin: 0px 20px 0px 20px;
+`;
+
+const MiscArrayDiv = styled.div`
+  display: flex;
+  flex-direction: row;
+  justify-content: space-evenly;
+  width: 100&;
+`;
+
+const TooltipWrapper = styled.div`
+  display: ${props => (props.isHidden ? "none" : "flex")};
+  flex-direction: column;
+  margin: 10px;
+`;
+
+const Help = styled(Button)``;
+
 export function Misc(props) {
+  const displayHelpHelpHandler = () => {
+    props.displayHelp();
+  };
   return (
-    <div className={props.className}>
-      {props.misc.map((i, ii) => (
-        <p
-          style={{ marginRight: "20px" }}
-          key={"misc" + ii}
-          className={i.split(";")[i.split(";").length - 1]}
-        >
-          {i.split(";")[i.split(";").length - 2]}
-        </p>
-      ))}
+    <div>
+      <TooltipWrapper isHidden={props.help}>
+        <h5>
+          <u>
+            <strong>Column Headers</strong>
+          </u>
+          : <strong>Left Click:</strong> Sort, <strong>Middle Click:</strong>{" "}
+          Delete, <strong>Right Click:</strong> Select,{" "}
+          <strong>Selected Column:</strong> Left/Right Arrows Keys Rearrange
+        </h5>
+        <h5>
+          <u>
+            <strong>Rows</strong>
+          </u>
+          : <strong>Middle Click:</strong> Delete, <strong>Right Click:</strong>{" "}
+          Underline/Select
+        </h5>
+      </TooltipWrapper>
+      <StyledMisc>
+        <MiscArrayDiv>
+          {props.misc
+            .filter(i => i.trim() !== "" && i !== "^^^^^")
+            .map((i, ii) => (
+              <p
+                style={{ padding: "0 2px 0 2px" }}
+                key={"misc" + ii}
+                className={i.split(";")[i.split(";").length - 1]}
+              >
+                {i.split(";")[i.split(";").length - 2]}
+              </p>
+            ))}
+        </MiscArrayDiv>
+        <div>
+          <Help
+            onClick={() => displayHelpHelpHandler()}
+            variant="outline-warning"
+            size="sm"
+          >
+            {props.help ? "Help" : "Hide"}
+          </Help>
+        </div>
+      </StyledMisc>
     </div>
   );
 }

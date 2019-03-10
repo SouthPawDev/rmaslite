@@ -17,9 +17,11 @@ class App extends Component {
       deletedRows: [],
       flightStatus: [],
       shiftBools: {},
+      selectedRows: [],
       sizing: false,
       refresh: false,
-      selected: false
+      selected: false,
+      help: true
     };
   }
 
@@ -43,95 +45,100 @@ class App extends Component {
 
     fetch(
       `http://wtc-275124-w23.corp.ds.fedex.com:9091/file/serve?file=${formatLocation}.csv`
-    ).then(
-      response =>
-        response
-          .json()
-          .then(data => {
-            this.setState({
-              flightType: data[1].split(",")[0],
-              shiftOne: data[0]
-                .split(",")
-                .filter((item, i) => i > 1 && i < 4 && item.trim() !== ""),
-              shiftTwo: data[1]
-                .split(",")
-                .filter((item, i) => i > 1 && i < 4 && item.trim() !== ""),
-              shiftThree: data[2]
-                .split(",")
-                .filter((item, i) => i > 1 && i < 4 && item.trim() !== ""),
-              rmas: [
-                data[0].split(",")[0],
-                data[1].split(",")[0],
-                data[2].split(",")[0]
-              ],
-              misc: data[3].split(","),
-              maints:
-                location.slice(-5) === "INLET" || location.slice(-5) === "DEICE"
-                  ? ""
-                  : data[2].split(",").filter(i => i.includes("Maint"))[0],
-              spares:
-                location.slice(-5) === "INLET" || location.slice(-5) === "DEICE"
-                  ? ""
-                  : data[2].split(",").filter(i => i.includes("Spare"))[0],
-              opens:
-                location.slice(-5) === "INLET" || location.slice(-5) === "DEICE"
-                  ? ""
-                  : data[2].split(",").filter(i => i.includes("Open"))[0],
-              maintBool: true,
-              spareBool: true,
-              openBool: true,
-              otherBool: true,
-              shiftBools: {
-                shiftOne: data[0].split(",")[1].slice(0, 1) === "X",
-                shiftTwo: data[1].split(",")[1].slice(0, 1) === "X",
-                shiftThree: data[2].split(",")[1].slice(0, 1) === "X"
-              },
-              fileLines: data,
-              // columnTitles: data[4]
-              //   .split(",")
-              //   .filter(item => item !== "NULL" || item !== " "),
-              fileLinesContent: data
-                .filter(
-                  (item, i) =>
-                    i > 3 &&
-                    item.match(/^\w/) &&
-                    item !== "NULL" &&
-                    item.trim() !== ""
-                )
-                .map((j, k) => {
-                  if (k === 0) {
-                  }
-                  let obj = {};
-                  for (var h = 0; h < data[4].length; h++) {
-                    obj[data[4].split(",")[h]] = j.split(",")[h];
-                  }
-                  return obj;
-                }),
-              currentDate: data[0].split(",")[4],
-              currentTime: data[0].split(",")[6],
-              direction: true
-            });
-          })
-          .then(() => this.filter())
-          .then(() => this.setState({ initialState: this.state }))
-      // .then(() => {
-      //   let location = this.props.location.pathname.split("/");
-      //   let columns = Object.keys(this.state.fileLinesContent[0]);
-      //   if (location.length === 4) {
-      //     if (location[3] === "DEICE") {
-      //       let index = columns.indexOf("DILOC;BBW");
-      //       this.onSort(columns[index]);
-      //     } else {
-      //       let index = columns.indexOf("IREQ;BBW");
-      //       this.onSort(columns[index]);
-      //     }
-      //   } else {
-      //     let data = this.state.misc;
-      //     let index = data.indexOf("^^^^^");
-      //     this.onSort(columns[index]);
-      //   }
-      // })
-    );
+    )
+      .then(
+        response =>
+          response
+            .json()
+            .then(data => {
+              this.setState({
+                flightType: data[1].split(",")[0],
+                shiftOne: data[0]
+                  .split(",")
+                  .filter((item, i) => i > 1 && i < 4 && item.trim() !== ""),
+                shiftTwo: data[1]
+                  .split(",")
+                  .filter((item, i) => i > 1 && i < 4 && item.trim() !== ""),
+                shiftThree: data[2]
+                  .split(",")
+                  .filter((item, i) => i > 1 && i < 4 && item.trim() !== ""),
+                rmas: [
+                  data[0].split(",")[0],
+                  data[1].split(",")[0],
+                  data[2].split(",")[0]
+                ],
+                misc: data[3].split(","),
+                maints:
+                  location.slice(-5) === "INLET" ||
+                  location.slice(-5) === "DEICE"
+                    ? ""
+                    : data[2].split(",").filter(i => i.includes("Maint"))[0],
+                spares:
+                  location.slice(-5) === "INLET" ||
+                  location.slice(-5) === "DEICE"
+                    ? ""
+                    : data[2].split(",").filter(i => i.includes("Spare"))[0],
+                opens:
+                  location.slice(-5) === "INLET" ||
+                  location.slice(-5) === "DEICE"
+                    ? ""
+                    : data[2].split(",").filter(i => i.includes("Open"))[0],
+                maintBool: true,
+                spareBool: true,
+                openBool: true,
+                otherBool: true,
+                shiftBools: {
+                  shiftOne: data[0].split(",")[1].slice(0, 1) === "X",
+                  shiftTwo: data[1].split(",")[1].slice(0, 1) === "X",
+                  shiftThree: data[2].split(",")[1].slice(0, 1) === "X"
+                },
+                fileLines: data,
+                // columnTitles: data[4]
+                //   .split(",")
+                //   .filter(item => item !== "NULL" || item !== " "),
+                fileLinesContent: data
+                  .filter(
+                    (item, i) =>
+                      i > 3 &&
+                      item.match(/^\w/) &&
+                      item !== "NULL" &&
+                      item.trim() !== ""
+                  )
+                  .map((j, k) => {
+                    if (k === 0) {
+                    }
+                    let obj = {};
+                    for (var h = 0; h < data[4].length; h++) {
+                      obj[data[4].split(",")[h]] = j.split(",")[h];
+                    }
+                    return obj;
+                  }),
+                currentDate: data[0].split(",")[4],
+                currentTime: data[0].split(",")[6],
+                direction: true
+              });
+            })
+            .then(() => this.filter())
+            .then(() => this.setState({ initialState: this.state }))
+        // .then(() => {
+        //   let location = this.props.location.pathname.split("/");
+        //   let columns = Object.keys(this.state.fileLinesContent[0]);
+        //   if (location.length === 4) {
+        //     if (location[3] === "DEICE") {
+        //       let index = columns.indexOf("DILOC;BBW");
+        //       this.onSort(columns[index]);
+        //     } else {
+        //       let index = columns.indexOf("IREQ;BBW");
+        //       this.onSort(columns[index]);
+        //     }
+        //   } else {
+        //     let data = this.state.misc;
+        //     let index = data.indexOf("^^^^^");
+        //     this.onSort(columns[index]);
+        //   }
+        // })
+      )
+      .catch(() => this.setState({ noFile: true }));
   }
 
   filter() {
@@ -308,20 +315,24 @@ class App extends Component {
         shiftThree: this.state.initialState.shiftThree,
         maints: this.state.initialState.maints,
         spares: this.state.initialState.spares,
-        opens: this.state.initialState.opens
+        opens: this.state.initialState.opens,
+        maintBool: true,
+        spareBool: true,
+        openBool: true,
+        otherBool: true
       },
       () => this.filter()
     );
   }
 
-  reset() {
-    this.getFile();
-    let y = document.getElementsByTagName("tr");
-    for (let i = 0; i < y.length; i++) {
-      y.item(i).classList.remove("selected");
-      y.item(i).classList.remove("hidden");
-    }
-  }
+  // reset() {
+  //   this.getFile();
+  //   let y = document.getElementsByTagName("tr");
+  //   for (let i = 0; i < y.length; i++) {
+  //     y.item(i).classList.remove("selected");
+  //     y.item(i).classList.remove("hidden");
+  //   }
+  // }
 
   showSelected() {
     let x = document.getElementsByTagName("tr");
@@ -659,7 +670,7 @@ class App extends Component {
         },
         () => this.filter()
       );
-    } else if (exception === "Flights") {
+    } else if (exception.startsWith("Flights ")) {
       this.setState(
         {
           otherBool: !this.state.otherBool
@@ -759,6 +770,21 @@ class App extends Component {
         }
       }
     }
+  }
+
+  handleRightClickRow(e, i) {
+    e.preventDefault();
+
+    let selectedRows = this.state.selectedRows;
+    selectedRows.includes(i)
+      ? selectedRows.filter(
+          j =>
+            j["FLIGHT;BBW"] + " " + j["GATE;BBW"] ===
+            i["FLIGHT;BBW"] + " " + i["GATE;BBW"]
+        )
+      : selectedRows.push(i);
+
+    this.setState({ selectedRows: selectedRows });
   }
 
   handleClick(e, i) {
@@ -881,6 +907,10 @@ class App extends Component {
     }
   }
 
+  displayHelp() {
+    this.setState({ help: !this.state.help });
+  }
+
   handlePrint() {
     document.getElementsByTagName("table")[0].style.height = "100%";
     window.print();
@@ -905,8 +935,26 @@ class App extends Component {
     const shiftTwo = this.state.shiftTwo ? this.state.shiftTwo : "";
     const shiftThree = this.state.shiftThree ? this.state.shiftThree : "";
     const location = this.props.location.pathname;
-
-    return (
+    const noFile = this.state.noFile ? this.state.noFile : "";
+    const help = this.state.help ? this.state.help : "";
+    return noFile ? (
+      <div
+        style={{
+          display: "flex",
+          flexDirection: "column",
+          justifyContent: "center",
+          alignItems: "center",
+          minHeight: "100vh"
+        }}
+      >
+        <h1>No File Found</h1>
+        <NavLink to={"/home"}>
+          <Button variant="outline-secondary" className="home">
+            Home
+          </Button>
+        </NavLink>
+      </div>
+    ) : (
       <div
         className="App"
         tabIndex="0"
@@ -1030,6 +1078,41 @@ class App extends Component {
                   </Button>
                 </NavLink>
               </div>
+
+              <div
+                style={{
+                  display: "flex",
+                  flexDirection: "row",
+                  marginTop: "12px"
+                }}
+              >
+                <FlightException
+                  checked={otherBool}
+                  onCheckException={this.onCheckException.bind(this)}
+                  className={"BBW"}
+                  exception={
+                    "Flights " +
+                    Object.keys(shiftBools)
+                      .filter(i => shiftBools[i])
+                      .reduce((num, bool) => {
+                        if (bool === "shiftOne") {
+                          num += parseInt(
+                            shiftOne[1].slice(0, -4).replace(/\D/g, "")
+                          );
+                        } else if (bool === "shiftTwo") {
+                          num += parseInt(
+                            shiftTwo[1].slice(0, -4).replace(/\D/g, "")
+                          );
+                        } else if (bool === "shiftThree") {
+                          num += parseInt(
+                            shiftThree[1].slice(0, -4).replace(/\D/g, "")
+                          );
+                        }
+                        return num;
+                      }, 0)
+                  }
+                />
+              </div>
             </div>
             <div className="header-content-right">
               <div className="header-content-right-row-1">
@@ -1050,21 +1133,6 @@ class App extends Component {
                         currentTime.split(";")[0]
                       : ""
                   }
-                />
-              </div>
-              <div
-                style={{
-                  display: "flex",
-                  flexDirection: "row",
-                  justifyContent: "flex-start",
-                  margin: "6px 0 6px 0"
-                }}
-              >
-                <FlightException
-                  checked={otherBool}
-                  onCheckException={this.onCheckException.bind(this)}
-                  className={"BBW"}
-                  exception={"Flights"}
                 />
               </div>
 
@@ -1099,7 +1167,15 @@ class App extends Component {
               </div>
             </div>
           </div>
-          {misc ? <Misc className="misc" misc={misc} /> : ""}
+          {misc ? (
+            <Misc
+              help={help}
+              misc={misc}
+              displayHelp={this.displayHelp.bind(this)}
+            />
+          ) : (
+            ""
+          )}
         </div>
 
         <div className="App-content">
@@ -1110,10 +1186,9 @@ class App extends Component {
             handleRightClickTh={this.handleRightClickTh.bind(this)}
             handleOnMouseDownTh={this.handleOnMouseDownTh.bind(this)}
             handleClick={this.handleClick.bind(this)}
-            // handleRightClick={this.handleRightClick.bind(this)}
+            handleRightClickRow={this.handleRightClickRow.bind(this)}
             onSort={this.onSort.bind(this)}
             content={content}
-            // columns={columns}
           />
         </div>
       </div>

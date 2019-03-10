@@ -1,5 +1,4 @@
 import React, { Component } from "react";
-import TableRow from "./TableRow";
 import Table from "react-bootstrap/Table";
 import styled from "styled-components";
 
@@ -17,7 +16,7 @@ class FlightTableB extends Component {
     super(props);
     this.sortHandler = this.sortHandler.bind(this);
     this.onMouseDownHandler = this.onMouseDownHandler.bind(this);
-    // this.onContextMenuHandler = this.onContextMenuHandler.bind(this);
+    this.onContextMenuHandler = this.onContextMenuHandler.bind(this);
     this.onContextMenuHandlerTh = this.onContextMenuHandlerTh.bind(this);
     this.onMouseDownHandlerTh = this.onMouseDownHandlerTh.bind(this);
   }
@@ -26,9 +25,9 @@ class FlightTableB extends Component {
     this.props.onSort(item, content);
   }
 
-  // onContextMenuHandler(e) {
-  //   this.props.handleRightClick(e);
-  // }
+  onContextMenuHandler(e, i) {
+    this.props.handleRightClickRow(e, i);
+  }
 
   onMouseDownHandler(e, i) {
     this.props.handleClick(e, i);
@@ -61,6 +60,11 @@ class FlightTableB extends Component {
                   onClick={() => this.sortHandler(item, this.props.content)}
                   onContextMenu={e => this.onContextMenuHandlerTh(e, item)}
                   onMouseDown={e => this.onMouseDownHandlerTh(e, item)}
+                  title={
+                    this.props.selected
+                      ? "Left/Right Arrow Keys"
+                      : "Left/Middle/Right Click"
+                  }
                 >
                   {item.includes(";") ? item.split(";")[0].trim() : ""}
                 </Th>
@@ -70,22 +74,15 @@ class FlightTableB extends Component {
         <tbody>
           {this.props.content
             ? this.props.content.map((i, ii) => (
-                <TableRow
+                <tr
                   key={"tr" + ii}
                   id={ii}
                   children={Object.keys(i)
                     .filter(i => i !== "undefined")
                     .map((j, jj) => (
                       <td
-                        style={{
-                          textAlign: j.startsWith("AC TYPE")
-                            ? "left"
-                            : j.startsWith("PAYLOAD")
-                            ? "right"
-                            : ""
-                        }}
                         id={`${ii}/${jj}`}
-                        // onContextMenu={this.onContextMenuHandler}
+                        onContextMenu={e => this.onContextMenuHandler(e, i)}
                         onMouseDown={e => this.onMouseDownHandler(e, i)}
                         key={jj}
                         className={

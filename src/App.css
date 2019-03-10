@@ -53,6 +53,11 @@
   justify-content: space-evenly;
 }
 
+.header-content-buttons-three {
+  display: flex;
+  flex-direction: column;
+}
+
 .header-content-buttons-row > div {
   /* margin: 0 10px 0 10px;
   cursor: pointer;
@@ -88,6 +93,7 @@ a {
   display: flex;
   flex-direction: row;
   justify-content: space-between;
+  margin-top: 12px;
 }
 
 .print-span > p {
@@ -96,13 +102,6 @@ a {
   cursor: pointer;
   background-color: springgreen;
   border-radius: 15px;
-}
-
-.misc {
-  display: flex;
-  justify-content: flex-start;
-  margin: 10px 0 0 10px;
-  font-style: italic;
 }
 
 .shift {
@@ -141,6 +140,12 @@ a {
 .BPW {
   font-weight: bold;
   color: purple;
+  background-color: white;
+}
+
+.PBW {
+  font-weight: normal;
+  color: black;
   background-color: white;
 }
 
@@ -215,7 +220,6 @@ input {
 .App-content {
   width: 100%;
   height: 100%;
-  /* overflow: hidden; */
 }
 
 table {
