@@ -352,15 +352,27 @@ class App extends Component {
   }
 
   showSelected() {
-    this.setState({ showSelectedOnly: true, hideSelectedOnly: false }, () =>
-      this.filter()
-    );
+    let show = this.state.showSelectedOnly;
+
+    if (show) {
+      this.setState({ showSelectedOnly: false }, () => this.filter());
+    } else {
+      this.setState({ showSelectedOnly: true, hideSelectedOnly: false }, () =>
+        this.filter()
+      );
+    }
   }
 
   hideSelected() {
-    this.setState({ showSelectedOnly: false, hideSelectedOnly: true }, () =>
-      this.filter()
-    );
+    let hide = this.state.hideSelectedOnly;
+
+    if (hide) {
+      this.setState({ hideSelectedOnly: false }, () => this.filter());
+    } else {
+      this.setState({ showSelectedOnly: false, hideSelectedOnly: true }, () =>
+        this.filter()
+      );
+    }
   }
 
   handleColumnExceptionSort(column, content) {
@@ -1015,7 +1027,9 @@ class App extends Component {
             <div className="header-content-buttons">
               <div className="header-content-buttons-row">
                 <Button
-                  variant="outline-primary"
+                  variant={
+                    this.state.showSelectedOnly ? "primary" : "outline-primary"
+                  }
                   onClick={() => this.showSelected()}
                   className=""
                 >
@@ -1024,7 +1038,9 @@ class App extends Component {
               </div>
               <div className="header-content-buttons-row">
                 <Button
-                  variant="outline-primary"
+                  variant={
+                    this.state.hideSelectedOnly ? "primary" : "outline-primary"
+                  }
                   onClick={() => this.hideSelected()}
                   className=""
                 >
