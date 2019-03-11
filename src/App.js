@@ -365,7 +365,6 @@ class App extends Component {
 
   hideSelected() {
     let hide = this.state.hideSelectedOnly;
-
     if (hide) {
       this.setState({ hideSelectedOnly: false }, () => this.filter());
     } else {
@@ -425,7 +424,7 @@ class App extends Component {
     }
 
     this.setState({
-      // currentFileLinesContent: sortedData,
+      currentContent: sortedData,
       direction: !this.state.direction
     });
   }
@@ -480,6 +479,7 @@ class App extends Component {
     }
 
     this.setState({
+      currentContent: sortedData,
       direction: !this.state.direction
     });
   }
@@ -639,7 +639,7 @@ class App extends Component {
       }
 
       this.setState({
-        // fileLinesContent: sortedData,
+        currentContent: sortedData,
         direction: !this.state.direction
       });
     }

@@ -92,6 +92,11 @@ class FlightTableB extends Component {
                     .filter(i => i !== "undefined")
                     .map((j, jj) => (
                       <td
+                        title={
+                          i[j]
+                            ? i[j].split(";")[i[j].split(";").length - 2]
+                            : ""
+                        }
                         id={`${ii}/${jj}`}
                         onContextMenu={e => this.onContextMenuHandler(e, i)}
                         onMouseDown={e => this.onMouseDownHandler(e, i)}
