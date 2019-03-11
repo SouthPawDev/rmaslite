@@ -4,6 +4,7 @@ import CheckboxShift from "./Components/Checkbox";
 import { Title, Time, FlightException, Misc } from "./Components/Stateless";
 import FlightTableB from "./Components/FlightTableB";
 import Button from "react-bootstrap/Button";
+import resizePage from "./Functions/resizePage";
 import "./App.css";
 
 class App extends Component {
@@ -15,10 +16,9 @@ class App extends Component {
       columnOrder: [],
       deletedColumns: [],
       deletedRows: [],
-      flightStatus: [],
       shiftBools: {},
       selectedRows: [],
-      sizing: false,
+      resizable: false,
       refresh: false,
       selected: false,
       help: true,
@@ -295,28 +295,28 @@ class App extends Component {
     );
   }
 
-  sizing() {
-    this.setState(
-      {
-        sizing: !this.state.sizing
-      },
-      () => {
-        if (this.state.sizing) {
-          document.getElementsByClassName("App")[0].style.width = "100%";
-          let c = document.getElementsByTagName("*");
-          for (let i = 0; i < c.length; i++) {
-            c.item(i).classList.add("resizable");
-          }
-        } else {
-          document.getElementsByClassName("App")[0].style.width = "1680px";
-          let c = document.getElementsByTagName("*");
-          for (let i = 0; i < c.length; i++) {
-            c.item(i).classList.remove("resizable");
-          }
-        }
-      }
-    );
-  }
+  // sizing() {
+  //   this.setState(
+  //     {
+  //       resizable: !this.state.resizable
+  //     },
+  //     () => {
+  //       if (this.state.resizable) {
+  //         document.getElementsByClassName("App")[0].style.width = "100%";
+  //         let c = document.getElementsByTagName("*");
+  //         for (let i = 0; i < c.length; i++) {
+  //           c.item(i).classList.add("resizable");
+  //         }
+  //       } else {
+  //         document.getElementsByClassName("App")[0].style.width = "1680px";
+  //         let c = document.getElementsByTagName("*");
+  //         for (let i = 0; i < c.length; i++) {
+  //           c.item(i).classList.remove("resizable");
+  //         }
+  //       }
+  //     }
+  //   );
+  // }
 
   resetColumns() {
     this.setState(
@@ -1074,10 +1074,14 @@ class App extends Component {
               <div className="header-content-buttons-row">
                 <Button
                   style={{ width: "100%" }}
-                  variant={this.state.sizing ? "success" : "outline-success"}
-                  onClick={() => this.sizing()}
+                  variant={this.state.resizable ? "success" : "outline-success"}
+                  onClick={() =>
+                    this.setState({ resizable: !this.state.resizable }, () =>
+                      resizePage(this.state.resizable)
+                    )
+                  }
                 >
-                  {this.state.sizing ? "Auto Sizing On" : "Auto Sizing Off"}
+                  {this.state.resizable ? "Auto Sizing On" : "Auto Sizing Off"}
                 </Button>
               </div>
               <div className="header-content-buttons-row">
