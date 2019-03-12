@@ -16,7 +16,6 @@ class App extends Component {
       columnOrder: [],
       deletedColumns: [],
       deletedRows: [],
-      shiftBools: {},
       selectedRows: [],
       resizable: false,
       refresh: false,
@@ -294,29 +293,6 @@ class App extends Component {
       }
     );
   }
-
-  // sizing() {
-  //   this.setState(
-  //     {
-  //       resizable: !this.state.resizable
-  //     },
-  //     () => {
-  //       if (this.state.resizable) {
-  //         document.getElementsByClassName("App")[0].style.width = "100%";
-  //         let c = document.getElementsByTagName("*");
-  //         for (let i = 0; i < c.length; i++) {
-  //           c.item(i).classList.add("resizable");
-  //         }
-  //       } else {
-  //         document.getElementsByClassName("App")[0].style.width = "1680px";
-  //         let c = document.getElementsByTagName("*");
-  //         for (let i = 0; i < c.length; i++) {
-  //           c.item(i).classList.remove("resizable");
-  //         }
-  //       }
-  //     }
-  //   );
-  // }
 
   resetColumns() {
     this.setState(
@@ -646,6 +622,8 @@ class App extends Component {
   }
 
   onCheck(name) {
+    console.log(name);
+
     this.setState(
       {
         shiftBools: {
@@ -953,6 +931,7 @@ class App extends Component {
     const noFile = this.state.noFile ? this.state.noFile : "";
     const help = this.state.help ? this.state.help : "";
     const selectedRows = this.state.selectedRows ? this.state.selectedRows : "";
+
     return noFile ? (
       <div
         style={{
@@ -998,7 +977,7 @@ class App extends Component {
                   id="shiftOne"
                   lClassName={shiftOne ? shiftOne[0].slice(-3) : ""}
                   name={"shiftOne"}
-                  checked={shiftBools.shiftOne}
+                  shiftActive={shiftBools.shiftOne}
                   onCheck={this.onCheck.bind(this)}
                   inputText={shiftOne ? shiftOne[0].slice(0, -4) : ""}
                   pClassName={shiftOne ? shiftOne[1].slice(-3) : ""}
@@ -1008,7 +987,7 @@ class App extends Component {
                   id="shiftTwo"
                   lClassName={shiftTwo ? shiftTwo[0].slice(-3) : ""}
                   name={"shiftTwo"}
-                  checked={shiftBools.shiftTwo}
+                  shiftActive={shiftBools.shiftTwo}
                   onCheck={this.onCheck.bind(this)}
                   inputText={shiftTwo ? shiftTwo[0].slice(0, -4) : ""}
                   pClassName={shiftTwo ? shiftTwo[1].slice(-3) : ""}
@@ -1018,7 +997,7 @@ class App extends Component {
                   id="shiftThree"
                   lClassName={shiftThree ? shiftThree[0].slice(-3) : ""}
                   name={"shiftThree"}
-                  checked={shiftBools.shiftThree}
+                  shiftActive={shiftBools.shiftThree}
                   onCheck={this.onCheck.bind(this)}
                   inputText={shiftThree ? shiftThree[0].slice(0, -4) : ""}
                   pClassName={shiftThree ? shiftThree[1].slice(-3) : ""}

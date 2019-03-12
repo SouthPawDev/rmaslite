@@ -13,7 +13,7 @@ const Th = styled.th`
 
 const Tr = styled.tr`
   border-bottom: ${props =>
-    props.isSelectedRow ? "1px solid black" : ""} !important;
+    props.isSelectedRow ? "1px solid black" : "none"} !important;
 `;
 
 class FlightTableB extends Component {
@@ -86,6 +86,7 @@ class FlightTableB extends Component {
                   isSelectedRow={selectedRowsPK.includes(
                     i["FLIGHT;BBW"] + i["GATE;BBW"]
                   )}
+                  className={ii % 2 === 1 ? "striped" : ""}
                   key={"tr" + ii}
                   id={ii}
                   children={Object.keys(i)
@@ -101,11 +102,11 @@ class FlightTableB extends Component {
                         onContextMenu={e => this.onContextMenuHandler(e, i)}
                         onMouseDown={e => this.onMouseDownHandler(e, i)}
                         key={jj}
-                        className={
+                        className={[
                           i[j]
                             ? i[j].split(";")[i[j].split(";").length - 1]
                             : ""
-                        }
+                        ]}
                       >
                         {i[j]
                           ? i[j].split(";")[i[j].split(";").length - 2]

@@ -4,9 +4,6 @@ class CheckboxShift extends Component {
   constructor(props) {
     super(props);
     this.handler = this.handler.bind(this);
-    this.state = {
-      isChecked: null
-    };
   }
 
   handler() {
@@ -20,8 +17,8 @@ class CheckboxShift extends Component {
           <input
             type="checkbox"
             name={this.props.name}
-            checked={this.props.checked}
             onChange={this.handler}
+            checked={this.props.shiftActive}
           />
           {this.props.inputText}
         </label>
@@ -30,21 +27,5 @@ class CheckboxShift extends Component {
     );
   }
 }
-
-// export default function CheckboxFunction(props) {
-//   return (
-//     <div>
-//       <label>
-//         <input
-//           type="checkbox"
-//           name={props.name}
-//           checked={props.checked}
-//           onChange={props.onCheck}
-//         />
-//         {props.text}
-//       </label>
-//     </div>
-//   );
-// }
 
 export default CheckboxShift;

@@ -123,19 +123,17 @@ a {
 .BPW {
   font-weight: bold;
   color: purple;
-  background-color: white;
 }
 
-.PBW {
+.PEW {
   font-weight: normal;
-  color: black;
-  background-color: white;
+  color: blue;
+  /* background-color: inherit; */
 }
 
 .PRW {
   font-weight: normal;
   color: red;
-  background-color: white;
 }
 
 .PBO {
@@ -159,7 +157,6 @@ a {
 .BEW {
   font-weight: bold;
   color: blue;
-  background-color: white;
 }
 
 .BBN {
@@ -171,13 +168,11 @@ a {
 .BBW {
   font-weight: bold;
   color: black;
-  background-color: white;
 }
 
 .BRW {
   font-weight: bold;
   color: red;
-  background-color: white;
 }
 
 p {
