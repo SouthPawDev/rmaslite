@@ -114,7 +114,9 @@ class App extends Component {
         });
       })
       .then(() => this.filter())
+
       .then(() => this.setState({ initialState: this.state }))
+
       .then(() => {
         if (this.state.initalLoad) {
           this.setState({ initalLoad: false });
@@ -128,20 +130,19 @@ class App extends Component {
             if (location.length === 4) {
               if (location[3] === "DEICE") {
                 let index = columns.indexOf("DILOC;BBW");
-                this.onSort(columns[index], content);
+                this.onSort(columns[index], content, null);
               } else {
                 let index = columns.indexOf("IREQ;BBW");
-                this.onSort(columns[index], content);
+                this.onSort(columns[index], content, null);
               }
             } else {
               let data = this.state.misc;
               let index = data.indexOf("^^^^^");
-              this.onSort(columns[index], content);
+              this.onSort(columns[index], content, null);
             }
           }
         } else {
           let content = this.state.currentContent;
-          let columns = this.state.currentContent;
           let isSorted = this.state.isSorted;
           this.onSort(isSorted, content);
         }
@@ -182,6 +183,11 @@ class App extends Component {
                     },
                     () => this.filter()
                   );
+                  this.onSort(
+                    this.state.isSorted,
+                    this.state.currentContent,
+                    null
+                  );
                   console.log("Different Data Detected");
                 }
               })
@@ -216,7 +222,6 @@ class App extends Component {
     let hideSelectedOnly = this.state.hideSelectedOnly
       ? this.state.hideSelectedOnly
       : "";
-
     let content = this.state.fileLinesContent
       ? this.state.fileLinesContent
           .reduce((acc, c) => {
@@ -307,8 +312,7 @@ class App extends Component {
           })
       : "";
     this.setState({
-      currentContent: content,
-      currentRowSort: content.map(i => i["row"])
+      currentContent: content
     });
   }
 
@@ -360,6 +364,11 @@ class App extends Component {
                           })
                       },
                       () => this.filter()
+                    );
+                    this.onSort(
+                      this.state.isSorted,
+                      this.state.currentContent,
+                      null
                     );
                     console.log("Different Data Detected");
                   }
@@ -430,7 +439,7 @@ class App extends Component {
     }
   }
 
-  handleColumnExceptionSort(column, content) {
+  handleColumnExceptionSort(column, content, clicked) {
     let direction = this.state.direction;
     let sortedData = content.sort((a, b) => {
       let nameA = a[column]
@@ -479,13 +488,19 @@ class App extends Component {
       sortedData.reverse();
     }
 
-    this.setState({
-      currentContent: sortedData,
-      direction: !this.state.direction
-    });
+    if (clicked) {
+      this.setState({
+        currentContent: sortedData,
+        direction: !this.state.direction
+      });
+    } else {
+      this.setState({
+        currentContent: sortedData
+      });
+    }
   }
 
-  handleFlightSort(column, content) {
+  handleFlightSort(column, content, clicked) {
     let direction = this.state.direction;
     let sortedData = content.sort((a, b) => {
       let nameA = a["FLIGHT;BBW"]
@@ -534,17 +549,25 @@ class App extends Component {
       sortedData.reverse();
     }
 
-    this.setState({
-      currentContent: sortedData,
-      direction: !this.state.direction
-    });
+    if (clicked) {
+      this.setState({
+        currentContent: sortedData,
+        direction: !this.state.direction
+      });
+    } else {
+      this.setState({
+        currentContent: sortedData
+      });
+    }
   }
 
-  onSort(column, content) {
+  onSort(column, content, clicked) {
+    console.log(column);
+
     this.setState({ isSorted: column });
     if (column === "FLIGHT;BBW") {
       this.setState({ isSecondarySorted: "GATE;BBW" });
-      this.handleFlightSort(column, content);
+      this.handleFlightSort(column, content, clicked);
     } else if (
       column === "AC;BBW" ||
       column === "GATE;BBW" ||
@@ -552,7 +575,7 @@ class App extends Component {
       column === "STD;BBW"
     ) {
       this.setState({ isSecondarySorted: "FLIGHT;BBW" });
-      this.handleColumnExceptionSort(column, content);
+      this.handleColumnExceptionSort(column, content, clicked);
     } else {
       let type = this.state.rmas[1].split(";")[0];
       type === "INBOUND"
@@ -628,7 +651,7 @@ class App extends Component {
         return 0;
       });
 
-      if (!direction) {
+      if (!direction && clicked) {
         sortedData.sort((a, b) => {
           let nameA = a[column]
             .split(";")[0]
@@ -694,10 +717,16 @@ class App extends Component {
         });
       }
 
-      this.setState({
-        currentContent: sortedData,
-        direction: !this.state.direction
-      });
+      if (clicked) {
+        this.setState({
+          currentContent: sortedData,
+          direction: !this.state.direction
+        });
+      } else {
+        this.setState({
+          currentContent: sortedData
+        });
+      }
     }
   }
 

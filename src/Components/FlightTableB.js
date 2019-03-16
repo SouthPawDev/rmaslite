@@ -26,8 +26,8 @@ class FlightTableB extends Component {
     this.onMouseDownHandlerTh = this.onMouseDownHandlerTh.bind(this);
   }
 
-  sortHandler(item, content) {
-    this.props.onSort(item, content);
+  sortHandler(item, content, clicked) {
+    this.props.onSort(item, content, clicked);
   }
 
   onContextMenuHandler(e, i) {
@@ -62,10 +62,19 @@ class FlightTableB extends Component {
                   isSorted={this.props.sorted === item}
                   isSecondarySorted={this.props.secondarySorted === item}
                   key={i}
-                  className={
-                    item.includes(";") ? item.split(";")[1].trim() : ""
+                  className={[
+                    item.includes(";") ? item.split(";")[1].trim() : "",
+                    item.startsWith("I/R")
+                      ? "IR"
+                      : item.startsWith("EMP#")
+                      ? "EMP"
+                      : item.startsWith("OFF/SEQ")
+                      ? "OFFSEQ"
+                      : item.split(";")[0]
+                  ].join(" ")}
+                  onClick={() =>
+                    this.sortHandler(item, this.props.content, true)
                   }
-                  onClick={() => this.sortHandler(item, this.props.content)}
                   onContextMenu={e => this.onContextMenuHandlerTh(e, item)}
                   onMouseDown={e => this.onMouseDownHandlerTh(e, item)}
                   title={
@@ -93,20 +102,22 @@ class FlightTableB extends Component {
                     .filter(i => i !== "undefined" && i !== "row")
                     .map((j, jj) => (
                       <td
-                        title={
-                          i[j]
-                            ? i[j].split(";")[i[j].split(";").length - 2]
-                            : ""
-                        }
-                        id={`${ii}/${jj}`}
+                        title={i[j] ? i[j].split(";")[0] : ""}
                         onContextMenu={e => this.onContextMenuHandler(e, i)}
                         onMouseDown={e => this.onMouseDownHandler(e, i)}
                         key={jj}
                         className={[
                           i[j]
-                            ? i[j].split(";")[i[j].split(";").length - 1]
-                            : ""
-                        ]}
+                            ? i[j].split(";")[i[j].split(";").length - 1] + " "
+                            : "",
+                          j.startsWith("I/R")
+                            ? "IR"
+                            : j.startsWith("EMP#")
+                            ? "EMP"
+                            : j.startsWith("OFF/SEQ")
+                            ? "OFFSEQ"
+                            : j.split(";")[0]
+                        ].join(" ")}
                       >
                         {i[j]
                           ? i[j].split(";")[i[j].split(";").length - 2]

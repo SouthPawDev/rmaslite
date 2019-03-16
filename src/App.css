@@ -9,13 +9,14 @@
   justify-content: center;
   align-items: center;
   flex-direction: column;
-  width: 1680px;
+  /* width: 1680px; */
   margin: 0;
 }
 
 .App-header {
-  margin: 0;
+  /* padding: 2.5px; */
   width: 100%;
+  border: 1px solid #dee2e6;
 }
 
 .header-content {
@@ -26,12 +27,13 @@
 }
 
 .App-content {
-  position: relative;
+  /* position: relative; */
+  /* background-color: black; */
   display: flex;
   flex-direction: column;
   align-items: center;
   margin: auto;
-  width: 100%;
+  /* width: 100%; */
   overflow: hidden;
 }
 
@@ -195,15 +197,12 @@ input {
   display: none;
 }
 
-.App-content {
-  width: 100%;
-  height: 100%;
-}
-
 table {
+  /* background-color: cornflowerblue; */
+  padding: 10px;
+  margin: 20px;
   overflow: hidden;
-  width: 1680px;
-  height: 100%;
+  height: 80vh;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -216,13 +215,15 @@ td {
 }
 
 thead {
-  width: 100%;
+  background-color: white;
+  /* width: 100%; */
   padding-right: 17px;
 }
 
 tbody {
-  width: 100%;
-  height: 90vh;
+  background-color: white;
+  /* width: 100%; */
+  /* height: 100vh; */
   overflow-y: scroll;
 }
 
@@ -231,7 +232,7 @@ th {
 }
 
 tr {
-  display: flex;
+  display: block;
 }
 
 tr th {
@@ -252,4 +253,180 @@ td:hover {
 
 #override td {
   padding: 0.015rem;
+}
+
+/* 
+  Table Column Widths
+*/
+
+.SHIFT {
+  width: 60px;
+}
+
+.FLIGHT {
+  width: 70px;
+}
+
+.GATE {
+  width: 50px;
+}
+
+.GP {
+  width: 30px;
+}
+
+.AC {
+  width: 50px;
+}
+
+.SPOT {
+  width: 50px;
+}
+
+.STD {
+  width: 60px;
+}
+
+.STA {
+  width: 60px;
+}
+
+.IR {
+  width: 60px;
+}
+
+.ON {
+  width: 60px;
+}
+
+.IN {
+  width: 60px;
+}
+
+.MG {
+  width: 30px;
+}
+
+.ORG {
+  width: 40px;
+}
+
+.TYPE {
+  width: 90px;
+}
+
+.FGD {
+  width: 40px;
+}
+
+.NSD {
+  width: 40px;
+}
+
+.NMD {
+  width: 40px;
+}
+
+.OB {
+  width: 70px;
+}
+
+.PAYLOAD {
+  width: 80px;
+}
+
+.RWY {
+  width: 40px;
+}
+
+.FFX {
+  width: 60px;
+}
+
+.FLX {
+  width: 60px;
+}
+
+.DST {
+  width: 40px;
+}
+
+.BCON {
+  width: 60px;
+}
+
+.PUSH {
+  width: 60px;
+}
+
+.TAXI {
+  width: 60px;
+}
+
+.OUT {
+  width: 60px;
+}
+
+.OFF {
+  width: 60px;
+}
+
+.ETA {
+  width: 60px;
+}
+
+.DC {
+  width: 30px;
+}
+
+.TIME {
+  width: 50px;
+}
+
+.FWBT {
+  width: 50px;
+}
+
+.REI {
+  width: 40px;
+}
+
+.IREQ {
+  width: 50px;
+}
+
+.ISTR {
+  width: 50px;
+}
+
+.ICMP {
+  width: 50px;
+}
+
+.EMP {
+  width: 70px;
+}
+
+.DILOC {
+  width: 60px;
+}
+
+._ {
+  width: 30px;
+}
+
+.DREQ {
+  width: 60px;
+}
+
+.ONPD {
+  width: 60px;
+}
+
+.OFPD {
+  width: 60px;
+}
+
+.OFFSEQ {
+  width: 80px;
 }
