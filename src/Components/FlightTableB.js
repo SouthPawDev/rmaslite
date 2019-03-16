@@ -55,7 +55,7 @@ class FlightTableB extends Component {
         <thead>
           <tr>
             {Object.keys(this.props.content[0] || {})
-              .filter(i => i !== "undefined")
+              .filter(i => i !== "undefined" && i !== "row")
               .map((item, i) => (
                 <Th
                   isSelected={this.props.selected === item}
@@ -90,7 +90,7 @@ class FlightTableB extends Component {
                   key={"tr" + ii}
                   id={ii}
                   children={Object.keys(i)
-                    .filter(i => i !== "undefined")
+                    .filter(i => i !== "undefined" && i !== "row")
                     .map((j, jj) => (
                       <td
                         title={

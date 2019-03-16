@@ -17,12 +17,14 @@ class App extends Component {
       deletedColumns: [],
       deletedRows: [],
       selectedRows: [],
+      currentRowSort: [],
       resizable: false,
-      refresh: false,
+      refresh: true,
       selected: false,
       help: true,
       showSelectedOnly: false,
-      hideSelectedOnly: false
+      hideSelectedOnly: false,
+      initalLoad: true
     };
   }
 
@@ -103,6 +105,7 @@ class App extends Component {
               for (var h = 0; h < data[4].length; h++) {
                 obj[data[4].split(",")[h]] = j.split(",")[h];
               }
+              obj["row"] = k;
               return obj;
             }),
           currentDate: data[0].split(",")[4],
@@ -113,28 +116,79 @@ class App extends Component {
       .then(() => this.filter())
       .then(() => this.setState({ initialState: this.state }))
       .then(() => {
-        let location = this.props.location.pathname.split("/");
-        let content = this.state.currentContent;
-        let columns = this.state.currentContent
-          ? Object.keys(this.state.currentContent[0])
-          : "";
+        if (this.state.initalLoad) {
+          this.setState({ initalLoad: false });
+          let location = this.props.location.pathname.split("/");
+          let content = this.state.currentContent;
+          let columns = this.state.currentContent
+            ? Object.keys(this.state.currentContent[0])
+            : "";
 
-        if (columns) {
-          if (location.length === 4) {
-            if (location[3] === "DEICE") {
-              let index = columns.indexOf("DILOC;BBW");
-              this.onSort(columns[index], content);
+          if (columns) {
+            if (location.length === 4) {
+              if (location[3] === "DEICE") {
+                let index = columns.indexOf("DILOC;BBW");
+                this.onSort(columns[index], content);
+              } else {
+                let index = columns.indexOf("IREQ;BBW");
+                this.onSort(columns[index], content);
+              }
             } else {
-              let index = columns.indexOf("IREQ;BBW");
+              let data = this.state.misc;
+              let index = data.indexOf("^^^^^");
               this.onSort(columns[index], content);
             }
-          } else {
-            let data = this.state.misc;
-            let index = data.indexOf("^^^^^");
-            this.onSort(columns[index], content);
           }
+        } else {
+          let content = this.state.currentContent;
+          let columns = this.state.currentContent;
+          let isSorted = this.state.isSorted;
+          this.onSort(isSorted, content);
         }
       })
+      .then(() =>
+        this.setState({
+          timer: setInterval(() => {
+            fetch(
+              `http://wtc-275124-w23.corp.ds.fedex.com:9091/file/serve?file=${formatLocation}.csv`
+            ).then(response =>
+              response.json().then(data => {
+                if (
+                  JSON.stringify(data) === JSON.stringify(this.state.fileLines)
+                ) {
+                  console.log("Data unchanged.");
+                } else {
+                  this.setState(
+                    {
+                      fileLines: data,
+                      fileLinesContent: data
+                        .filter(
+                          (item, i) =>
+                            i > 3 &&
+                            item.match(/^\w/) &&
+                            item !== "NULL" &&
+                            item.trim() !== ""
+                        )
+                        .map((j, k) => {
+                          if (k === 0) {
+                          }
+                          let obj = {};
+                          for (var h = 0; h < data[4].length; h++) {
+                            obj[data[4].split(",")[h]] = j.split(",")[h];
+                          }
+                          obj["row"] = k;
+                          return obj;
+                        })
+                    },
+                    () => this.filter()
+                  );
+                  console.log("Different Data Detected");
+                }
+              })
+            );
+          }, 15000)
+        })
+      )
       .catch(() => this.setState({ noFile: true }));
   }
 
@@ -252,7 +306,10 @@ class App extends Component {
             return true;
           })
       : "";
-    this.setState({ currentContent: content });
+    this.setState({
+      currentContent: content,
+      currentRowSort: content.map(i => i["row"])
+    });
   }
 
   refresh() {
@@ -280,7 +337,30 @@ class App extends Component {
                   ) {
                     console.log("Data unchanged.");
                   } else {
-                    this.getFile();
+                    this.setState(
+                      {
+                        fileLines: data,
+                        fileLinesContent: data
+                          .filter(
+                            (item, i) =>
+                              i > 3 &&
+                              item.match(/^\w/) &&
+                              item !== "NULL" &&
+                              item.trim() !== ""
+                          )
+                          .map((j, k) => {
+                            if (k === 0) {
+                            }
+                            let obj = {};
+                            for (var h = 0; h < data[4].length; h++) {
+                              obj[data[4].split(",")[h]] = j.split(",")[h];
+                            }
+                            obj["row"] = k;
+                            return obj;
+                          })
+                      },
+                      () => this.filter()
+                    );
                     console.log("Different Data Detected");
                   }
                 })
