@@ -49,6 +49,7 @@ const MiscArrayDiv = styled.div`
 const TooltipWrapper = styled.div`
   display: ${props => (props.isHidden ? "none" : "flex")};
   flex-direction: column;
+  align-items: start;
   margin: 10px;
 `;
 
@@ -75,6 +76,59 @@ export function Misc(props) {
           </u>
           : <strong>Middle Click:</strong> Delete, <strong>Right Click:</strong>{" "}
           Underline/Select
+        </h5>
+        <h5>
+          <u>
+            <strong>Show Selected Button</strong>
+          </u>
+          : <strong>Toggleable: </strong>
+          Show Only Selected Rows (Underlined Rows)
+        </h5>
+        <h5>
+          <u>
+            <strong>Hide Selected Button</strong>
+          </u>
+          : <strong>Toggleable: </strong>
+          Hide Selected Rows (Underlined Rows)
+        </h5>
+        <h5>
+          <strong>
+            <u>Reset Columns Button</u>:{" "}
+          </strong>
+          Reset All Deleted and Rearranged Columns to Original Load
+        </h5>
+        <h5>
+          <strong>
+            <u>Reset Flights Button</u>:{" "}
+          </strong>
+          Reset All Selected, Hidden, Deleted Flights(Rows) to Original Load
+        </h5>
+        <h5>
+          <strong>
+            <u>Auto Sizing Off Button</u>:{" "}
+          </strong>
+          <strong>Toggleable: </strong>
+          Makes the Website Resizable For Dynamic Screen Sizes
+        </h5>
+        <h5>
+          <strong>
+            <u>Auto Refresh On Button</u>:{" "}
+          </strong>
+          <strong>Toggleable: </strong>
+          Checks the Server Every 15 Seconds For Fresh Data; Updates Table on
+          Fresh Data; Default On
+        </h5>
+        <h5>
+          <strong>
+            <u>Home Button</u>:{" "}
+          </strong>
+          Redirects the Page to Home: RMAS Station Selection
+        </h5>
+        <h5>
+          <strong>
+            <u>Print Button</u>:{" "}
+          </strong>
+          Prints the Entire Table Except for Hidden/Deleted Rows and Columns
         </h5>
       </TooltipWrapper>
       <StyledMisc>
