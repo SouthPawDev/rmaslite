@@ -9,7 +9,7 @@ import { HashRouter as Router, Route } from "react-router-dom";
 ReactDOM.render(
   <Router>
     <div>
-      <Route exact path="/home" component={Home} />
+      {/* <Route exact path="/home" component={Home} />
       <Route exact path="/" component={Home} />
       <Route exact path="/upload" component={App} />
       <Route exact path="/MEM/MEM_SVR_IBLIST" component={App} />
@@ -43,7 +43,45 @@ ReactDOM.render(
       <Route exact path="/OAK/OAK_SVR_IBLIST" component={App} />
       <Route exact path="/OAK/OAK_SVR_OBLIST" component={App} />
       <Route exact path="/OAK/OAK_SVR_SDLIST/INLET" component={App} />
-      <Route exact path="/OAK/OAK_SVR_SDLIST/DEICE" component={App} />
+      <Route exact path="/OAK/OAK_SVR_SDLIST/DEICE" component={App} /> */}
+
+      {/* WebApp Deployment */}
+
+      <Route exact path="/home" component={Home} />
+      <Route exact path="/" component={Home} />
+      <Route exact path="/upload" component={App} />
+      <Route exact path="/MEM_SVR_IBLIST" component={App} />
+      <Route exact path="/MEM_SVR_OBLIST" component={App} />
+      <Route exact path="/MEM_SVR_SDLIST/INLET" component={App} />
+      <Route exact path="/MEM_SVR_SDLIST/DEICE" component={App} />
+      <Route exact path="/CDG_SVR_IBLIST" component={App} />
+      <Route exact path="/CDG_SVR_OBLIST" component={App} />
+      <Route exact path="/CDG_SVR_SDLIST/INLET" component={App} />
+      <Route exact path="/CDG_SVR_SDLIST/DEICE" component={App} />
+      <Route exact path="/CAN_SVR_IBLIST" component={App} />
+      <Route exact path="/CAN_SVR_OBLIST" component={App} />
+      <Route exact path="/CAN_SVR_SDLIST/INLET" component={App} />
+      <Route exact path="/CAN_SVR_SDLIST/DEICE" component={App} />
+      <Route exact path="/AFW_SVR_IBLIST" component={App} />
+      <Route exact path="/AFW_SVR_OBLIST" component={App} />
+      <Route exact path="/AFW_SVR_SDLIST/INLET" component={App} />
+      <Route exact path="/AFW_SVR_SDLIST/DEICE" component={App} />
+      <Route exact path="/IND_SVR_IBLIST" component={App} />
+      <Route exact path="/IND_SVR_OBLIST" component={App} />
+      <Route exact path="/IND_SVR_SDLIST/INLET" component={App} />
+      <Route exact path="/IND_SVR_SDLIST/DEICE" component={App} />
+      <Route exact path="/EWR_SVR_IBLIST" component={App} />
+      <Route exact path="/EWR_SVR_OBLIST" component={App} />
+      <Route exact path="/EWR_SVR_SDLIST/INLET" component={App} />
+      <Route exact path="/EWR_SVR_SDLIST/DEICE" component={App} />
+      <Route exact path="/GSO_SVR_IBLIST" component={App} />
+      <Route exact path="/GSO_SVR_OBLIST" component={App} />
+      <Route exact path="/GSO_SVR_SDLIST/INLET" component={App} />
+      <Route exact path="/GSO_SVR_SDLIST/DEICE" component={App} />
+      <Route exact path="/OAK_SVR_IBLIST" component={App} />
+      <Route exact path="/OAK_SVR_OBLIST" component={App} />
+      <Route exact path="/OAK_SVR_SDLIST/INLET" component={App} />
+      <Route exact path="/OAK_SVR_SDLIST/DEICE" component={App} />
     </div>
   </Router>,
   document.getElementById("root")

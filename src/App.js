@@ -7,6 +7,7 @@ import Button from "react-bootstrap/Button";
 import resizePage from "./Functions/resizePage";
 import "./App.css";
 
+
 class App extends Component {
   constructor(props) {
     super(props);
@@ -41,6 +42,7 @@ class App extends Component {
   async getFile() {
     let location = this.props.location.pathname;
 
+    
     let formatLocation =
       location.slice(-5) === "INLET" || location.slice(-5) === "DEICE"
         ? location.slice(1, -6)
@@ -48,6 +50,7 @@ class App extends Component {
 
     fetch(
       `http://wtc-275124-w23.corp.ds.fedex.com:9091/file/serve?file=${formatLocation}.csv`
+      // `http://wtc-275124-w23.corp.ds.fedex.com:7001/external-flight-access-server-build/file/serve?file=${formatLocation}.csv`
     )
       .then(response => response.json())
       .then(data => {
@@ -114,9 +117,7 @@ class App extends Component {
         });
       })
       .then(() => this.filter())
-
       .then(() => this.setState({ initialState: this.state }))
-
       .then(() => {
         if (this.state.initalLoad) {
           this.setState({ initalLoad: false });
@@ -152,6 +153,7 @@ class App extends Component {
           timer: setInterval(() => {
             fetch(
               `http://wtc-275124-w23.corp.ds.fedex.com:9091/file/serve?file=${formatLocation}.csv`
+              // `http://wtc-275124-w23.corp.ds.fedex.com:7001/external-flight-access-server-build/file/serve?file=${formatLocation}.csv`
             ).then(response =>
               response.json().then(data => {
                 if (
@@ -159,35 +161,66 @@ class App extends Component {
                 ) {
                   console.log("Data unchanged.");
                 } else {
-                  this.setState(
-                    {
-                      fileLines: data,
-                      fileLinesContent: data
-                        .filter(
-                          (item, i) =>
-                            i > 3 &&
-                            item.match(/^\w/) &&
-                            item !== "NULL" &&
-                            item.trim() !== ""
-                        )
-                        .map((j, k) => {
-                          if (k === 0) {
-                          }
-                          let obj = {};
-                          for (var h = 0; h < data[4].length; h++) {
-                            obj[data[4].split(",")[h]] = j.split(",")[h];
-                          }
-                          obj["row"] = k;
-                          return obj;
-                        })
-                    },
-                    () => this.filter()
-                  );
-                  this.onSort(
-                    this.state.isSorted,
-                    this.state.currentContent,
-                    null
-                  );
+                  this.setState({
+                    shiftOne: data[0]
+                      .split(",")
+                      .filter(
+                        (item, i) => i > 1 && i < 4 && item.trim() !== ""
+                      ),
+                    shiftTwo: data[1]
+                      .split(",")
+                      .filter(
+                        (item, i) => i > 1 && i < 4 && item.trim() !== ""
+                      ),
+                    shiftThree: data[2]
+                      .split(",")
+                      .filter(
+                        (item, i) => i > 1 && i < 4 && item.trim() !== ""
+                      ),
+                    misc: data[3].split(","),
+                    maints:
+                      location.slice(-5) === "INLET" ||
+                      location.slice(-5) === "DEICE"
+                        ? ""
+                        : data[2]
+                            .split(",")
+                            .filter(i => i.includes("Maint"))[0],
+                    spares:
+                      location.slice(-5) === "INLET" ||
+                      location.slice(-5) === "DEICE"
+                        ? ""
+                        : data[2]
+                            .split(",")
+                            .filter(i => i.includes("Spare"))[0],
+                    opens:
+                      location.slice(-5) === "INLET" ||
+                      location.slice(-5) === "DEICE"
+                        ? ""
+                        : data[2].split(",").filter(i => i.includes("Open"))[0],
+                    fileLines: data,
+                    fileLinesContent: data
+                      .filter(
+                        (item, i) =>
+                          i > 3 &&
+                          item.match(/^\w/) &&
+                          item !== "NULL" &&
+                          item.trim() !== ""
+                      )
+                      .map((j, k) => {
+                        if (k === 0) {
+                        }
+                        let obj = {};
+                        for (var h = 0; h < data[4].length; h++) {
+                          obj[data[4].split(",")[h]] = j.split(",")[h];
+                        }
+                        obj["row"] = k;
+                        return obj;
+                      }),
+                    currentDate: data[0].split(",")[4],
+                    currentTime: data[0].split(",")[6]
+                  });
+
+                  this.filter();
                   console.log("Different Data Detected");
                 }
               })
@@ -311,9 +344,14 @@ class App extends Component {
             return true;
           })
       : "";
-    this.setState({
-      currentContent: content
-    });
+
+    if (this.state.isSorted) {
+      this.onSort(this.state.isSorted, content, null);
+    } else {
+      this.setState({
+        currentContent: content
+      });
+    }
   }
 
   refresh() {
@@ -333,6 +371,7 @@ class App extends Component {
             timer: setInterval(() => {
               fetch(
                 `http://wtc-275124-w23.corp.ds.fedex.com:9091/file/serve?file=${formatLocation}.csv`
+                // `http://wtc-275124-w23.corp.ds.fedex.com:7001/external-flight-access-server-build/file/serve?file=${formatLocation}.csv`
               ).then(response =>
                 response.json().then(data => {
                   if (
@@ -341,35 +380,67 @@ class App extends Component {
                   ) {
                     console.log("Data unchanged.");
                   } else {
-                    this.setState(
-                      {
-                        fileLines: data,
-                        fileLinesContent: data
-                          .filter(
-                            (item, i) =>
-                              i > 3 &&
-                              item.match(/^\w/) &&
-                              item !== "NULL" &&
-                              item.trim() !== ""
-                          )
-                          .map((j, k) => {
-                            if (k === 0) {
-                            }
-                            let obj = {};
-                            for (var h = 0; h < data[4].length; h++) {
-                              obj[data[4].split(",")[h]] = j.split(",")[h];
-                            }
-                            obj["row"] = k;
-                            return obj;
-                          })
-                      },
-                      () => this.filter()
-                    );
-                    this.onSort(
-                      this.state.isSorted,
-                      this.state.currentContent,
-                      null
-                    );
+                    this.setState({
+                      shiftOne: data[0]
+                        .split(",")
+                        .filter(
+                          (item, i) => i > 1 && i < 4 && item.trim() !== ""
+                        ),
+                      shiftTwo: data[1]
+                        .split(",")
+                        .filter(
+                          (item, i) => i > 1 && i < 4 && item.trim() !== ""
+                        ),
+                      shiftThree: data[2]
+                        .split(",")
+                        .filter(
+                          (item, i) => i > 1 && i < 4 && item.trim() !== ""
+                        ),
+                      misc: data[3].split(","),
+                      maints:
+                        location.slice(-5) === "INLET" ||
+                        location.slice(-5) === "DEICE"
+                          ? ""
+                          : data[2]
+                              .split(",")
+                              .filter(i => i.includes("Maint"))[0],
+                      spares:
+                        location.slice(-5) === "INLET" ||
+                        location.slice(-5) === "DEICE"
+                          ? ""
+                          : data[2]
+                              .split(",")
+                              .filter(i => i.includes("Spare"))[0],
+                      opens:
+                        location.slice(-5) === "INLET" ||
+                        location.slice(-5) === "DEICE"
+                          ? ""
+                          : data[2]
+                              .split(",")
+                              .filter(i => i.includes("Open"))[0],
+                      fileLines: data,
+                      fileLinesContent: data
+                        .filter(
+                          (item, i) =>
+                            i > 3 &&
+                            item.match(/^\w/) &&
+                            item !== "NULL" &&
+                            item.trim() !== ""
+                        )
+                        .map((j, k) => {
+                          if (k === 0) {
+                          }
+                          let obj = {};
+                          for (var h = 0; h < data[4].length; h++) {
+                            obj[data[4].split(",")[h]] = j.split(",")[h];
+                          }
+                          obj["row"] = k;
+                          return obj;
+                        }),
+                      currentDate: data[0].split(",")[4],
+                      currentTime: data[0].split(",")[6]
+                    });
+                    this.filter();
                     console.log("Different Data Detected");
                   }
                 })
@@ -484,11 +555,10 @@ class App extends Component {
       return 0;
     });
 
-    if (!direction) {
-      sortedData.reverse();
-    }
-
     if (clicked) {
+      if (direction) {
+        sortedData.reverse()
+      }
       this.setState({
         currentContent: sortedData,
         direction: !this.state.direction
@@ -545,11 +615,10 @@ class App extends Component {
       return 0;
     });
 
-    if (!direction) {
-      sortedData.reverse();
-    }
-
     if (clicked) {
+      if (direction) {
+        sortedData.reverse()
+      }
       this.setState({
         currentContent: sortedData,
         direction: !this.state.direction
@@ -651,73 +720,76 @@ class App extends Component {
         return 0;
       });
 
-      if (!direction && clicked) {
-        sortedData.sort((a, b) => {
-          let nameA = a[column]
-            .split(";")[0]
-            .toUpperCase()
-            .trim();
-          let nameB = b[column]
-            .split(";")[0]
-            .toUpperCase()
-            .trim();
-          if (nameA === "") {
-            return 1;
-          }
-          if (nameA < nameB) {
-            return 1;
-          }
-          if (nameA > nameB) {
-            return -1;
-          }
-          if (nameA === nameB) {
-            if (type === "INBOUND") {
-              if (a["STA;BBW"]) {
-                nameA = a["STA;BBW"]
-                  .split(";")[0]
-                  .toUpperCase()
-                  .trim();
-                nameB = b["STA;BBW"]
-                  .split(";")[0]
-                  .toUpperCase()
-                  .trim();
-                if (nameA === "") {
-                  return 1;
-                }
-                if (nameA < nameB) {
-                  return -1;
-                }
-                if (nameA > nameB) {
-                  return 1;
-                }
-              }
-            } else {
-              if (a["STD;BBW"]) {
-                nameA = a["STD;BBW"]
-                  .split(";")[0]
-                  .toUpperCase()
-                  .trim();
-                nameB = b["STD;BBW"]
-                  .split(";")[0]
-                  .toUpperCase()
-                  .trim();
-                if (nameA === "") {
-                  return 1;
-                }
-                if (nameA < nameB) {
-                  return -1;
-                }
-                if (nameA > nameB) {
-                  return 1;
-                }
-              }
-            }
-          }
-          return 0;
-        });
-      }
+      // if (!direction && clicked) {
+      //   sortedData.sort((a, b) => {
+      //     let nameA = a[column]
+      //       .split(";")[0]
+      //       .toUpperCase()
+      //       .trim();
+      //     let nameB = b[column]
+      //       .split(";")[0]
+      //       .toUpperCase()
+      //       .trim();
+      //     if (nameA === "") {
+      //       return 1;
+      //     }
+      //     if (nameA < nameB) {
+      //       return 1;
+      //     }
+      //     if (nameA > nameB) {
+      //       return -1;
+      //     }
+      //     if (nameA === nameB) {
+      //       if (type === "INBOUND") {
+      //         if (a["STA;BBW"]) {
+      //           nameA = a["STA;BBW"]
+      //             .split(";")[0]
+      //             .toUpperCase()
+      //             .trim();
+      //           nameB = b["STA;BBW"]
+      //             .split(";")[0]
+      //             .toUpperCase()
+      //             .trim();
+      //           if (nameA === "") {
+      //             return 1;
+      //           }
+      //           if (nameA < nameB) {
+      //             return -1;
+      //           }
+      //           if (nameA > nameB) {
+      //             return 1;
+      //           }
+      //         }
+      //       } else {
+      //         if (a["STD;BBW"]) {
+      //           nameA = a["STD;BBW"]
+      //             .split(";")[0]
+      //             .toUpperCase()
+      //             .trim();
+      //           nameB = b["STD;BBW"]
+      //             .split(";")[0]
+      //             .toUpperCase()
+      //             .trim();
+      //           if (nameA === "") {
+      //             return 1;
+      //           }
+      //           if (nameA < nameB) {
+      //             return -1;
+      //           }
+      //           if (nameA > nameB) {
+      //             return 1;
+      //           }
+      //         }
+      //       }
+      //     }
+      //     return 0;
+      //   });
+      // }
 
       if (clicked) {
+        if (direction) {
+          sortedData.reverse()
+        }
         this.setState({
           currentContent: sortedData,
           direction: !this.state.direction
@@ -731,8 +803,6 @@ class App extends Component {
   }
 
   onCheck(name) {
-    console.log(name);
-
     this.setState(
       {
         shiftBools: {
@@ -1016,7 +1086,7 @@ class App extends Component {
   handlePrint() {
     document.getElementsByTagName("table")[0].style.height = "100%";
     window.print();
-    document.getElementsByTagName("table")[0].style.height = "800px";
+    document.getElementsByTagName("table")[0].style.height = "80vh";
   }
 
   render() {

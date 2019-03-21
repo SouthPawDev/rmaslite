@@ -11,14 +11,16 @@ class Station extends Component {
         <ul>
           <li>
             <Link
-              to={this.props.station + "/" + this.props.station + "_SVR_IBLIST"}
+              // to={this.props.station + "/" + this.props.station + "_SVR_IBLIST"}
+              to={this.props.station + "_SVR_IBLIST"}
             >
               Inbound
             </Link>
           </li>
           <li>
             <Link
-              to={this.props.station + "/" + this.props.station + "_SVR_OBLIST"}
+              // to={this.props.station + "/" + this.props.station + "_SVR_OBLIST"}
+              to={this.props.station + "_SVR_OBLIST"}
             >
               Outbound
             </Link>
@@ -26,24 +28,26 @@ class Station extends Component {
 
           <li>
             <Link
-              to={
-                this.props.station +
-                "/" +
-                this.props.station +
-                "_SVR_SDLIST/INLET"
-              }
+              // to={
+              //   this.props.station +
+              //   "/" +
+              //   this.props.station +
+              //   "_SVR_SDLIST/INLET"
+              // }
+              to={this.props.station + "_SVR_SDLIST/INLET"}
             >
               Snow Desk(Inlet)
             </Link>
           </li>
           <li>
             <Link
-              to={
-                this.props.station +
-                "/" +
-                this.props.station +
-                "_SVR_SDLIST/DEICE"
-              }
+              // to={
+              //   this.props.station +
+              //   "/" +
+              //   this.props.station +
+              //   "_SVR_SDLIST/DEICE"
+              // }
+              to={this.props.station + "_SVR_SDLIST/DEICE"}
             >
               Snow Desk(Deice)
             </Link>
