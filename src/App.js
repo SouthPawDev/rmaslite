@@ -7,7 +7,6 @@ import Button from "react-bootstrap/Button";
 import resizePage from "./Functions/resizePage";
 import "./App.css";
 
-
 class App extends Component {
   constructor(props) {
     super(props);
@@ -42,7 +41,6 @@ class App extends Component {
   async getFile() {
     let location = this.props.location.pathname;
 
-    
     let formatLocation =
       location.slice(-5) === "INLET" || location.slice(-5) === "DEICE"
         ? location.slice(1, -6)
@@ -557,7 +555,7 @@ class App extends Component {
 
     if (clicked) {
       if (direction) {
-        sortedData.reverse()
+        sortedData.reverse();
       }
       this.setState({
         currentContent: sortedData,
@@ -617,7 +615,7 @@ class App extends Component {
 
     if (clicked) {
       if (direction) {
-        sortedData.reverse()
+        sortedData.reverse();
       }
       this.setState({
         currentContent: sortedData,
@@ -788,7 +786,7 @@ class App extends Component {
 
       if (clicked) {
         if (direction) {
-          sortedData.reverse()
+          sortedData.reverse();
         }
         this.setState({
           currentContent: sortedData,
@@ -1083,6 +1081,33 @@ class App extends Component {
     this.setState({ help: !this.state.help });
   }
 
+  exportContent() {
+    let currentContent = this.state.currentContent
+      .map(i =>
+        Object.values(i)
+          .filter(k => k !== undefined && typeof k !== "number")
+          .map(j => {
+            
+              return j.split(";")[j.split(";").length - 2]
+            
+          })
+          .join(",")
+      )
+      .join("\n");
+    let csv = "data:text/csv;charset=utf-8," + currentContent;
+    
+    let encodedUri = encodeURI(csv);
+
+    let link = document.createElement("a")
+    link.setAttribute("href", encodedUri);
+    link.setAttribute("download", "export.csv")
+    document.body.appendChild(link);
+
+    link.click();
+
+    document.body.removeChild(link);
+  }
+
   handlePrint() {
     document.getElementsByTagName("table")[0].style.height = "100%";
     window.print();
@@ -1134,7 +1159,14 @@ class App extends Component {
         tabIndex="0"
         onKeyDown={this.handleKeyPress.bind(this)}
       >
-        <div className="App-header">
+        <div
+          className="App-header"
+          style={{
+            width: document.getElementsByTagName("table")[0]
+              ? document.getElementsByTagName("table")[0].offsetWidth
+              : ""
+          }}
+        >
           <div className="header-content">
             <div className="header-content-left">
               <Title
@@ -1187,51 +1219,60 @@ class App extends Component {
             <div className="header-content-buttons">
               <div className="header-content-buttons-row">
                 <Button
+                  size="sm"
+                  style={{ width: "100%", margin: "2px 0 2px 0" }}
                   variant={
                     this.state.showSelectedOnly ? "primary" : "outline-primary"
                   }
                   onClick={() => this.showSelected()}
                   className=""
                 >
-                  Show Selected
+                  Show <br /> Selected
                 </Button>
               </div>
               <div className="header-content-buttons-row">
                 <Button
+                  size="sm"
+                  style={{ width: "100%", margin: "2px 0 2px 0" }}
                   variant={
                     this.state.hideSelectedOnly ? "primary" : "outline-primary"
                   }
                   onClick={() => this.hideSelected()}
                   className=""
                 >
-                  Hide Selected
+                  Hide <br /> Selected
                 </Button>
               </div>
             </div>
             <div className="header-content-buttons-reset">
               <div className="header-content-buttons-row">
                 <Button
+                  size="sm"
+                  style={{ width: "100%", margin: "2px 0 2px 0" }}
                   variant="outline-danger"
                   onClick={() => this.resetColumns()}
                   className=""
                 >
-                  Reset Columns
+                  Reset <br /> Columns
                 </Button>
               </div>
               <div className="header-content-buttons-row">
                 <Button
+                  size="sm"
+                  style={{ width: "100%", margin: "2px 0 2px 0" }}
                   variant="outline-danger"
                   onClick={() => this.resetFlights()}
                   className=""
                 >
-                  Reset Flights
+                  Reset <br /> Flights
                 </Button>
               </div>
             </div>
             <div className="header-content-buttons-two">
               <div className="header-content-buttons-row">
                 <Button
-                  style={{ width: "100%" }}
+                  size="sm"
+                  style={{ width: "100%", margin: "2px 0 2px 0" }}
                   variant={this.state.resizable ? "success" : "outline-success"}
                   onClick={() =>
                     this.setState({ resizable: !this.state.resizable }, () =>
@@ -1239,23 +1280,28 @@ class App extends Component {
                     )
                   }
                 >
-                  {this.state.resizable ? "Auto Sizing On" : "Auto Sizing Off"}
+                  Auto <br /> Sizing
                 </Button>
               </div>
               <div className="header-content-buttons-row">
                 <Button
-                  style={{ width: "100%" }}
+                  size="sm"
+                  style={{ width: "100%", margin: "2px 0 2px 0" }}
                   variant={this.state.refresh ? "success" : "outline-success"}
                   onClick={() => this.refresh()}
                 >
-                  {this.state.refresh ? "Auto Refresh On" : "Auto Refresh Off"}
+                  Auto <br /> Refresh
                 </Button>
               </div>
             </div>
             <div className="header-content-buttons-three">
               <div className="header-content-buttons-row">
                 <NavLink to={"/home"}>
-                  <Button variant="outline-secondary" className="home">
+                  <Button
+                    variant="outline-secondary"
+                    className="home"
+                    size="sm"
+                  >
                     Home
                   </Button>
                 </NavLink>
@@ -1299,6 +1345,7 @@ class App extends Component {
             <div className="header-content-right">
               <div className="header-content-right-row-1">
                 <Button
+                  size="sm"
                   style={{ marginRight: "20px" }}
                   variant="outline-success"
                   onClick={() => this.handlePrint()}
@@ -1354,6 +1401,7 @@ class App extends Component {
               help={help}
               misc={misc}
               displayHelp={this.displayHelp.bind(this)}
+              exportContent={this.exportContent.bind(this)}
             />
           ) : (
             ""

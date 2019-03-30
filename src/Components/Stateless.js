@@ -36,7 +36,6 @@ const StyledMisc = styled.div`
   display: flex;
   flex-direction: row;
   justify-content: space-between;
-  margin: 0px 20px 0px 20px;
 `;
 
 const MiscArrayDiv = styled.div`
@@ -58,6 +57,9 @@ const Help = styled(Button)``;
 export function Misc(props) {
   const displayHelpHelpHandler = () => {
     props.displayHelp();
+  };
+  const exportContentHandler = () => {
+    props.exportContent();
   };
   return (
     <div>
@@ -137,7 +139,7 @@ export function Misc(props) {
             .filter(i => i.trim() !== "" && i !== "^^^^^")
             .map((i, ii) => (
               <p
-                style={{ padding: "0 2px 0 2px" }}
+                style={{ padding: "0 2px 0 2px", margin: 0 }}
                 key={"misc" + ii}
                 className={i.split(";")[i.split(";").length - 1]}
               >
@@ -153,6 +155,14 @@ export function Misc(props) {
           >
             {props.help ? "Help" : "Hide"}
           </Help>
+          <Button
+            onClick={() => exportContentHandler()}
+            variant="outline-warning"
+            size="sm"
+            style={{ marginLeft: "5px" }}
+          >
+            Export
+          </Button>
         </div>
       </StyledMisc>
     </div>

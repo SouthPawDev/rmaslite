@@ -14,8 +14,8 @@
 }
 
 .App-header {
-  /* padding: 2.5px; */
-  width: 100%;
+  margin-top: 10px;
+  min-width: 1200px;
   border: 1px solid #dee2e6;
 }
 
@@ -27,13 +27,10 @@
 }
 
 .App-content {
-  /* position: relative; */
-  /* background-color: black; */
   display: flex;
   flex-direction: column;
   align-items: center;
   margin: auto;
-  /* width: 100%; */
   overflow: hidden;
 }
 
@@ -48,6 +45,7 @@
   display: flex;
   flex-direction: row;
   align-items: center;
+  margin: 0 10px 0 10px;
 }
 
 .header-content-buttons-row {
@@ -58,6 +56,7 @@
 .header-content-buttons-three {
   display: flex;
   flex-direction: column;
+  margin: 0 10px 0 10px;
 }
 
 a {
@@ -66,7 +65,7 @@ a {
 .header-content-right {
   display: flex;
   flex-direction: column;
-  margin: 0 20px 0 0;
+  margin: 0 10px 0 0;
 }
 
 .header-content-right-row-1 {
@@ -80,6 +79,23 @@ a {
   flex-direction: row;
   justify-content: space-between;
   margin-top: 12px;
+}
+
+.header-content-buttons {
+  margin: 0 2px 0 2px;
+}
+
+.header-content-buttons-reset {
+  margin: 0 2px 0 2px;
+}
+
+.header-content-buttons-two {
+  margin: 0 2px 0 2px;
+}
+
+.header-content-buttons-three {
+  display: flex;
+  height: 100%;
 }
 
 .print-span > p {
@@ -199,6 +215,7 @@ input {
 
 table {
   /* background-color: cornflowerblue; */
+  min-width: 1200px;
   padding: 10px;
   margin: 20px;
   overflow: hidden;
@@ -225,10 +242,6 @@ tbody {
   /* width: 100%; */
   /* height: 100vh; */
   overflow-y: scroll;
-}
-
-th {
-  cursor: pointer;
 }
 
 tr {
@@ -315,6 +328,10 @@ td:hover {
   width: 90px;
 }
 
+td.TYPE {
+  text-align: right;
+}
+
 .FGD {
   width: 40px;
 }
@@ -333,6 +350,10 @@ td:hover {
 
 .PAYLOAD {
   width: 80px;
+}
+
+td.PAYLOAD {
+  text-align: left;
 }
 
 .RWY {
@@ -429,4 +450,12 @@ td:hover {
 
 .OFFSEQ {
   width: 80px;
+}
+
+th {
+  cursor: pointer;
+}
+
+button {
+  cursor: pointer;
 }
