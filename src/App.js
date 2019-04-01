@@ -511,42 +511,44 @@ class App extends Component {
   handleColumnExceptionSort(column, content, clicked) {
     let direction = this.state.direction;
     let sortedData = content.sort((a, b) => {
-      let nameA = a[column]
-        .split(";")[0]
-        .toUpperCase()
-        .trim();
-      let nameB = b[column]
-        .split(";")[0]
-        .toUpperCase()
-        .trim();
-      if (nameA === "") {
-        return 1;
-      }
-      if (nameA < nameB) {
-        return -1;
-      }
-      if (nameA > nameB) {
-        return 1;
-      }
+      if (a[column]) {
+        let nameA = a[column]
+          .split(";")[0]
+          .toUpperCase()
+          .trim();
+        let nameB = b[column]
+          .split(";")[0]
+          .toUpperCase()
+          .trim();
+        if (nameA === "") {
+          return 1;
+        }
+        if (nameA < nameB) {
+          return -1;
+        }
+        if (nameA > nameB) {
+          return 1;
+        }
 
-      if (nameA === nameB) {
-        if (a["FLIGHT;BBW"]) {
-          nameA = a["FLIGHT;BBW"]
-            .split(";")[0]
-            .toUpperCase()
-            .trim();
-          nameB = b["FLIGHT;BBW"]
-            .split(";")[0]
-            .toUpperCase()
-            .trim();
-          if (nameA === "") {
-            return 1;
-          }
-          if (nameA < nameB) {
-            return -1;
-          }
-          if (nameA > nameB) {
-            return 1;
+        if (nameA === nameB) {
+          if (a["FLIGHT;BBW"]) {
+            nameA = a["FLIGHT;BBW"]
+              .split(";")[0]
+              .toUpperCase()
+              .trim();
+            nameB = b["FLIGHT;BBW"]
+              .split(";")[0]
+              .toUpperCase()
+              .trim();
+            if (nameA === "") {
+              return 1;
+            }
+            if (nameA < nameB) {
+              return -1;
+            }
+            if (nameA > nameB) {
+              return 1;
+            }
           }
         }
       }
@@ -571,42 +573,44 @@ class App extends Component {
   handleFlightSort(column, content, clicked) {
     let direction = this.state.direction;
     let sortedData = content.sort((a, b) => {
-      let nameA = a["FLIGHT;BBW"]
-        .split(";")[0]
-        .toUpperCase()
-        .trim();
-      let nameB = b["FLIGHT;BBW"]
-        .split(";")[0]
-        .toUpperCase()
-        .trim();
-      if (nameA === "") {
-        return 1;
-      }
-      if (nameA < nameB) {
-        return -1;
-      }
-      if (nameA > nameB) {
-        return 1;
-      }
+      if (a["FLIGHT;BBW"]) {
+        let nameA = a["FLIGHT;BBW"]
+          .split(";")[0]
+          .toUpperCase()
+          .trim();
+        let nameB = b["FLIGHT;BBW"]
+          .split(";")[0]
+          .toUpperCase()
+          .trim();
+        if (nameA === "") {
+          return 1;
+        }
+        if (nameA < nameB) {
+          return -1;
+        }
+        if (nameA > nameB) {
+          return 1;
+        }
 
-      if (nameA === nameB) {
-        if (a["GATE;BBW"]) {
-          nameA = a["GATE;BBW"]
-            .split(";")[0]
-            .toUpperCase()
-            .trim();
-          nameB = b["GATE;BBW"]
-            .split(";")[0]
-            .toUpperCase()
-            .trim();
-          if (nameA === "") {
-            return 1;
-          }
-          if (nameA < nameB) {
-            return -1;
-          }
-          if (nameA > nameB) {
-            return 1;
+        if (nameA === nameB) {
+          if (a["GATE;BBW"]) {
+            nameA = a["GATE;BBW"]
+              .split(";")[0]
+              .toUpperCase()
+              .trim();
+            nameB = b["GATE;BBW"]
+              .split(";")[0]
+              .toUpperCase()
+              .trim();
+            if (nameA === "") {
+              return 1;
+            }
+            if (nameA < nameB) {
+              return -1;
+            }
+            if (nameA > nameB) {
+              return 1;
+            }
           }
         }
       }
@@ -629,8 +633,6 @@ class App extends Component {
   }
 
   onSort(column, content, clicked) {
-    console.log(column);
-
     this.setState({ isSorted: column });
     if (column === "FLIGHT;BBW") {
       this.setState({ isSecondarySorted: "GATE;BBW" });
@@ -652,6 +654,7 @@ class App extends Component {
       let direction = this.state.direction;
 
       let sortedData = content.sort((a, b) => {
+        if (a[column]) {
         let nameA = a[column]
           .split(";")[0]
           .toUpperCase()
@@ -714,6 +717,7 @@ class App extends Component {
             }
           }
         }
+      }
 
         return 0;
       });
@@ -1082,25 +1086,28 @@ class App extends Component {
   }
 
   exportContent() {
+    let titles =
+      Object.keys(this.state.currentContent[0])
+        .map(i => i.split(";")[0])
+        .filter(j => j !== "undefined" && j !== "row")
+        .join(",") + "\n";
     let currentContent = this.state.currentContent
       .map(i =>
         Object.values(i)
           .filter(k => k !== undefined && typeof k !== "number")
           .map(j => {
-            
-              return j.split(";")[j.split(";").length - 2]
-            
+            return j.split(";")[j.split(";").length - 2];
           })
           .join(",")
       )
       .join("\n");
-    let csv = "data:text/csv;charset=utf-8," + currentContent;
-    
+    let csv = "data:text/csv;charset=utf-8," + titles + currentContent;
+
     let encodedUri = encodeURI(csv);
 
-    let link = document.createElement("a")
+    let link = document.createElement("a");
     link.setAttribute("href", encodedUri);
-    link.setAttribute("download", "export.csv")
+    link.setAttribute("download", "export.csv");
     document.body.appendChild(link);
 
     link.click();

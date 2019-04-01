@@ -69,8 +69,13 @@ export function Misc(props) {
             <strong>Column Headers</strong>
           </u>
           : <strong>Left Click:</strong> Sort, <strong>Middle Click:</strong>{" "}
-          Delete, <strong>Right Click:</strong> Select,{" "}
-          <strong>Selected Column:</strong> Left/Right Arrows Keys Rearrange
+          Delete, <strong>Right Click:</strong> Select{" "}
+        </h5>
+        <h5>
+          <u>
+            <strong>Selected Column:</strong>
+          </u>{" "}
+          Left/Right Arrows Keys Rearrange
         </h5>
         <h5>
           <u>
@@ -107,18 +112,17 @@ export function Misc(props) {
         </h5>
         <h5>
           <strong>
-            <u>Auto Sizing Off Button</u>:{" "}
+            <u>Auto Sizing Button</u>:{" "}
           </strong>
           <strong>Toggleable: </strong>
           Makes the Website Resizable For Dynamic Screen Sizes
         </h5>
         <h5>
           <strong>
-            <u>Auto Refresh On Button</u>:{" "}
+            <u>Auto Refresh Button</u>:{" "}
           </strong>
           <strong>Toggleable: </strong>
-          Checks the Server Every 15 Seconds For Fresh Data; Updates Table on
-          Fresh Data; Default On
+          Checks the Server Every 15 Seconds For Fresh Data and Updates Table
         </h5>
         <h5>
           <strong>
@@ -131,6 +135,12 @@ export function Misc(props) {
             <u>Print Button</u>:{" "}
           </strong>
           Prints the Entire Table Except for Hidden/Deleted Rows and Columns
+        </h5>
+        <h5>
+          <strong>
+            <u>Export Button</u>:{" "}
+          </strong>
+          Exports the Currently Displayed Table to a CSV File
         </h5>
       </TooltipWrapper>
       <StyledMisc>
