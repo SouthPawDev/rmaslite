@@ -7,6 +7,9 @@ import Button from "react-bootstrap/Button";
 import resizePage from "./Functions/resizePage";
 import "./App.css";
 
+// const BACKEND_URL='http://wtc-275124-w23.corp.ds.fedex.com:9091'
+const BACKEND_URL="http://wtc-275124-w23.corp.ds.fedex.com:7001/external-flight-access-server-build"
+
 class App extends Component {
   constructor(props) {
     super(props);
@@ -47,8 +50,7 @@ class App extends Component {
         : location.slice(1);
 
     fetch(
-      `http://wtc-275124-w23.corp.ds.fedex.com:9091/file/serve?file=${formatLocation}.csv`
-      // `http://wtc-275124-w23.corp.ds.fedex.com:7001/external-flight-access-server-build/file/serve?file=${formatLocation}.csv`
+      BACKEND_URL + `/file/serve?file=${formatLocation}.csv`
     )
       .then(response => response.json())
       .then(data => {
@@ -150,8 +152,7 @@ class App extends Component {
         this.setState({
           timer: setInterval(() => {
             fetch(
-              `http://wtc-275124-w23.corp.ds.fedex.com:9091/file/serve?file=${formatLocation}.csv`
-              // `http://wtc-275124-w23.corp.ds.fedex.com:7001/external-flight-access-server-build/file/serve?file=${formatLocation}.csv`
+              BACKEND_URL + `/file/serve?file=${formatLocation}.csv`
             ).then(response =>
               response.json().then(data => {
                 if (
@@ -368,8 +369,7 @@ class App extends Component {
           this.setState({
             timer: setInterval(() => {
               fetch(
-                `http://wtc-275124-w23.corp.ds.fedex.com:9091/file/serve?file=${formatLocation}.csv`
-                // `http://wtc-275124-w23.corp.ds.fedex.com:7001/external-flight-access-server-build/file/serve?file=${formatLocation}.csv`
+                BACKEND_URL + `/file/serve?file=${formatLocation}.csv`
               ).then(response =>
                 response.json().then(data => {
                   if (
@@ -531,7 +531,6 @@ class App extends Component {
         }
 
         if (nameA === nameB) {
-          if (a["FLIGHT;BBW"]) {
             nameA = a["FLIGHT;BBW"]
               .split(";")[0]
               .toUpperCase()
@@ -549,7 +548,6 @@ class App extends Component {
             if (nameA > nameB) {
               return 1;
             }
-          }
         }
       }
       return 0;
@@ -573,7 +571,6 @@ class App extends Component {
   handleFlightSort(column, content, clicked) {
     let direction = this.state.direction;
     let sortedData = content.sort((a, b) => {
-      if (a["FLIGHT;BBW"]) {
         let nameA = a["FLIGHT;BBW"]
           .split(";")[0]
           .toUpperCase()
@@ -593,7 +590,6 @@ class App extends Component {
         }
 
         if (nameA === nameB) {
-          if (a["GATE;BBW"]) {
             nameA = a["GATE;BBW"]
               .split(";")[0]
               .toUpperCase()
@@ -611,9 +607,8 @@ class App extends Component {
             if (nameA > nameB) {
               return 1;
             }
-          }
         }
-      }
+      
       return 0;
     });
 
@@ -718,7 +713,6 @@ class App extends Component {
           }
         }
       }
-
         return 0;
       });
 
