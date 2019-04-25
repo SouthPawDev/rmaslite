@@ -8,7 +8,8 @@ import resizePage from "./Functions/resizePage";
 import "./App.css";
 
 // const BACKEND_URL='http://wtc-275124-w23.corp.ds.fedex.com:9091'
-const BACKEND_URL="http://wtc-275124-w23.corp.ds.fedex.com:7001/external-flight-access-server-build"
+// const BACKEND_URL="http://wtc-275124-w23.corp.ds.fedex.com:7001/external-flight-access-server-build"
+const FOLDER = '/external-flight-access-server-build/file/serve?file='
 
 class App extends Component {
   constructor(props) {
@@ -50,7 +51,8 @@ class App extends Component {
         : location.slice(1);
 
     fetch(
-      BACKEND_URL + `/file/serve?file=${formatLocation}.csv`
+      // BACKEND_URL + `/file/serve?file=${formatLocation}.csv`
+      FOLDER + `${formatLocation}.csv`
     )
       .then(response => response.json())
       .then(data => {
@@ -152,7 +154,8 @@ class App extends Component {
         this.setState({
           timer: setInterval(() => {
             fetch(
-              BACKEND_URL + `/file/serve?file=${formatLocation}.csv`
+                    // BACKEND_URL + `/file/serve?file=${formatLocation}.csv`
+                    FOLDER + `${formatLocation}.csv`
             ).then(response =>
               response.json().then(data => {
                 if (
@@ -369,7 +372,8 @@ class App extends Component {
           this.setState({
             timer: setInterval(() => {
               fetch(
-                BACKEND_URL + `/file/serve?file=${formatLocation}.csv`
+                      // BACKEND_URL + `/file/serve?file=${formatLocation}.csv`
+                      FOLDER + `${formatLocation}.csv`
               ).then(response =>
                 response.json().then(data => {
                   if (
