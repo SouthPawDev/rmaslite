@@ -1,5 +1,5 @@
 {
-  "homepage": "http://wtc-275124-w23.corp.ds.fedex.com:7001/external-flight-access-server-build",
+  "homepage": "http://stage-omni-cluster.ute.fedex.com/rmaslite",
   "name": "react-playground",
   "version": "0.1.0",
   "private": true,

@@ -9,7 +9,7 @@ import "./App.css";
 
 // const BACKEND_URL='http://wtc-275124-w23.corp.ds.fedex.com:9091'
 // const BACKEND_URL="http://wtc-275124-w23.corp.ds.fedex.com:7001/external-flight-access-server-build"
-const FOLDER = '/external-flight-access-server-build/file/serve?file='
+const FOLDER = '/rmaslite/file/serve?file='
 
 class App extends Component {
   constructor(props) {

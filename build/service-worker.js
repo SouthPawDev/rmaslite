@@ -14,7 +14,7 @@
 importScripts("https://storage.googleapis.com/workbox-cdn/releases/3.6.3/workbox-sw.js");
 
 importScripts(
-  "/external-flight-access-server-build/precache-manifest.88ee6294f97d462a741c9095c29f1a87.js"
+  "/rmaslite/precache-manifest.744f848c08111919a0937752ff792d1f.js"
 );
 
 workbox.clientsClaim();
@@ -28,7 +28,7 @@ self.__precacheManifest = [].concat(self.__precacheManifest || []);
 workbox.precaching.suppressWarnings();
 workbox.precaching.precacheAndRoute(self.__precacheManifest, {});
 
-workbox.routing.registerNavigationRoute("/external-flight-access-server-build/index.html", {
+workbox.routing.registerNavigationRoute("/rmaslite/index.html", {
   
   blacklist: [/^\/_/,/\/[^\/]+\.[^\/]+$/],
 });
