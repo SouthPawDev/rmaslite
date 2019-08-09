@@ -70,7 +70,8 @@ class FlightTableB extends Component {
                       ? "EMP"
                       : item.startsWith("OFF/SEQ")
                       ? "OFFSEQ"
-                      : item.split(";")[0]
+                      : item.split(";")[0],
+                    "EE"
                   ].join(" ")}
                   onClick={() =>
                     this.sortHandler(item, this.props.content, true)
@@ -88,7 +89,8 @@ class FlightTableB extends Component {
               ))}
           </tr>
         </thead>
-        <tbody>
+
+        <tbody className="tbody-class">
           {this.props.content
             ? this.props.content.map((i, ii) => (
                 <Tr
@@ -116,7 +118,8 @@ class FlightTableB extends Component {
                             ? "EMP"
                             : j.startsWith("OFF/SEQ")
                             ? "OFFSEQ"
-                            : j.split(";")[0]
+                            : j.split(";")[0],
+                          "EE"
                         ].join(" ")}
                       >
                         {i[j]

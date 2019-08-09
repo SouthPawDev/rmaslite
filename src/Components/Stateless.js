@@ -62,7 +62,7 @@ export function Misc(props) {
     props.exportContent();
   };
   return (
-    <div>
+    <div id="misc">
       <TooltipWrapper isHidden={props.help}>
         <h5>
           <u>
@@ -122,7 +122,7 @@ export function Misc(props) {
             <u>Auto Refresh Button</u>:{" "}
           </strong>
           <strong>Toggleable: </strong>
-          Checks the Server Every 15 Seconds For Fresh Data and Updates Table
+          Checks the Server Every 60 Seconds For Fresh Data and Updates Table
         </h5>
         <h5>
           <strong>
@@ -141,6 +141,12 @@ export function Misc(props) {
             <u>Export Button</u>:{" "}
           </strong>
           Exports the Currently Displayed Table to a CSV File
+        </h5>
+        <h5>
+          <strong>
+            <u>Delete Column (iPad Only)</u>: <strong>Toggleable: </strong>
+          </strong>
+          Turn On to Enable Deleting Columns By Touch
         </h5>
       </TooltipWrapper>
       <StyledMisc>

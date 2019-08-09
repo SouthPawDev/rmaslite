@@ -5,11 +5,12 @@ import { Title, Time, FlightException, Misc } from "./Components/Stateless";
 import FlightTableB from "./Components/FlightTableB";
 import Button from "react-bootstrap/Button";
 import resizePage from "./Functions/resizePage";
+import { demo } from "./demo";
 import "./App.css";
 
-// const BACKEND_URL='http://wtc-275124-w23.corp.ds.fedex.com:9091'
+const BACKEND_URL = "http://wtc-275124-w23.corp.ds.fedex.com:9091";
 // const BACKEND_URL="http://wtc-275124-w23.corp.ds.fedex.com:7001/external-flight-access-server-build"
-const FOLDER = '/rmaslite/file/serve?file='
+// const FOLDER = "/rmaslite/file/serve?file=";
 
 class App extends Component {
   constructor(props) {
@@ -26,14 +27,95 @@ class App extends Component {
       refresh: true,
       selected: false,
       help: true,
+      leftClick: true,
+      middleClick: false,
+      rightClick: false,
       showSelectedOnly: false,
       hideSelectedOnly: false,
-      initalLoad: true
+      initalLoad: true,
+      demo: true
     };
   }
 
   componentDidMount() {
-    this.getFile();
+    if (this.state.demo) {
+      let location = this.props.location.pathname;
+
+      let formatLocation =
+        location.slice(-5) === "INLET" || location.slice(-5) === "DEICE"
+          ? location.slice(1, -6)
+          : location.slice(1);
+      let data = demo.split("\n");
+
+      return new Promise((res, rej) => {
+        this.setState({
+          flightType: data[1].split(",")[0],
+          shiftOne: data[0]
+            .split(",")
+            .filter((item, i) => i > 1 && i < 4 && item.trim() !== ""),
+          shiftTwo: data[1]
+            .split(",")
+            .filter((item, i) => i > 1 && i < 4 && item.trim() !== ""),
+          shiftThree: data[2]
+            .split(",")
+            .filter((item, i) => i > 1 && i < 4 && item.trim() !== ""),
+          rmas: [
+            data[0].split(",")[0],
+            data[1].split(",")[0],
+            data[2].split(",")[0]
+          ],
+          misc: data[3].split(","),
+          maints:
+            location.slice(-5) === "INLET" || location.slice(-5) === "DEICE"
+              ? ""
+              : data[2].split(",").filter(i => i.includes("Maint"))[0],
+          spares:
+            location.slice(-5) === "INLET" || location.slice(-5) === "DEICE"
+              ? ""
+              : data[2].split(",").filter(i => i.includes("Spare"))[0],
+          opens:
+            location.slice(-5) === "INLET" || location.slice(-5) === "DEICE"
+              ? ""
+              : data[2].split(",").filter(i => i.includes("Open"))[0],
+          maintBool: true,
+          spareBool: true,
+          openBool: true,
+          otherBool: true,
+          shiftBools: {
+            shiftOne: data[0].split(",")[1].slice(0, 1) === "X",
+            shiftTwo: data[1].split(",")[1].slice(0, 1) === "X",
+            shiftThree: data[2].split(",")[1].slice(0, 1) === "X"
+          },
+          fileLines: data,
+          fileLinesContent: data
+            .filter(
+              (item, i) =>
+                i > 3 &&
+                item.match(/^\w/) &&
+                item !== "NULL" &&
+                item.trim() !== ""
+            )
+            .map((j, k) => {
+              if (k === 0) {
+              }
+              let obj = {};
+              for (var h = 0; h < data[4].length; h++) {
+                obj[data[4].split(",")[h]] = j.split(",")[h];
+              }
+              obj["row"] = k;
+              return obj;
+            }),
+          currentDate: data[0].split(",")[4],
+          currentTime: data[0].split(",")[6],
+          direction: true
+        });
+        res();
+      })
+        .then(() => this.filter())
+        .then(() => this.setState({ initialState: this.state }));
+    } else {
+      this.getFile();
+    }
   }
 
   componentWillUnmount() {
@@ -51,8 +133,8 @@ class App extends Component {
         : location.slice(1);
 
     fetch(
-      // BACKEND_URL + `/file/serve?file=${formatLocation}.csv`
-      FOLDER + `${formatLocation}.csv`
+      BACKEND_URL + `/file/serve?file=${formatLocation}.csv`
+      // FOLDER + `${formatLocation}.csv`
     )
       .then(response => response.json())
       .then(data => {
@@ -154,8 +236,8 @@ class App extends Component {
         this.setState({
           timer: setInterval(() => {
             fetch(
-                    // BACKEND_URL + `/file/serve?file=${formatLocation}.csv`
-                    FOLDER + `${formatLocation}.csv`
+              BACKEND_URL + `/file/serve?file=${formatLocation}.csv`
+              // FOLDER + `${formatLocation}.csv`
             ).then(response =>
               response.json().then(data => {
                 if (
@@ -372,8 +454,8 @@ class App extends Component {
           this.setState({
             timer: setInterval(() => {
               fetch(
-                      // BACKEND_URL + `/file/serve?file=${formatLocation}.csv`
-                      FOLDER + `${formatLocation}.csv`
+                BACKEND_URL + `/file/serve?file=${formatLocation}.csv`
+                // FOLDER + `${formatLocation}.csv`
               ).then(response =>
                 response.json().then(data => {
                   if (
@@ -460,7 +542,7 @@ class App extends Component {
     this.setState(
       {
         deletedColumns: [],
-        selectedColumn: [],
+        selectedColumn: "",
         columnOrder: []
       },
       () => this.filter()
@@ -468,6 +550,7 @@ class App extends Component {
   }
 
   resetFlights() {
+    console.log("Hello");
     this.setState(
       {
         deletedRows: [],
@@ -535,23 +618,23 @@ class App extends Component {
         }
 
         if (nameA === nameB) {
-            nameA = a["FLIGHT;BBW"]
-              .split(";")[0]
-              .toUpperCase()
-              .trim();
-            nameB = b["FLIGHT;BBW"]
-              .split(";")[0]
-              .toUpperCase()
-              .trim();
-            if (nameA === "") {
-              return 1;
-            }
-            if (nameA < nameB) {
-              return -1;
-            }
-            if (nameA > nameB) {
-              return 1;
-            }
+          nameA = a["FLIGHT;BBW"]
+            .split(";")[0]
+            .toUpperCase()
+            .trim();
+          nameB = b["FLIGHT;BBW"]
+            .split(";")[0]
+            .toUpperCase()
+            .trim();
+          if (nameA === "") {
+            return 1;
+          }
+          if (nameA < nameB) {
+            return -1;
+          }
+          if (nameA > nameB) {
+            return 1;
+          }
         }
       }
       return 0;
@@ -575,11 +658,30 @@ class App extends Component {
   handleFlightSort(column, content, clicked) {
     let direction = this.state.direction;
     let sortedData = content.sort((a, b) => {
-        let nameA = a["FLIGHT;BBW"]
+      let nameA = a["FLIGHT;BBW"]
+        .split(";")[0]
+        .toUpperCase()
+        .trim();
+      let nameB = b["FLIGHT;BBW"]
+        .split(";")[0]
+        .toUpperCase()
+        .trim();
+      if (nameA === "") {
+        return 1;
+      }
+      if (nameA < nameB) {
+        return -1;
+      }
+      if (nameA > nameB) {
+        return 1;
+      }
+
+      if (nameA === nameB) {
+        nameA = a["GATE;BBW"]
           .split(";")[0]
           .toUpperCase()
           .trim();
-        let nameB = b["FLIGHT;BBW"]
+        nameB = b["GATE;BBW"]
           .split(";")[0]
           .toUpperCase()
           .trim();
@@ -592,27 +694,8 @@ class App extends Component {
         if (nameA > nameB) {
           return 1;
         }
+      }
 
-        if (nameA === nameB) {
-            nameA = a["GATE;BBW"]
-              .split(";")[0]
-              .toUpperCase()
-              .trim();
-            nameB = b["GATE;BBW"]
-              .split(";")[0]
-              .toUpperCase()
-              .trim();
-            if (nameA === "") {
-              return 1;
-            }
-            if (nameA < nameB) {
-              return -1;
-            }
-            if (nameA > nameB) {
-              return 1;
-            }
-        }
-      
       return 0;
     });
 
@@ -632,172 +715,180 @@ class App extends Component {
   }
 
   onSort(column, content, clicked) {
-    this.setState({ isSorted: column });
-    if (column === "FLIGHT;BBW") {
-      this.setState({ isSecondarySorted: "GATE;BBW" });
-      this.handleFlightSort(column, content, clicked);
-    } else if (
-      column === "AC;BBW" ||
-      column === "GATE;BBW" ||
-      column === "STA;BBW" ||
-      column === "STD;BBW"
-    ) {
-      this.setState({ isSecondarySorted: "FLIGHT;BBW" });
-      this.handleColumnExceptionSort(column, content, clicked);
+    if (this.state.middleClick) {
+      this.deleteColumn(column);
+    } else if (this.state.rightClick) {
+      if (clicked) {
+        this.selectColumn(column);
+      }
     } else {
-      let type = this.state.rmas[1].split(";")[0];
-      type === "INBOUND"
-        ? this.setState({ isSecondarySorted: "STA;BBW" })
-        : this.setState({ isSecondarySorted: "STD;BBW" });
+      this.setState({ isSorted: column });
+      if (column === "FLIGHT;BBW") {
+        this.setState({ isSecondarySorted: "GATE;BBW" });
+        this.handleFlightSort(column, content, clicked);
+      } else if (
+        column === "AC;BBW" ||
+        column === "GATE;BBW" ||
+        column === "STA;BBW" ||
+        column === "STD;BBW"
+      ) {
+        this.setState({ isSecondarySorted: "FLIGHT;BBW" });
+        this.handleColumnExceptionSort(column, content, clicked);
+      } else {
+        let type = this.state.rmas[1].split(";")[0];
+        type === "INBOUND"
+          ? this.setState({ isSecondarySorted: "STA;BBW" })
+          : this.setState({ isSecondarySorted: "STD;BBW" });
 
-      let direction = this.state.direction;
+        let direction = this.state.direction;
 
-      let sortedData = content.sort((a, b) => {
-        if (a[column]) {
-        let nameA = a[column]
-          .split(";")[0]
-          .toUpperCase()
-          .trim();
-        let nameB = b[column]
-          .split(";")[0]
-          .toUpperCase()
-          .trim();
+        let sortedData = content.sort((a, b) => {
+          if (a[column]) {
+            let nameA = a[column]
+              .split(";")[0]
+              .toUpperCase()
+              .trim();
+            let nameB = b[column]
+              .split(";")[0]
+              .toUpperCase()
+              .trim();
 
-        if (nameA === "") {
-          return 1;
-        }
-        if (nameA < nameB) {
-          return -1;
-        }
-        if (nameA > nameB) {
-          return 1;
-        }
-
-        if (nameA === nameB) {
-          if (type === "INBOUND") {
-            if (a["STA;BBW"]) {
-              nameA = a["STA;BBW"]
-                .split(";")[0]
-                .toUpperCase()
-                .trim();
-              nameB = b["STA;BBW"]
-                .split(";")[0]
-                .toUpperCase()
-                .trim();
-              if (nameA === "") {
-                return 1;
-              }
-              if (nameA < nameB) {
-                return -1;
-              }
-              if (nameA > nameB) {
-                return 1;
-              }
+            if (nameA === "") {
+              return 1;
             }
-          } else {
-            if (a["STD;BBW"]) {
-              nameA = a["STD;BBW"]
-                .split(";")[0]
-                .toUpperCase()
-                .trim();
-              nameB = b["STD;BBW"]
-                .split(";")[0]
-                .toUpperCase()
-                .trim();
-              if (nameA === "") {
-                return 1;
-              }
-              if (nameA < nameB) {
-                return -1;
-              }
-              if (nameA > nameB) {
-                return 1;
+            if (nameA < nameB) {
+              return -1;
+            }
+            if (nameA > nameB) {
+              return 1;
+            }
+
+            if (nameA === nameB) {
+              if (type === "INBOUND") {
+                if (a["STA;BBW"]) {
+                  nameA = a["STA;BBW"]
+                    .split(";")[0]
+                    .toUpperCase()
+                    .trim();
+                  nameB = b["STA;BBW"]
+                    .split(";")[0]
+                    .toUpperCase()
+                    .trim();
+                  if (nameA === "") {
+                    return 1;
+                  }
+                  if (nameA < nameB) {
+                    return -1;
+                  }
+                  if (nameA > nameB) {
+                    return 1;
+                  }
+                }
+              } else {
+                if (a["STD;BBW"]) {
+                  nameA = a["STD;BBW"]
+                    .split(";")[0]
+                    .toUpperCase()
+                    .trim();
+                  nameB = b["STD;BBW"]
+                    .split(";")[0]
+                    .toUpperCase()
+                    .trim();
+                  if (nameA === "") {
+                    return 1;
+                  }
+                  if (nameA < nameB) {
+                    return -1;
+                  }
+                  if (nameA > nameB) {
+                    return 1;
+                  }
+                }
               }
             }
           }
-        }
-      }
-        return 0;
-      });
-
-      // if (!direction && clicked) {
-      //   sortedData.sort((a, b) => {
-      //     let nameA = a[column]
-      //       .split(";")[0]
-      //       .toUpperCase()
-      //       .trim();
-      //     let nameB = b[column]
-      //       .split(";")[0]
-      //       .toUpperCase()
-      //       .trim();
-      //     if (nameA === "") {
-      //       return 1;
-      //     }
-      //     if (nameA < nameB) {
-      //       return 1;
-      //     }
-      //     if (nameA > nameB) {
-      //       return -1;
-      //     }
-      //     if (nameA === nameB) {
-      //       if (type === "INBOUND") {
-      //         if (a["STA;BBW"]) {
-      //           nameA = a["STA;BBW"]
-      //             .split(";")[0]
-      //             .toUpperCase()
-      //             .trim();
-      //           nameB = b["STA;BBW"]
-      //             .split(";")[0]
-      //             .toUpperCase()
-      //             .trim();
-      //           if (nameA === "") {
-      //             return 1;
-      //           }
-      //           if (nameA < nameB) {
-      //             return -1;
-      //           }
-      //           if (nameA > nameB) {
-      //             return 1;
-      //           }
-      //         }
-      //       } else {
-      //         if (a["STD;BBW"]) {
-      //           nameA = a["STD;BBW"]
-      //             .split(";")[0]
-      //             .toUpperCase()
-      //             .trim();
-      //           nameB = b["STD;BBW"]
-      //             .split(";")[0]
-      //             .toUpperCase()
-      //             .trim();
-      //           if (nameA === "") {
-      //             return 1;
-      //           }
-      //           if (nameA < nameB) {
-      //             return -1;
-      //           }
-      //           if (nameA > nameB) {
-      //             return 1;
-      //           }
-      //         }
-      //       }
-      //     }
-      //     return 0;
-      //   });
-      // }
-
-      if (clicked) {
-        if (direction) {
-          sortedData.reverse();
-        }
-        this.setState({
-          currentContent: sortedData,
-          direction: !this.state.direction
+          return 0;
         });
-      } else {
-        this.setState({
-          currentContent: sortedData
-        });
+
+        // if (!direction && clicked) {
+        //   sortedData.sort((a, b) => {
+        //     let nameA = a[column]
+        //       .split(";")[0]
+        //       .toUpperCase()
+        //       .trim();
+        //     let nameB = b[column]
+        //       .split(";")[0]
+        //       .toUpperCase()
+        //       .trim();
+        //     if (nameA === "") {
+        //       return 1;
+        //     }
+        //     if (nameA < nameB) {
+        //       return 1;
+        //     }
+        //     if (nameA > nameB) {
+        //       return -1;
+        //     }
+        //     if (nameA === nameB) {
+        //       if (type === "INBOUND") {
+        //         if (a["STA;BBW"]) {
+        //           nameA = a["STA;BBW"]
+        //             .split(";")[0]
+        //             .toUpperCase()
+        //             .trim();
+        //           nameB = b["STA;BBW"]
+        //             .split(";")[0]
+        //             .toUpperCase()
+        //             .trim();
+        //           if (nameA === "") {
+        //             return 1;
+        //           }
+        //           if (nameA < nameB) {
+        //             return -1;
+        //           }
+        //           if (nameA > nameB) {
+        //             return 1;
+        //           }
+        //         }
+        //       } else {
+        //         if (a["STD;BBW"]) {
+        //           nameA = a["STD;BBW"]
+        //             .split(";")[0]
+        //             .toUpperCase()
+        //             .trim();
+        //           nameB = b["STD;BBW"]
+        //             .split(";")[0]
+        //             .toUpperCase()
+        //             .trim();
+        //           if (nameA === "") {
+        //             return 1;
+        //           }
+        //           if (nameA < nameB) {
+        //             return -1;
+        //           }
+        //           if (nameA > nameB) {
+        //             return 1;
+        //           }
+        //         }
+        //       }
+        //     }
+        //     return 0;
+        //   });
+        // }
+
+        if (clicked) {
+          if (direction) {
+            sortedData.reverse();
+          }
+          this.setState({
+            currentContent: sortedData,
+            direction: !this.state.direction
+          });
+        } else {
+          this.setState({
+            currentContent: sortedData
+          });
+        }
       }
     }
   }
@@ -846,38 +937,95 @@ class App extends Component {
     }
   }
 
+  deleteColumn(column) {
+    let deletedColumns = this.state.deletedColumns;
+    if (!column.startsWith("FLIGHT") && !column.startsWith("GATE")) {
+      deletedColumns.push(column);
+    }
+    let currentContent = this.state.currentContent.map(i => {
+      return Object.keys(i).reduce((newObj, k) => {
+        if (k !== column) {
+          newObj[k] = i[k];
+        } else if (column.startsWith("FLIGHT") || column.startsWith("GATE")) {
+          newObj[k] = i[k];
+        }
+        return newObj;
+      }, {});
+    });
+    this.setState({
+      currentContent: currentContent,
+      deletedColumns: deletedColumns,
+      columnOrder: Object.keys(currentContent[0])
+    });
+  }
+
   handleOnMouseDownTh(e, column) {
     e.preventDefault();
 
     if (e.button === 1) {
-      let deletedColumns = this.state.deletedColumns;
-      if (!column.startsWith("FLIGHT") && !column.startsWith("GATE")) {
-        deletedColumns.push(column);
-      }
-      let currentContent = this.state.currentContent.map(i => {
-        return Object.keys(i).reduce((newObj, k) => {
-          if (k !== column) {
-            newObj[k] = i[k];
-          } else if (column.startsWith("FLIGHT") || column.startsWith("GATE")) {
-            newObj[k] = i[k];
-          }
-          return newObj;
-        }, {});
-      });
-      this.setState({
-        currentContent: currentContent,
-        deletedColumns: deletedColumns,
-        columnOrder: Object.keys(currentContent[0])
-      });
+      this.deleteColumn(column);
     }
   }
 
-  handleRightClickTh(e, column) {
-    e.preventDefault();
+  selectColumn(column) {
+    console.log("a");
     document.getElementsByClassName("App")[0].focus();
     this.setState({
       selectedColumn: this.state.selectedColumn === column ? "" : column
     });
+  }
+
+  handleRightClickTh(e, column) {
+    e.preventDefault();
+    this.selectColumn(column);
+  }
+
+  leftArrowKey(selectedColumn, currentContent, columns, columnsLength, index) {
+    if (index > 0) {
+      let tmp = columns[index];
+      columns[index] = columns[index - 1];
+      columns[index - 1] = tmp;
+
+      let newRows = currentContent.map(obj => {
+        let keys = Object.keys(obj);
+        let keyTmp = keys[index];
+        keys[index] = keys[index - 1];
+        keys[index - 1] = keyTmp;
+        let newObj = keys.reduce((o, c) => {
+          o[c] = obj[c];
+          return o;
+        }, {});
+        return newObj;
+      });
+      this.setState({
+        currentContent: newRows,
+        columnOrder: Object.keys(newRows[0])
+      });
+    }
+  }
+
+  rightArrowKey(selectedColumn, currentContent, columns, columnsLength, index) {
+    if (index < columnsLength - 1) {
+      let tmp = columns[index];
+      columns[index] = columns[index + 1];
+      columns[index + 1] = tmp;
+
+      let newRows = currentContent.map(obj => {
+        let keys = Object.keys(obj);
+        let keyTmp = keys[index];
+        keys[index] = keys[index + 1];
+        keys[index + 1] = keyTmp;
+        let newObj = keys.reduce((o, c) => {
+          o[c] = obj[c];
+          return o;
+        }, {});
+        return newObj;
+      });
+      this.setState({
+        currentContent: newRows,
+        columnOrder: Object.keys(newRows[0])
+      });
+    }
   }
 
   handleKeyPress(e) {
@@ -888,61 +1036,72 @@ class App extends Component {
         let currentContent = this.state.currentContent;
         let columns = Object.keys(currentContent[0]);
         let columnsLength = columns.length;
-
         let index = columns.indexOf(selectedColumn);
 
         if (e.keyCode === 37) {
-          if (index > 0) {
-            let tmp = columns[index];
-            columns[index] = columns[index - 1];
-            columns[index - 1] = tmp;
+          this.leftArrowKey(
+            selectedColumn,
+            currentContent,
+            columns,
+            columnsLength,
+            index
+          );
+          // if (index > 0) {
+          //   let tmp = columns[index];
+          //   columns[index] = columns[index - 1];
+          //   columns[index - 1] = tmp;
 
-            let newRows = currentContent.map(obj => {
-              let keys = Object.keys(obj);
-              let keyTmp = keys[index];
-              keys[index] = keys[index - 1];
-              keys[index - 1] = keyTmp;
-              let newObj = keys.reduce((o, c) => {
-                o[c] = obj[c];
-                return o;
-              }, {});
-              return newObj;
-            });
-            this.setState({
-              currentContent: newRows,
-              columnOrder: Object.keys(newRows[0])
-            });
-          }
+          //   let newRows = currentContent.map(obj => {
+          //     let keys = Object.keys(obj);
+          //     let keyTmp = keys[index];
+          //     keys[index] = keys[index - 1];
+          //     keys[index - 1] = keyTmp;
+          //     let newObj = keys.reduce((o, c) => {
+          //       o[c] = obj[c];
+          //       return o;
+          //     }, {});
+          //     return newObj;
+          //   });
+          //   this.setState({
+          //     currentContent: newRows,
+          //     columnOrder: Object.keys(newRows[0])
+          //   });
+          // }
         } else {
-          if (index < columnsLength - 1) {
-            let tmp = columns[index];
-            columns[index] = columns[index + 1];
-            columns[index + 1] = tmp;
+          this.rightArrowKey(
+            selectedColumn,
+            currentContent,
+            columns,
+            columnsLength,
+            index
+          );
+          // if (index < columnsLength - 1) {
+          //   let tmp = columns[index];
+          //   columns[index] = columns[index + 1];
+          //   columns[index + 1] = tmp;
 
-            let newRows = currentContent.map(obj => {
-              let keys = Object.keys(obj);
-              let keyTmp = keys[index];
-              keys[index] = keys[index + 1];
-              keys[index + 1] = keyTmp;
-              let newObj = keys.reduce((o, c) => {
-                o[c] = obj[c];
-                return o;
-              }, {});
-              return newObj;
-            });
-            this.setState({
-              currentContent: newRows,
-              columnOrder: Object.keys(newRows[0])
-            });
-          }
+          //   let newRows = currentContent.map(obj => {
+          //     let keys = Object.keys(obj);
+          //     let keyTmp = keys[index];
+          //     keys[index] = keys[index + 1];
+          //     keys[index + 1] = keyTmp;
+          //     let newObj = keys.reduce((o, c) => {
+          //       o[c] = obj[c];
+          //       return o;
+          //     }, {});
+          //     return newObj;
+          //   });
+          //   this.setState({
+          //     currentContent: newRows,
+          //     columnOrder: Object.keys(newRows[0])
+          //   });
+          // }
         }
       }
     }
   }
 
-  handleRightClickRow(e, i) {
-    e.preventDefault();
-
+  selectRow(i) {
     let selectedRows = this.state.selectedRows;
     let selectedRowsPK = selectedRows.map(j => j["FLIGHT;BBW"] + j["GATE;BBW"]);
 
@@ -959,124 +1118,139 @@ class App extends Component {
     }
   }
 
+  handleRightClickRow(e, i) {
+    e.preventDefault();
+    this.selectRow(i);
+  }
+
   handleClick(e, i) {
     e.preventDefault();
+
     if (e.button === 0) {
+      if (this.state.middleClick) {
+        this.deleteRow(i);
+      } else if (this.state.rightClick) {
+        this.selectRow(i);
+      }
+    } else if (e.button === 1) {
+      this.deleteRow(i);
+    } else if (e.button === 2) {
     }
-    if (e.button === 1) {
-      let currentRow = Object.values(i).join("");
-      let shift = i["SHIFT;BBW"] ? i["SHIFT;BBW"].split(";")[0].trim() : "";
-      let shiftFlight = i["FLIGHT;BBW"]
-        ? i["FLIGHT;BBW"].split(";")[0].trim()
-        : "";
+  }
 
-      let shiftOne = this.state.shiftOne;
-      let shiftTwo = this.state.shiftTwo;
-      let shiftThree = this.state.shiftThree;
-      let maints = this.state.maints;
-      let spares = this.state.spares;
-      let opens = this.state.opens;
+  deleteRow(i) {
+    let currentRow = Object.values(i).join("");
+    let shift = i["SHIFT;BBW"] ? i["SHIFT;BBW"].split(";")[0].trim() : "";
+    let shiftFlight = i["FLIGHT;BBW"]
+      ? i["FLIGHT;BBW"].split(";")[0].trim()
+      : "";
 
-      let deletedRows = this.state.deletedRows;
+    let shiftOne = this.state.shiftOne;
+    let shiftTwo = this.state.shiftTwo;
+    let shiftThree = this.state.shiftThree;
+    let maints = this.state.maints;
+    let spares = this.state.spares;
+    let opens = this.state.opens;
 
-      if (shiftOne[0].split(" ")[0] === shift) {
-        if (
-          !parseInt(shiftOne[1].replace(/\D/g, "") - 1 < 0) &&
-          (shiftFlight !== "OPEN" &&
-            shiftFlight !== "MAINT" &&
-            shiftFlight !== "SPARE")
-        ) {
-          let decrement = parseInt(shiftOne[1].replace(/\D/g, "")) - 1;
-          shiftOne = [
-            shiftOne[0],
-            "Flights  " + decrement + ";" + shiftOne[1].split(";")[1]
-          ];
-          this.setState({ shiftOne: shiftOne });
-        } else {
-          if (shiftFlight === "OPEN") {
-            let decrement = parseInt(opens.replace(/\D/g, "")) - 1;
-            opens = "Open " + decrement + opens.slice(-4);
-            this.setState({ opens: opens });
-          } else if (shiftFlight === "MAINT") {
-            let decrement = parseInt(maints.replace(/\D/g, "")) - 1;
-            maints = "Maint " + decrement + maints.slice(-4);
-            this.setState({ maints: maints });
-          } else if (shiftFlight === "SPARE") {
-            let decrement = parseInt(spares.replace(/\D/g, "")) - 1;
-            spares = "Spare " + decrement + spares.slice(-4);
-            this.setState({ spares: spares });
-          }
-        }
-      } else if (shiftTwo[0].split(" ")[0] === shift) {
-        if (
-          !parseInt(shiftTwo[1].replace(/\D/g, "") - 1 < 0) &&
-          (shiftFlight !== "OPEN" &&
-            shiftFlight !== "MAINT" &&
-            shiftFlight !== "SPARE")
-        ) {
-          let decrement = parseInt(shiftTwo[1].replace(/\D/g, "")) - 1;
-          shiftTwo = [
-            shiftTwo[0],
-            "Flights  " + decrement + ";" + shiftTwo[1].split(";")[1]
-          ];
-          this.setState({ shiftTwo: shiftTwo });
-        } else {
-          if (shiftFlight === "OPEN") {
-            let decrement = parseInt(opens.replace(/\D/g, "")) - 1;
-            opens = "Open " + decrement + opens.slice(-4);
-            this.setState({ opens: opens });
-          } else if (shiftFlight === "MAINT") {
-            let decrement = parseInt(maints.replace(/\D/g, "")) - 1;
-            maints = "Maint " + decrement + maints.slice(-4);
-            this.setState({ maints: maints });
-          } else if (shiftFlight === "SPARE") {
-            let decrement = parseInt(spares.replace(/\D/g, "")) - 1;
-            spares = "Spare " + decrement + spares.slice(-4);
-            this.setState({ spares: spares });
-          }
-        }
-      } else if (shiftThree[0].split(" ")[0] === shift) {
-        if (
-          !parseInt(shiftThree[1].replace(/\D/g, "") - 1 < 0) &&
-          (shiftFlight !== "OPEN" &&
-            shiftFlight !== "MAINT" &&
-            shiftFlight !== "SPARE")
-        ) {
-          let decrement = parseInt(shiftThree[1].replace(/\D/g, "")) - 1;
-          shiftThree = [
-            shiftThree[0],
-            "Flights  " + decrement + ";" + shiftThree[1].split(";")[1]
-          ];
-          this.setState({ shiftThree: shiftThree });
-        } else {
-          if (shiftFlight === "OPEN") {
-            let decrement = parseInt(opens.replace(/\D/g, "")) - 1;
-            opens = "Open " + decrement + opens.slice(-4);
-            this.setState({ opens: opens });
-          } else if (shiftFlight === "MAINT") {
-            let decrement = parseInt(maints.replace(/\D/g, "")) - 1;
-            maints = "Maint " + decrement + maints.slice(-4);
-            this.setState({ maints: maints });
-          } else if (shiftFlight === "SPARE") {
-            let decrement = parseInt(spares.replace(/\D/g, "")) - 1;
-            spares = "Spare " + decrement + spares.slice(-4);
-            this.setState({ spares: spares });
-          }
+    let deletedRows = this.state.deletedRows;
+
+    if (shiftOne[0].split(" ")[0] === shift) {
+      if (
+        !parseInt(shiftOne[1].replace(/\D/g, "") - 1 < 0) &&
+        (shiftFlight !== "OPEN" &&
+          shiftFlight !== "MAINT" &&
+          shiftFlight !== "SPARE")
+      ) {
+        let decrement = parseInt(shiftOne[1].replace(/\D/g, "")) - 1;
+        shiftOne = [
+          shiftOne[0],
+          "Flights  " + decrement + ";" + shiftOne[1].split(";")[1]
+        ];
+        this.setState({ shiftOne: shiftOne });
+      } else {
+        if (shiftFlight === "OPEN") {
+          let decrement = parseInt(opens.replace(/\D/g, "")) - 1;
+          opens = "Open " + decrement + opens.slice(-4);
+          this.setState({ opens: opens });
+        } else if (shiftFlight === "MAINT") {
+          let decrement = parseInt(maints.replace(/\D/g, "")) - 1;
+          maints = "Maint " + decrement + maints.slice(-4);
+          this.setState({ maints: maints });
+        } else if (shiftFlight === "SPARE") {
+          let decrement = parseInt(spares.replace(/\D/g, "")) - 1;
+          spares = "Spare " + decrement + spares.slice(-4);
+          this.setState({ spares: spares });
         }
       }
-
-      this.setState({
-        currentContent: this.state.currentContent.reduce((arr, obj) => {
-          let row = Object.values(obj).join("");
-          if (!(row === currentRow)) {
-            arr.push(obj);
-          } else {
-            deletedRows.push(obj);
-          }
-          return arr;
-        }, [])
-      });
+    } else if (shiftTwo[0].split(" ")[0] === shift) {
+      if (
+        !parseInt(shiftTwo[1].replace(/\D/g, "") - 1 < 0) &&
+        (shiftFlight !== "OPEN" &&
+          shiftFlight !== "MAINT" &&
+          shiftFlight !== "SPARE")
+      ) {
+        let decrement = parseInt(shiftTwo[1].replace(/\D/g, "")) - 1;
+        shiftTwo = [
+          shiftTwo[0],
+          "Flights  " + decrement + ";" + shiftTwo[1].split(";")[1]
+        ];
+        this.setState({ shiftTwo: shiftTwo });
+      } else {
+        if (shiftFlight === "OPEN") {
+          let decrement = parseInt(opens.replace(/\D/g, "")) - 1;
+          opens = "Open " + decrement + opens.slice(-4);
+          this.setState({ opens: opens });
+        } else if (shiftFlight === "MAINT") {
+          let decrement = parseInt(maints.replace(/\D/g, "")) - 1;
+          maints = "Maint " + decrement + maints.slice(-4);
+          this.setState({ maints: maints });
+        } else if (shiftFlight === "SPARE") {
+          let decrement = parseInt(spares.replace(/\D/g, "")) - 1;
+          spares = "Spare " + decrement + spares.slice(-4);
+          this.setState({ spares: spares });
+        }
+      }
+    } else if (shiftThree[0].split(" ")[0] === shift) {
+      if (
+        !parseInt(shiftThree[1].replace(/\D/g, "") - 1 < 0) &&
+        (shiftFlight !== "OPEN" &&
+          shiftFlight !== "MAINT" &&
+          shiftFlight !== "SPARE")
+      ) {
+        let decrement = parseInt(shiftThree[1].replace(/\D/g, "")) - 1;
+        shiftThree = [
+          shiftThree[0],
+          "Flights  " + decrement + ";" + shiftThree[1].split(";")[1]
+        ];
+        this.setState({ shiftThree: shiftThree });
+      } else {
+        if (shiftFlight === "OPEN") {
+          let decrement = parseInt(opens.replace(/\D/g, "")) - 1;
+          opens = "Open " + decrement + opens.slice(-4);
+          this.setState({ opens: opens });
+        } else if (shiftFlight === "MAINT") {
+          let decrement = parseInt(maints.replace(/\D/g, "")) - 1;
+          maints = "Maint " + decrement + maints.slice(-4);
+          this.setState({ maints: maints });
+        } else if (shiftFlight === "SPARE") {
+          let decrement = parseInt(spares.replace(/\D/g, "")) - 1;
+          spares = "Spare " + decrement + spares.slice(-4);
+          this.setState({ spares: spares });
+        }
+      }
     }
+
+    this.setState({
+      currentContent: this.state.currentContent.reduce((arr, obj) => {
+        let row = Object.values(obj).join("");
+        if (!(row === currentRow)) {
+          arr.push(obj);
+        } else {
+          deletedRows.push(obj);
+        }
+        return arr;
+      }, [])
+    });
   }
 
   displayHelp() {
@@ -1117,6 +1291,56 @@ class App extends Component {
     document.getElementsByTagName("table")[0].style.height = "100%";
     window.print();
     document.getElementsByTagName("table")[0].style.height = "80vh";
+  }
+
+  leftClickMode() {
+    if (!this.state.leftClick) {
+      this.setState({ leftClick: true, middleClick: false, rightClick: false });
+    }
+  }
+
+  middleClickMode() {
+    if (!this.state.middleClick) {
+      this.setState({ middleClick: true, leftClick: false, rightClick: false });
+    }
+  }
+
+  rightClickMode() {
+    if (!this.state.rightClick) {
+      this.setState({ rightClick: true, leftClick: false, middleClick: false });
+    }
+  }
+
+  moveColumnLeft(e) {
+    e.preventDefault();
+    let selectedColumn = this.state.selectedColumn;
+    let currentContent = this.state.currentContent;
+    let columns = Object.keys(currentContent[0]);
+    let columnsLength = columns.length;
+    let index = columns.indexOf(selectedColumn);
+    this.leftArrowKey(
+      selectedColumn,
+      currentContent,
+      columns,
+      columnsLength,
+      index
+    );
+  }
+
+  moveColumnRight(e) {
+    e.preventDefault();
+    let selectedColumn = this.state.selectedColumn;
+    let currentContent = this.state.currentContent;
+    let columns = Object.keys(currentContent[0]);
+    let columnsLength = columns.length;
+    let index = columns.indexOf(selectedColumn);
+    this.rightArrowKey(
+      selectedColumn,
+      currentContent,
+      columns,
+      columnsLength,
+      index
+    );
   }
 
   render() {
@@ -1160,6 +1384,7 @@ class App extends Component {
       </div>
     ) : (
       <div
+        id="main"
         className="App"
         tabIndex="0"
         onKeyDown={this.handleKeyPress.bind(this)}
@@ -1224,6 +1449,7 @@ class App extends Component {
             <div className="header-content-buttons">
               <div className="header-content-buttons-row">
                 <Button
+                  id="show-selected"
                   size="sm"
                   style={{ width: "100%", margin: "2px 0 2px 0" }}
                   variant={
@@ -1237,6 +1463,7 @@ class App extends Component {
               </div>
               <div className="header-content-buttons-row">
                 <Button
+                  id="hide-selected"
                   size="sm"
                   style={{ width: "100%", margin: "2px 0 2px 0" }}
                   variant={
@@ -1251,7 +1478,17 @@ class App extends Component {
             </div>
             <div className="header-content-buttons-reset">
               <div className="header-content-buttons-row">
+                {/* <Button
+                  id="delete-column"
+                  size="sm"
+                  variant={this.state.delete ? "danger" : "outline-danger"}
+                  onClick={() => this.delete()}
+                  className=""
+                >
+                  Delete <br /> Column
+                </Button> */}
                 <Button
+                  id="reset-columns"
                   size="sm"
                   style={{ width: "100%", margin: "2px 0 2px 0" }}
                   variant="outline-danger"
@@ -1263,6 +1500,7 @@ class App extends Component {
               </div>
               <div className="header-content-buttons-row">
                 <Button
+                  id="reset-flights"
                   size="sm"
                   style={{ width: "100%", margin: "2px 0 2px 0" }}
                   variant="outline-danger"
@@ -1276,6 +1514,7 @@ class App extends Component {
             <div className="header-content-buttons-two">
               <div className="header-content-buttons-row">
                 <Button
+                  id="auto-sizing"
                   size="sm"
                   style={{ width: "100%", margin: "2px 0 2px 0" }}
                   variant={this.state.resizable ? "success" : "outline-success"}
@@ -1290,6 +1529,7 @@ class App extends Component {
               </div>
               <div className="header-content-buttons-row">
                 <Button
+                  id="auto-refresh"
                   size="sm"
                   style={{ width: "100%", margin: "2px 0 2px 0" }}
                   variant={this.state.refresh ? "success" : "outline-success"}
@@ -1350,6 +1590,7 @@ class App extends Component {
             <div className="header-content-right">
               <div className="header-content-right-row-1">
                 <Button
+                  id="print"
                   size="sm"
                   style={{ marginRight: "20px" }}
                   variant="outline-success"
@@ -1399,6 +1640,66 @@ class App extends Component {
                   </React.Fragment>
                 )}
               </div>
+              <div className="header-content-right-row-3">
+                <Button
+                  id="left-click"
+                  size="sm"
+                  variant={
+                    this.state.leftClick ? "secondary" : "outline-secondary"
+                  }
+                  onClick={() => this.leftClickMode()}
+                  className=""
+                >
+                  Left
+                  <br /> Click
+                </Button>
+                <Button
+                  id="middle-click"
+                  size="sm"
+                  variant={
+                    this.state.middleClick ? "secondary" : "outline-secondary"
+                  }
+                  onClick={() => this.middleClickMode()}
+                  className=""
+                >
+                  Middle <br /> Click
+                </Button>
+                <Button
+                  id="right-click"
+                  size="sm"
+                  variant={
+                    this.state.rightClick ? "secondary" : "outline-secondary"
+                  }
+                  onClick={() => this.rightClickMode()}
+                  className=""
+                >
+                  Right <br /> Click
+                </Button>
+              </div>
+              {this.state.rightClick && this.state.selectedColumn ? (
+                <div className="header-content-right-row-4">
+                  <Button
+                    id="move-left"
+                    size="sm"
+                    variant={"info"}
+                    onClick={e => this.moveColumnLeft(e)}
+                    className=""
+                  >
+                    Move <br /> Left
+                  </Button>
+                  <Button
+                    id="move-right"
+                    size="sm"
+                    variant={"info"}
+                    onClick={e => this.moveColumnRight(e)}
+                    className=""
+                  >
+                    Move <br /> Right
+                  </Button>
+                </div>
+              ) : (
+                ""
+              )}
             </div>
           </div>
           {misc ? (

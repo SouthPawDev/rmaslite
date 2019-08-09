@@ -2,36 +2,11 @@
   font-size: calc(1.5vmin + 1.5px);
 }
 
-.App {
-  text-align: center;
-  font-family: "Courier New", Courier, monospace;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  flex-direction: column;
-  width: 1680px;
-  margin: 0;
-}
-
-.App-header {
-  margin-top: 10px;
-  min-width: 1200px;
-  border: 1px solid #dee2e6;
-}
-
 .header-content {
   align-items: center;
   justify-content: space-between;
   display: flex;
   flex-direction: row;
-}
-
-.App-content {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  margin: auto;
-  overflow: hidden;
 }
 
 .header-content-left {
@@ -79,6 +54,26 @@ a {
   flex-direction: row;
   justify-content: space-between;
   margin-top: 12px;
+}
+
+.header-content-right-row-3 {
+  display: flex;
+  flex-direction: row;
+  margin: 2.5px;
+}
+
+.header-content-right-row-4 {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+}
+
+.header-content-right-row-3 button {
+  margin: 0 2px 0 2px;
+}
+
+.header-content-right-row-4 button {
+  margin: 0 2px 0 2px;
 }
 
 .header-content-buttons {
@@ -211,49 +206,6 @@ input {
 
 .hidden {
   display: none;
-}
-
-table {
-  /* background-color: cornflowerblue; */
-  min-width: 1200px;
-  padding: 10px;
-  margin: 20px;
-  overflow: hidden;
-  height: 80vh;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-}
-
-td {
-  text-overflow: ellipsis;
-  white-space: nowrap;
-  overflow: hidden;
-}
-
-thead {
-  background-color: white;
-  /* width: 100%; */
-  padding-right: 17px;
-}
-
-tbody {
-  background-color: white;
-  /* width: 100%; */
-  /* height: 100vh; */
-  overflow-y: scroll;
-}
-
-tr {
-  display: block;
-}
-
-tr th {
-  flex: 1;
-}
-
-tr td {
-  flex: 1;
 }
 
 td:hover {
@@ -452,10 +404,486 @@ td.PAYLOAD {
   width: 80px;
 }
 
+.POINT {
+  width: 60px;
+}
+
 th {
   cursor: pointer;
 }
 
 button {
   cursor: pointer;
+}
+
+#left-click {
+  display: none;
+}
+
+#middle-click {
+  display: none;
+}
+
+#right-click {
+  display: none;
+}
+
+.App {
+  text-align: center;
+  font-family: "Courier New", Courier, monospace;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  width: 1680px;
+  margin: 0;
+}
+
+.App-header {
+  margin-top: 10px;
+  min-width: 1200px;
+  border: 1px solid #dee2e6;
+}
+
+.App-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+table {
+  min-width: 1200px;
+  padding: 10px;
+  margin: 20px;
+  height: 70vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  overflow: hidden;
+  border-collapse: collapse;
+}
+
+/* thead tr {
+  display: flex;
+  justify-content: space-evenly;
+  min-width: 1000px;
+}
+
+thead tr th {
+  width: auto !important;
+}
+
+tbody tr {
+  display: flex;
+  justify-content: space-evenly;
+  min-width: 1000px;
+}
+
+tbody tr td {
+  width: auto !important;
+} */
+
+td {
+  text-overflow: ellipsis;
+  /* white-space: nowrap; */
+}
+
+thead {
+  background-color: white;
+}
+
+tbody {
+  overflow-y: scroll;
+  padding-left: 17px;
+  background-color: white;
+}
+
+tr {
+  display: table-row;
+}
+
+@media only screen and (min-device-width: 768px) and (max-device-width: 1024px) {
+  .App {
+    width: 768px;
+  }
+
+  .App-header {
+    font-size: 10px;
+    padding: 5px;
+    margin: 0px;
+    width: 768px;
+    min-width: 768px;
+    max-width: 768px;
+  }
+
+  .App-header label {
+    white-space: nowrap;
+  }
+
+  .App-content {
+    margin: auto;
+    width: 768px;
+    font-size: 13px;
+  }
+
+  table {
+    display: block;
+    width: 100%;
+    min-width: 0px;
+    margin: auto;
+    padding: 0px;
+    overflow: scroll;
+    height: 90vh;
+  }
+
+  * {
+    -webkit-overflow-scrolling: touch;
+  }
+
+  #show-selected {
+    /* display: none; */
+    font-size: 8px;
+  }
+
+  #hide-selected {
+    /* display: none; */
+    font-size: 8px;
+  }
+
+  #reset-columns {
+    /* display: none; */
+    font-size: 8px;
+  }
+
+  #reset-flights {
+    /* display: none; */
+    font-size: 8px;
+  }
+
+  #auto-sizing {
+    display: none;
+  }
+
+  #auto-refresh {
+    font-size: 8px;
+  }
+
+  #print {
+    display: none;
+  }
+
+  #misc {
+    display: none;
+  }
+
+  #left-click {
+    display: block;
+    font-size: 8px;
+  }
+
+  #middle-click {
+    display: block;
+    font-size: 8px;
+  }
+
+  #right-click {
+    display: block;
+    font-size: 8px;
+  }
+
+  tr {
+    display: table-row;
+  }
+}
+
+.EE {
+  /* width: auto; */
+}
+
+/* .SHIFT {
+    width: 30px;
+  }
+
+  .FLIGHT {
+    width: 35px;
+  }
+
+  .GATE {
+    width: 25px;
+  }
+
+  .GP {
+    width: 15px;
+  }
+
+  .AC {
+    width: 30px;
+  }
+
+  .SPOT {
+    width: 25px;
+  }
+
+  .STD {
+    width: 30px;
+  }
+
+  .STA {
+    width: 30px;
+  }
+
+  .IR {
+    width: 30px;
+  }
+
+  .ON {
+    width: 30px;
+  }
+
+  .IN {
+    width: 30px;
+  }
+
+  .MG {
+    width: 15px;
+  }
+
+  .ORG {
+    width: 20px;
+  }
+
+  .TYPE {
+    width: 45px;
+  }
+
+  td.TYPE {
+    text-align: right;
+  }
+
+  .FGD {
+    width: 20px;
+  }
+
+  .NSD {
+    width: 20px;
+  }
+
+  .NMD {
+    width: 20px;
+  }
+
+  .OB {
+    width: 35px;
+  }
+
+  .PAYLOAD {
+    width: 40px;
+  }
+
+  td.PAYLOAD {
+    text-align: left;
+  }
+
+  .RWY {
+    width: 20px;
+  }
+
+  .FFX {
+    width: 30px;
+  }
+
+  .FLX {
+    width: 30px;
+  }
+
+  .DST {
+    width: 20px;
+  }
+
+  .BCON {
+    width: 30px;
+  }
+
+  .PUSH {
+    width: 30px;
+  }
+
+  .TAXI {
+    width: 30px;
+  }
+
+  .OUT {
+    width: 30px;
+  }
+
+  .OFF {
+    width: 30px;
+  }
+
+  .ETA {
+    width: 30px;
+  }
+
+  .DC {
+    width: 15px;
+  }
+
+  .TIME {
+    width: 50px;
+  }
+
+  .FWBT {
+    width: 50px;
+  }
+
+  .REI {
+    width: 40px;
+  }
+
+  .IREQ {
+    width: 50px;
+  }
+
+  .ISTR {
+    width: 50px;
+  }
+
+  .ICMP {
+    width: 50px;
+  }
+
+  .EMP {
+    width: 70px;
+  }
+
+  .DILOC {
+    width: 60px;
+  }
+
+  ._ {
+    width: 30px;
+  }
+
+  .DREQ {
+    width: 60px;
+  }
+
+  .ONPD {
+    width: 60px;
+  }
+
+  .OFPD {
+    width: 60px;
+  }
+
+  .OFFSEQ {
+    width: 80px;
+  }
+
+  .POINT {
+    width: 60px;
+  } */
+
+@media only screen and (min-device-width: 768px) and (max-device-width: 1024px) and (orientation: landscape) {
+  .App {
+    display: block;
+    width: 1024px;
+  }
+
+  .App-header {
+    display: block;
+    font-size: 10px;
+    padding: 5px;
+    margin: 0px;
+    width: 1024px;
+    min-width: 1024px;
+    max-width: 1024px;
+    z-index: 100;
+  }
+
+  .App-header label {
+    white-space: nowrap;
+  }
+
+  .App-content {
+    display: block;
+    margin: 0px;
+    width: 1024px;
+    font-size: 13px;
+  }
+
+  table {
+    min-width: 0px;
+    display: block;
+    margin: 0px;
+    padding: 0px;
+    overflow-y: scroll;
+    height: 90vh;
+  }
+
+  table tbody {
+    margin: 0;
+    padding-left: 0px;
+  }
+
+  * {
+    -webkit-overflow-scrolling: touch;
+  }
+
+  #show-selected {
+    /* display: none; */
+    font-size: 8px;
+  }
+
+  #hide-selected {
+    /* display: none; */
+    font-size: 8px;
+  }
+
+  #reset-columns {
+    /* display: none; */
+    font-size: 8px;
+  }
+
+  #reset-flights {
+    /* display: none; */
+    font-size: 8px;
+  }
+
+  #auto-sizing {
+    display: none;
+  }
+
+  #auto-refresh {
+    font-size: 8px;
+  }
+
+  #print {
+    display: none;
+  }
+
+  #misc {
+    display: none;
+  }
+
+  #left-click {
+    display: block;
+    font-size: 10px;
+    margin-right: 8px;
+  }
+
+  #middle-click {
+    display: block;
+    font-size: 10px;
+    margin-right: 8px;
+  }
+
+  #right-click {
+    display: block;
+    font-size: 10px;
+  }
+
+  tr {
+    display: table-row;
+  }
 }
