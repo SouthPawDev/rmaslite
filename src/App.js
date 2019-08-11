@@ -33,7 +33,7 @@ class App extends Component {
       showSelectedOnly: false,
       hideSelectedOnly: false,
       initalLoad: true,
-      demo: true
+      demo: false
     };
   }
 

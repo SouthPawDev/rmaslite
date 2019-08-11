@@ -47,7 +47,7 @@ a {
 .header-content-right-row-1 {
   display: flex;
   flex-direction: row;
-  justify-content: space-between;
+  justify-content: center;
 }
 
 .header-content-right-row-2 {
@@ -60,6 +60,7 @@ a {
 .header-content-right-row-3 {
   display: flex;
   flex-direction: row;
+  justify-content: space-between;
   margin: 2.5px;
 }
 
@@ -219,6 +220,7 @@ td:hover {
 
 #override td {
   padding: 0.015rem;
+  word-break: break-all;
 }
 
 button {
@@ -240,7 +242,6 @@ button {
 .app-container {
   display: flex;
   justify-content: center;
-  
 }
 
 th {
@@ -273,7 +274,6 @@ th {
   width: 100%;
   height: 80vh;
   overflow: hidden;
-  
 }
 
 label {
@@ -285,15 +285,15 @@ table {
   margin: 0px;
 }
 
-
-thead, tbody tr {
-  display:table;
+thead,
+tbody tr {
+  display: table;
   width: 100%;
   table-layout: fixed;
 }
 
 thead {
-  width: calc( 100% - 1.04em );
+  width: calc(100% - 1.04em);
   background-color: white;
 }
 
@@ -306,14 +306,17 @@ tbody {
 
 @media only screen and (min-device-width: 768px) and (max-device-width: 1024px) {
   .App {
-    width:100vw;
+    width: 100vw;
   }
 
   .App-header {
     display: flex;
     padding: 5px;
     margin: 0px;
-    
+  }
+
+  .App-header p {
+    font-size: 14px;
   }
 
   label {
@@ -385,8 +388,6 @@ tbody {
   }
 }
 
-
-
 @media only screen and (min-device-width: 768px) and (max-device-width: 1024px) and (orientation: landscape) {
   .App {
   }
@@ -397,11 +398,9 @@ tbody {
     margin: 0px;
   }
 
-
-
   .App-content {
   }
-  
+
   .header-content-middle {
     font-size: 10px;
     white-space: nowrap;
@@ -470,6 +469,4 @@ tbody {
     display: block;
     font-size: 10px;
   }
-
-
 }
