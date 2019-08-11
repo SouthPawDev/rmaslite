@@ -7,6 +7,7 @@
   justify-content: space-between;
   display: flex;
   flex-direction: row;
+  /* width: 100%; */
 }
 
 .header-content-left {
@@ -220,198 +221,6 @@ td:hover {
   padding: 0.015rem;
 }
 
-/* 
-  Table Column Widths
-*/
-
-.SHIFT {
-  width: 60px;
-}
-
-.FLIGHT {
-  width: 70px;
-}
-
-.GATE {
-  width: 50px;
-}
-
-.GP {
-  width: 30px;
-}
-
-.AC {
-  width: 60px;
-}
-
-.SPOT {
-  width: 50px;
-}
-
-.STD {
-  width: 60px;
-}
-
-.STA {
-  width: 60px;
-}
-
-.IR {
-  width: 60px;
-}
-
-.ON {
-  width: 60px;
-}
-
-.IN {
-  width: 60px;
-}
-
-.MG {
-  width: 30px;
-}
-
-.ORG {
-  width: 40px;
-}
-
-.TYPE {
-  width: 90px;
-}
-
-td.TYPE {
-  text-align: right;
-}
-
-.FGD {
-  width: 40px;
-}
-
-.NSD {
-  width: 40px;
-}
-
-.NMD {
-  width: 40px;
-}
-
-.OB {
-  width: 70px;
-}
-
-.PAYLOAD {
-  width: 80px;
-}
-
-td.PAYLOAD {
-  text-align: left;
-}
-
-.RWY {
-  width: 40px;
-}
-
-.FFX {
-  width: 60px;
-}
-
-.FLX {
-  width: 60px;
-}
-
-.DST {
-  width: 40px;
-}
-
-.BCON {
-  width: 60px;
-}
-
-.PUSH {
-  width: 60px;
-}
-
-.TAXI {
-  width: 60px;
-}
-
-.OUT {
-  width: 60px;
-}
-
-.OFF {
-  width: 60px;
-}
-
-.ETA {
-  width: 60px;
-}
-
-.DC {
-  width: 30px;
-}
-
-.TIME {
-  width: 50px;
-}
-
-.FWBT {
-  width: 50px;
-}
-
-.REI {
-  width: 40px;
-}
-
-.IREQ {
-  width: 50px;
-}
-
-.ISTR {
-  width: 50px;
-}
-
-.ICMP {
-  width: 50px;
-}
-
-.EMP {
-  width: 70px;
-}
-
-.DILOC {
-  width: 60px;
-}
-
-._ {
-  width: 30px;
-}
-
-.DREQ {
-  width: 60px;
-}
-
-.ONPD {
-  width: 60px;
-}
-
-.OFPD {
-  width: 60px;
-}
-
-.OFFSEQ {
-  width: 80px;
-}
-
-.POINT {
-  width: 60px;
-}
-
-th {
-  cursor: pointer;
-}
-
 button {
   cursor: pointer;
 }
@@ -428,6 +237,17 @@ button {
   display: none;
 }
 
+.app-container {
+  display: flex;
+  justify-content: center;
+  
+}
+
+th {
+  cursor: pointer;
+  word-break: break-all;
+}
+
 .App {
   text-align: center;
   font-family: "Courier New", Courier, monospace;
@@ -435,105 +255,82 @@ button {
   justify-content: center;
   align-items: center;
   flex-direction: column;
-  width: 1680px;
+  width: 95vw;
   margin: 0;
 }
 
 .App-header {
-  margin-top: 10px;
-  min-width: 1200px;
-  border: 1px solid #dee2e6;
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  /* margin-top: 10px; */
 }
 
 .App-content {
   display: flex;
   flex-direction: column;
   align-items: center;
-}
-
-table {
-  min-width: 1200px;
-  padding: 10px;
-  margin: 20px;
-  height: 70vh;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
+  width: 100%;
+  height: 80vh;
   overflow: hidden;
-  border-collapse: collapse;
+  
 }
 
-/* thead tr {
-  display: flex;
-  justify-content: space-evenly;
-  min-width: 1000px;
-}
-
-thead tr th {
-  width: auto !important;
-}
-
-tbody tr {
-  display: flex;
-  justify-content: space-evenly;
-  min-width: 1000px;
-}
-
-tbody tr td {
-  width: auto !important;
-} */
-
-td {
-  text-overflow: ellipsis;
+label {
   /* white-space: nowrap; */
+}
+table {
+  width: 100%;
+  padding: 10px;
+  margin: 0px;
+}
+
+
+thead, tbody tr {
+  display:table;
+  width: 100%;
+  table-layout: fixed;
 }
 
 thead {
+  width: calc( 100% - 1.04em );
   background-color: white;
 }
 
 tbody {
+  height: 75vh;
+  display: block;
   overflow-y: scroll;
-  padding-left: 17px;
   background-color: white;
-}
-
-tr {
-  display: table-row;
 }
 
 @media only screen and (min-device-width: 768px) and (max-device-width: 1024px) {
   .App {
-    width: 768px;
+    width:100vw;
   }
 
   .App-header {
-    font-size: 10px;
+    display: flex;
     padding: 5px;
     margin: 0px;
-    width: 768px;
-    min-width: 768px;
-    max-width: 768px;
+    
   }
 
-  .App-header label {
-    white-space: nowrap;
+  label {
+    font-size: 10px;
+    white-space: normal;
   }
 
   .App-content {
-    margin: auto;
-    width: 768px;
     font-size: 13px;
   }
 
   table {
-    display: block;
-    width: 100%;
-    min-width: 0px;
-    margin: auto;
     padding: 0px;
-    overflow: scroll;
-    height: 90vh;
+  }
+
+  thead {
+    width: 100%;
   }
 
   * {
@@ -541,22 +338,18 @@ tr {
   }
 
   #show-selected {
-    /* display: none; */
     font-size: 8px;
   }
 
   #hide-selected {
-    /* display: none; */
     font-size: 8px;
   }
 
   #reset-columns {
-    /* display: none; */
     font-size: 8px;
   }
 
   #reset-flights {
-    /* display: none; */
     font-size: 8px;
   }
 
@@ -590,234 +383,33 @@ tr {
     display: block;
     font-size: 8px;
   }
-
-  tr {
-    display: table-row;
-  }
 }
 
-.EE {
-  /* width: auto; */
-}
 
-/* .SHIFT {
-    width: 30px;
-  }
-
-  .FLIGHT {
-    width: 35px;
-  }
-
-  .GATE {
-    width: 25px;
-  }
-
-  .GP {
-    width: 15px;
-  }
-
-  .AC {
-    width: 30px;
-  }
-
-  .SPOT {
-    width: 25px;
-  }
-
-  .STD {
-    width: 30px;
-  }
-
-  .STA {
-    width: 30px;
-  }
-
-  .IR {
-    width: 30px;
-  }
-
-  .ON {
-    width: 30px;
-  }
-
-  .IN {
-    width: 30px;
-  }
-
-  .MG {
-    width: 15px;
-  }
-
-  .ORG {
-    width: 20px;
-  }
-
-  .TYPE {
-    width: 45px;
-  }
-
-  td.TYPE {
-    text-align: right;
-  }
-
-  .FGD {
-    width: 20px;
-  }
-
-  .NSD {
-    width: 20px;
-  }
-
-  .NMD {
-    width: 20px;
-  }
-
-  .OB {
-    width: 35px;
-  }
-
-  .PAYLOAD {
-    width: 40px;
-  }
-
-  td.PAYLOAD {
-    text-align: left;
-  }
-
-  .RWY {
-    width: 20px;
-  }
-
-  .FFX {
-    width: 30px;
-  }
-
-  .FLX {
-    width: 30px;
-  }
-
-  .DST {
-    width: 20px;
-  }
-
-  .BCON {
-    width: 30px;
-  }
-
-  .PUSH {
-    width: 30px;
-  }
-
-  .TAXI {
-    width: 30px;
-  }
-
-  .OUT {
-    width: 30px;
-  }
-
-  .OFF {
-    width: 30px;
-  }
-
-  .ETA {
-    width: 30px;
-  }
-
-  .DC {
-    width: 15px;
-  }
-
-  .TIME {
-    width: 50px;
-  }
-
-  .FWBT {
-    width: 50px;
-  }
-
-  .REI {
-    width: 40px;
-  }
-
-  .IREQ {
-    width: 50px;
-  }
-
-  .ISTR {
-    width: 50px;
-  }
-
-  .ICMP {
-    width: 50px;
-  }
-
-  .EMP {
-    width: 70px;
-  }
-
-  .DILOC {
-    width: 60px;
-  }
-
-  ._ {
-    width: 30px;
-  }
-
-  .DREQ {
-    width: 60px;
-  }
-
-  .ONPD {
-    width: 60px;
-  }
-
-  .OFPD {
-    width: 60px;
-  }
-
-  .OFFSEQ {
-    width: 80px;
-  }
-
-  .POINT {
-    width: 60px;
-  } */
 
 @media only screen and (min-device-width: 768px) and (max-device-width: 1024px) and (orientation: landscape) {
   .App {
-    display: block;
-    width: 1024px;
   }
 
   .App-header {
-    display: block;
-    font-size: 10px;
+    /* font-size: 10px; */
     padding: 5px;
     margin: 0px;
-    width: 1024px;
-    min-width: 1024px;
-    max-width: 1024px;
-    z-index: 100;
   }
 
-  .App-header label {
+
+
+  .App-content {
+  }
+  
+  .header-content-middle {
+    font-size: 10px;
     white-space: nowrap;
   }
 
-  .App-content {
-    display: block;
-    margin: 0px;
-    width: 1024px;
-    font-size: 13px;
-  }
-
   table {
-    min-width: 0px;
-    display: block;
     margin: 0px;
     padding: 0px;
-    overflow-y: scroll;
     height: 90vh;
   }
 
@@ -831,22 +423,18 @@ tr {
   }
 
   #show-selected {
-    /* display: none; */
     font-size: 8px;
   }
 
   #hide-selected {
-    /* display: none; */
     font-size: 8px;
   }
 
   #reset-columns {
-    /* display: none; */
     font-size: 8px;
   }
 
   #reset-flights {
-    /* display: none; */
     font-size: 8px;
   }
 
@@ -883,7 +471,5 @@ tr {
     font-size: 10px;
   }
 
-  tr {
-    display: table-row;
-  }
+
 }
