@@ -11,9 +11,13 @@ const Th = styled.th`
     props.isSecondarySorted ? "lightblue" : ""} !important;
 `;
 
+// border-bottom: ${props => props.isSelectedRow ? "1px solid black" : "none"} !important;
+const Td = styled.td``;
+
 const Tr = styled.tr`
-  border-bottom: ${props =>
-    props.isSelectedRow ? "1px solid black" : "none"} !important;
+   ${Td} {
+     border-bottom: ${props => props.isSelectedRow ? "1px solid black" : "none"} !important;}
+   }
 `;
 
 class FlightTableB extends Component {
@@ -103,7 +107,7 @@ class FlightTableB extends Component {
                   children={Object.keys(i)
                     .filter(i => i !== "undefined" && i !== "row")
                     .map((j, jj) => (
-                      <td
+                      <Td
                         title={i[j] ? i[j].split(";")[0] : ""}
                         onContextMenu={e => this.onContextMenuHandler(e, i)}
                         onMouseDown={e => this.onMouseDownHandler(e, i)}
@@ -125,7 +129,7 @@ class FlightTableB extends Component {
                         {i[j]
                           ? i[j].split(";")[i[j].split(";").length - 2]
                           : ""}
-                      </td>
+                      </Td>
                     ))}
                 />
               ))

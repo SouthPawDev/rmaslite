@@ -1383,6 +1383,7 @@ class App extends Component {
         </NavLink>
       </div>
     ) : (
+      <div className="app-container">
       <div
         id="main"
         className="App"
@@ -1391,11 +1392,7 @@ class App extends Component {
       >
         <div
           className="App-header"
-          style={{
-            width: document.getElementsByTagName("table")[0]
-              ? document.getElementsByTagName("table")[0].offsetWidth
-              : ""
-          }}
+
         >
           <div className="header-content">
             <div className="header-content-left">
@@ -1700,7 +1697,9 @@ class App extends Component {
               ) : (
                 ""
               )}
+
             </div>
+
           </div>
           {misc ? (
             <Misc
@@ -1712,6 +1711,7 @@ class App extends Component {
           ) : (
             ""
           )}
+
         </div>
 
         <div className="App-content">
@@ -1728,6 +1728,7 @@ class App extends Component {
             selectedRows={selectedRows}
           />
         </div>
+      </div>
       </div>
     );
   }
