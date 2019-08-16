@@ -1,5 +1,6 @@
 import React, { Component } from "react";
 import Station from "./Station";
+import { version } from "./properties";
 
 import "./Home.css";
 
@@ -51,8 +52,15 @@ class Home extends Component {
       <div className="Home">
         <div className="row">
           <h1>
-            RMAS <i>Lite</i>
+            RMAS{" "}
+            <i>
+              Lite
+              <br />
+            </i>
           </h1>
+          <div style={{ display: "flex", alignItems: "flex-end" }}>
+            <p> {"v" + version} </p>
+          </div>
         </div>
         {/* <div className="row">
           <h1>Stations:</h1>

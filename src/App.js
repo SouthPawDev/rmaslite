@@ -1,16 +1,19 @@
 import React, { Component } from "react";
 import { NavLink } from "react-router-dom";
 import CheckboxShift from "./Components/Checkbox";
-import { Title, Time, FlightException, Misc } from "./Components/Stateless";
+import {
+  Title,
+  Time,
+  FlightException,
+  Misc,
+  IpadHelp
+} from "./Components/Stateless";
 import FlightTableB from "./Components/FlightTableB";
 import Button from "react-bootstrap/Button";
 import resizePage from "./Functions/resizePage";
 import { demo } from "./demo";
+import { version, FOLDER } from "./properties";
 import "./App.css";
-
-const BACKEND_URL = "http://wtc-275124-w23.corp.ds.fedex.com:9091";
-// const BACKEND_URL="http://wtc-275124-w23.corp.ds.fedex.com:7001/external-flight-access-server-build"
-// const FOLDER = "/rmaslite/file/serve?file=";
 
 class App extends Component {
   constructor(props) {
@@ -33,7 +36,8 @@ class App extends Component {
       showSelectedOnly: false,
       hideSelectedOnly: false,
       initalLoad: true,
-      demo: false
+      demo: false,
+      iPadHelp: false
     };
   }
 
@@ -41,10 +45,10 @@ class App extends Component {
     if (this.state.demo) {
       let location = this.props.location.pathname;
 
-      let formatLocation =
-        location.slice(-5) === "INLET" || location.slice(-5) === "DEICE"
-          ? location.slice(1, -6)
-          : location.slice(1);
+      // let formatLocation =
+      //   location.slice(-5) === "INLET" || location.slice(-5) === "DEICE"
+      //     ? location.slice(1, -6)
+      //     : location.slice(1);
       let data = demo.split("\n");
 
       return new Promise((res, rej) => {
@@ -111,6 +115,13 @@ class App extends Component {
         });
         res();
       })
+        .then(() =>
+          this.setState({
+            availableMaints: parseInt(this.state.maints.match(/\d+/)[0]),
+            availableSpares: parseInt(this.state.spares.match(/\d+/)[0]),
+            availableOpens: parseInt(this.state.opens.match(/\d+/)[0])
+          })
+        )
         .then(() => this.filter())
         .then(() => this.setState({ initialState: this.state }));
     } else {
@@ -132,10 +143,7 @@ class App extends Component {
         ? location.slice(1, -6)
         : location.slice(1);
 
-    fetch(
-      BACKEND_URL + `/file/serve?file=${formatLocation}.csv`
-      // FOLDER + `${formatLocation}.csv`
-    )
+    fetch(FOLDER + `${formatLocation}.csv`)
       .then(response => response.json())
       .then(data => {
         this.setState({
@@ -200,6 +208,15 @@ class App extends Component {
           direction: true
         });
       })
+      .then(() =>
+        location.slice(-5) === "INLET" || location.slice(-5) === "DEICE"
+          ? ""
+          : this.setState({
+              availableMaints: parseInt(this.state.maints.match(/\d+/)[0]),
+              availableSpares: parseInt(this.state.spares.match(/\d+/)[0]),
+              availableOpens: parseInt(this.state.opens.match(/\d+/)[0])
+            })
+      )
       .then(() => this.filter())
       .then(() => this.setState({ initialState: this.state }))
       .then(() => {
@@ -235,84 +252,98 @@ class App extends Component {
       .then(() =>
         this.setState({
           timer: setInterval(() => {
-            fetch(
-              BACKEND_URL + `/file/serve?file=${formatLocation}.csv`
-              // FOLDER + `${formatLocation}.csv`
-            ).then(response =>
-              response.json().then(data => {
-                if (
-                  JSON.stringify(data) === JSON.stringify(this.state.fileLines)
-                ) {
-                  console.log("Data unchanged.");
-                } else {
-                  this.setState({
-                    shiftOne: data[0]
-                      .split(",")
-                      .filter(
-                        (item, i) => i > 1 && i < 4 && item.trim() !== ""
-                      ),
-                    shiftTwo: data[1]
-                      .split(",")
-                      .filter(
-                        (item, i) => i > 1 && i < 4 && item.trim() !== ""
-                      ),
-                    shiftThree: data[2]
-                      .split(",")
-                      .filter(
-                        (item, i) => i > 1 && i < 4 && item.trim() !== ""
-                      ),
-                    misc: data[3].split(","),
-                    maints:
-                      location.slice(-5) === "INLET" ||
-                      location.slice(-5) === "DEICE"
-                        ? ""
-                        : data[2]
-                            .split(",")
-                            .filter(i => i.includes("Maint"))[0],
-                    spares:
-                      location.slice(-5) === "INLET" ||
-                      location.slice(-5) === "DEICE"
-                        ? ""
-                        : data[2]
-                            .split(",")
-                            .filter(i => i.includes("Spare"))[0],
-                    opens:
-                      location.slice(-5) === "INLET" ||
-                      location.slice(-5) === "DEICE"
-                        ? ""
-                        : data[2].split(",").filter(i => i.includes("Open"))[0],
-                    fileLines: data,
-                    fileLinesContent: data
-                      .filter(
-                        (item, i) =>
-                          i > 3 &&
-                          item.match(/^\w/) &&
-                          item !== "NULL" &&
-                          item.trim() !== ""
-                      )
-                      .map((j, k) => {
-                        if (k === 0) {
-                        }
-                        let obj = {};
-                        for (var h = 0; h < data[4].length; h++) {
-                          obj[data[4].split(",")[h]] = j.split(",")[h];
-                        }
-                        obj["row"] = k;
-                        return obj;
-                      }),
-                    currentDate: data[0].split(",")[4],
-                    currentTime: data[0].split(",")[6]
-                  });
+            fetch(FOLDER + `${formatLocation}.csv`)
+              .then(response =>
+                response.json().then(data => {
+                  if (
+                    JSON.stringify(data) ===
+                    JSON.stringify(this.state.fileLines)
+                  ) {
+                    console.log("Data unchanged.");
+                  } else {
+                    this.setState({
+                      shiftOne: data[0]
+                        .split(",")
+                        .filter(
+                          (item, i) => i > 1 && i < 4 && item.trim() !== ""
+                        ),
+                      shiftTwo: data[1]
+                        .split(",")
+                        .filter(
+                          (item, i) => i > 1 && i < 4 && item.trim() !== ""
+                        ),
+                      shiftThree: data[2]
+                        .split(",")
+                        .filter(
+                          (item, i) => i > 1 && i < 4 && item.trim() !== ""
+                        ),
+                      misc: data[3].split(","),
+                      maints:
+                        location.slice(-5) === "INLET" ||
+                        location.slice(-5) === "DEICE"
+                          ? ""
+                          : data[2]
+                              .split(",")
+                              .filter(i => i.includes("Maint"))[0],
+                      spares:
+                        location.slice(-5) === "INLET" ||
+                        location.slice(-5) === "DEICE"
+                          ? ""
+                          : data[2]
+                              .split(",")
+                              .filter(i => i.includes("Spare"))[0],
+                      opens:
+                        location.slice(-5) === "INLET" ||
+                        location.slice(-5) === "DEICE"
+                          ? ""
+                          : data[2]
+                              .split(",")
+                              .filter(i => i.includes("Open"))[0],
+                      fileLines: data,
+                      fileLinesContent: data
+                        .filter(
+                          (item, i) =>
+                            i > 3 &&
+                            item.match(/^\w/) &&
+                            item !== "NULL" &&
+                            item.trim() !== ""
+                        )
+                        .map((j, k) => {
+                          if (k === 0) {
+                          }
+                          let obj = {};
+                          for (var h = 0; h < data[4].length; h++) {
+                            obj[data[4].split(",")[h]] = j.split(",")[h];
+                          }
+                          obj["row"] = k;
+                          return obj;
+                        }),
+                      currentDate: data[0].split(",")[4],
+                      currentTime: data[0].split(",")[6]
+                    });
 
-                  this.filter();
-                  console.log("Different Data Detected");
-                }
-              })
-            );
+                    console.log("Different Data Detected");
+                  }
+                })
+              )
+              .then(() =>
+                location.slice(-5) === "INLET" || location.slice(-5) === "DEICE"
+                  ? ""
+                  : this.setState({
+                      availableMaints: parseInt(
+                        this.state.maints.match(/\d+/)[0]
+                      ),
+                      availableSpares: parseInt(
+                        this.state.spares.match(/\d+/)[0]
+                      ),
+                      availableOpens: parseInt(this.state.opens.match(/\d+/)[0])
+                    })
+              )
+              .then(() => this.filter());
           }, 15000)
         })
       )
-      .catch(() => this.setState({ noFile: true }));
+      .catch(e => console.log(e));
   }
 
   filter() {
@@ -454,8 +485,8 @@ class App extends Component {
           this.setState({
             timer: setInterval(() => {
               fetch(
-                BACKEND_URL + `/file/serve?file=${formatLocation}.csv`
-                // FOLDER + `${formatLocation}.csv`
+                // BACKEND_URL + `/file/serve?file=${formatLocation}.csv`
+                FOLDER + `${formatLocation}.csv`
               ).then(response =>
                 response.json().then(data => {
                   if (
@@ -550,7 +581,6 @@ class App extends Component {
   }
 
   resetFlights() {
-    console.log("Hello");
     this.setState(
       {
         deletedRows: [],
@@ -968,7 +998,6 @@ class App extends Component {
   }
 
   selectColumn(column) {
-    console.log("a");
     document.getElementsByClassName("App")[0].focus();
     this.setState({
       selectedColumn: this.state.selectedColumn === column ? "" : column
@@ -1140,105 +1169,106 @@ class App extends Component {
 
   deleteRow(i) {
     let currentRow = Object.values(i).join("");
-    let shift = i["SHIFT;BBW"] ? i["SHIFT;BBW"].split(";")[0].trim() : "";
-    let shiftFlight = i["FLIGHT;BBW"]
-      ? i["FLIGHT;BBW"].split(";")[0].trim()
-      : "";
+    // let shift = i["SHIFT;BBW"] ? i["SHIFT;BBW"].split(";")[0].trim() : "";
+    // let shiftFlight = i["FLIGHT;BBW"]
+    //   ? i["FLIGHT;BBW"].split(";")[0].trim()
+    //   : "";
 
-    let shiftOne = this.state.shiftOne;
-    let shiftTwo = this.state.shiftTwo;
-    let shiftThree = this.state.shiftThree;
-    let maints = this.state.maints;
-    let spares = this.state.spares;
-    let opens = this.state.opens;
+    // let shiftOne = this.state.shiftOne;
+    // let shiftTwo = this.state.shiftTwo;
+    // let shiftThree = this.state.shiftThree;
+
+    // let maints = this.state.maints;
+    // let spares = this.state.spares;
+    // let opens = this.state.opens;
 
     let deletedRows = this.state.deletedRows;
 
-    if (shiftOne[0].split(" ")[0] === shift) {
-      if (
-        !parseInt(shiftOne[1].replace(/\D/g, "") - 1 < 0) &&
-        (shiftFlight !== "OPEN" &&
-          shiftFlight !== "MAINT" &&
-          shiftFlight !== "SPARE")
-      ) {
-        let decrement = parseInt(shiftOne[1].replace(/\D/g, "")) - 1;
-        shiftOne = [
-          shiftOne[0],
-          "Flights  " + decrement + ";" + shiftOne[1].split(";")[1]
-        ];
-        this.setState({ shiftOne: shiftOne });
-      } else {
-        if (shiftFlight === "OPEN") {
-          let decrement = parseInt(opens.replace(/\D/g, "")) - 1;
-          opens = "Open " + decrement + opens.slice(-4);
-          this.setState({ opens: opens });
-        } else if (shiftFlight === "MAINT") {
-          let decrement = parseInt(maints.replace(/\D/g, "")) - 1;
-          maints = "Maint " + decrement + maints.slice(-4);
-          this.setState({ maints: maints });
-        } else if (shiftFlight === "SPARE") {
-          let decrement = parseInt(spares.replace(/\D/g, "")) - 1;
-          spares = "Spare " + decrement + spares.slice(-4);
-          this.setState({ spares: spares });
-        }
-      }
-    } else if (shiftTwo[0].split(" ")[0] === shift) {
-      if (
-        !parseInt(shiftTwo[1].replace(/\D/g, "") - 1 < 0) &&
-        (shiftFlight !== "OPEN" &&
-          shiftFlight !== "MAINT" &&
-          shiftFlight !== "SPARE")
-      ) {
-        let decrement = parseInt(shiftTwo[1].replace(/\D/g, "")) - 1;
-        shiftTwo = [
-          shiftTwo[0],
-          "Flights  " + decrement + ";" + shiftTwo[1].split(";")[1]
-        ];
-        this.setState({ shiftTwo: shiftTwo });
-      } else {
-        if (shiftFlight === "OPEN") {
-          let decrement = parseInt(opens.replace(/\D/g, "")) - 1;
-          opens = "Open " + decrement + opens.slice(-4);
-          this.setState({ opens: opens });
-        } else if (shiftFlight === "MAINT") {
-          let decrement = parseInt(maints.replace(/\D/g, "")) - 1;
-          maints = "Maint " + decrement + maints.slice(-4);
-          this.setState({ maints: maints });
-        } else if (shiftFlight === "SPARE") {
-          let decrement = parseInt(spares.replace(/\D/g, "")) - 1;
-          spares = "Spare " + decrement + spares.slice(-4);
-          this.setState({ spares: spares });
-        }
-      }
-    } else if (shiftThree[0].split(" ")[0] === shift) {
-      if (
-        !parseInt(shiftThree[1].replace(/\D/g, "") - 1 < 0) &&
-        (shiftFlight !== "OPEN" &&
-          shiftFlight !== "MAINT" &&
-          shiftFlight !== "SPARE")
-      ) {
-        let decrement = parseInt(shiftThree[1].replace(/\D/g, "")) - 1;
-        shiftThree = [
-          shiftThree[0],
-          "Flights  " + decrement + ";" + shiftThree[1].split(";")[1]
-        ];
-        this.setState({ shiftThree: shiftThree });
-      } else {
-        if (shiftFlight === "OPEN") {
-          let decrement = parseInt(opens.replace(/\D/g, "")) - 1;
-          opens = "Open " + decrement + opens.slice(-4);
-          this.setState({ opens: opens });
-        } else if (shiftFlight === "MAINT") {
-          let decrement = parseInt(maints.replace(/\D/g, "")) - 1;
-          maints = "Maint " + decrement + maints.slice(-4);
-          this.setState({ maints: maints });
-        } else if (shiftFlight === "SPARE") {
-          let decrement = parseInt(spares.replace(/\D/g, "")) - 1;
-          spares = "Spare " + decrement + spares.slice(-4);
-          this.setState({ spares: spares });
-        }
-      }
-    }
+    // if (shiftOne[0].split(" ")[0] === shift) {
+    //   if (
+    //     !parseInt(shiftOne[1].replace(/\D/g, "") - 1 < 0) &&
+    //     (shiftFlight !== "OPEN" &&
+    //       shiftFlight !== "MAINT" &&
+    //       shiftFlight !== "SPARE")
+    //   ) {
+    //     let decrement = parseInt(shiftOne[1].replace(/\D/g, "")) - 1;
+    //     shiftOne = [
+    //       shiftOne[0],
+    //       "Flights  " + decrement + ";" + shiftOne[1].split(";")[1]
+    //     ];
+    //     this.setState({ shiftOne: shiftOne });
+    //   } else {
+    //     if (shiftFlight === "OPEN") {
+    //       let decrement = parseInt(opens.replace(/\D/g, "")) - 1;
+    //       opens = "Open " + decrement + opens.slice(-4);
+    //       this.setState({ opens: opens });
+    //     } else if (shiftFlight === "MAINT") {
+    //       let decrement = parseInt(maints.replace(/\D/g, "")) - 1;
+    //       maints = "Maint " + decrement + maints.slice(-4);
+    //       this.setState({ maints: maints });
+    //     } else if (shiftFlight === "SPARE") {
+    //       let decrement = parseInt(spares.replace(/\D/g, "")) - 1;
+    //       spares = "Spare " + decrement + spares.slice(-4);
+    //       this.setState({ spares: spares });
+    //     }
+    //   }
+    // } else if (shiftTwo[0].split(" ")[0] === shift) {
+    //   if (
+    //     !parseInt(shiftTwo[1].replace(/\D/g, "") - 1 < 0) &&
+    //     (shiftFlight !== "OPEN" &&
+    //       shiftFlight !== "MAINT" &&
+    //       shiftFlight !== "SPARE")
+    //   ) {
+    //     let decrement = parseInt(shiftTwo[1].replace(/\D/g, "")) - 1;
+    //     shiftTwo = [
+    //       shiftTwo[0],
+    //       "Flights  " + decrement + ";" + shiftTwo[1].split(";")[1]
+    //     ];
+    //     this.setState({ shiftTwo: shiftTwo });
+    //   } else {
+    //     if (shiftFlight === "OPEN") {
+    //       let decrement = parseInt(opens.replace(/\D/g, "")) - 1;
+    //       opens = "Open " + decrement + opens.slice(-4);
+    //       this.setState({ opens: opens });
+    //     } else if (shiftFlight === "MAINT") {
+    //       let decrement = parseInt(maints.replace(/\D/g, "")) - 1;
+    //       maints = "Maint " + decrement + maints.slice(-4);
+    //       this.setState({ maints: maints });
+    //     } else if (shiftFlight === "SPARE") {
+    //       let decrement = parseInt(spares.replace(/\D/g, "")) - 1;
+    //       spares = "Spare " + decrement + spares.slice(-4);
+    //       this.setState({ spares: spares });
+    //     }
+    //   }
+    // } else if (shiftThree[0].split(" ")[0] === shift) {
+    //   if (
+    //     !parseInt(shiftThree[1].replace(/\D/g, "") - 1 < 0) &&
+    //     (shiftFlight !== "OPEN" &&
+    //       shiftFlight !== "MAINT" &&
+    //       shiftFlight !== "SPARE")
+    //   ) {
+    //     let decrement = parseInt(shiftThree[1].replace(/\D/g, "")) - 1;
+    //     shiftThree = [
+    //       shiftThree[0],
+    //       "Flights  " + decrement + ";" + shiftThree[1].split(";")[1]
+    //     ];
+    //     this.setState({ shiftThree: shiftThree });
+    //   } else {
+    //     if (shiftFlight === "OPEN") {
+    //       let decrement = parseInt(opens.replace(/\D/g, "")) - 1;
+    //       opens = "Open " + decrement + opens.slice(-4);
+    //       this.setState({ opens: opens });
+    //     } else if (shiftFlight === "MAINT") {
+    //       let decrement = parseInt(maints.replace(/\D/g, "")) - 1;
+    //       maints = "Maint " + decrement + maints.slice(-4);
+    //       this.setState({ maints: maints });
+    //     } else if (shiftFlight === "SPARE") {
+    //       let decrement = parseInt(spares.replace(/\D/g, "")) - 1;
+    //       spares = "Spare " + decrement + spares.slice(-4);
+    //       this.setState({ spares: spares });
+    //     }
+    //   }
+    // }
 
     this.setState({
       currentContent: this.state.currentContent.reduce((arr, obj) => {
@@ -1348,11 +1378,20 @@ class App extends Component {
     const spareBool = this.state.spareBool ? this.state.spareBool : "";
     const openBool = this.state.openBool ? this.state.openBool : "";
     const otherBool = this.state.otherBool ? this.state.otherBool : "";
-    const content = this.state.currentContent ? this.state.currentContent : "";
+    const content = this.state.currentContent ? this.state.currentContent : [];
     const misc = this.state.misc ? this.state.misc : "";
     const maints = this.state.maints ? this.state.maints : "";
     const spares = this.state.spares ? this.state.spares : "";
     const opens = this.state.opens ? this.state.opens : "";
+    const availableMaints = this.state.availableMaints
+      ? this.state.availableMaints
+      : "";
+    const availableSpares = this.state.availableSpares
+      ? this.state.availableSpares
+      : "";
+    const availableOpens = this.state.availableOpens
+      ? this.state.availableOpens
+      : "";
     const currentTime = this.state.currentTime ? this.state.currentTime : "";
     const currentDate = this.state.currentDate ? this.state.currentDate : "";
     const shiftBools = this.state.shiftBools ? this.state.shiftBools : "";
@@ -1364,6 +1403,31 @@ class App extends Component {
     const noFile = this.state.noFile ? this.state.noFile : "";
     const help = this.state.help ? this.state.help : "";
     const selectedRows = this.state.selectedRows ? this.state.selectedRows : "";
+    const iPadHelp = this.state.iPadHelp ? this.state.iPadHelp : "";
+
+    const shiftOneFlights = shiftOne
+      ? parseInt(shiftOne[1].match(/\d+/)[0])
+      : 0;
+    const shiftTwoFlights = shiftTwo
+      ? parseInt(shiftTwo[1].match(/\d+/)[0])
+      : 0;
+    const shiftThreeFlights = shiftThree
+      ? parseInt(shiftThree[1].match(/\d+/)[0])
+      : 0;
+
+    const availableFlights = Object.keys(shiftBools)
+      .filter(i => shiftBools[i])
+      .reduce(
+        (num, c) =>
+          c === "shiftOne"
+            ? (num += shiftOneFlights)
+            : c === "shiftTwo"
+            ? (num += shiftTwoFlights)
+            : c === "shiftThree"
+            ? (num += shiftThreeFlights)
+            : (num += 0),
+        0
+      );
 
     return noFile ? (
       <div
@@ -1384,98 +1448,122 @@ class App extends Component {
       </div>
     ) : (
       <div className="app-container">
-      <div
-        id="main"
-        className="App"
-        tabIndex="0"
-        onKeyDown={this.handleKeyPress.bind(this)}
-      >
         <div
-          className="App-header"
-
+          id="main"
+          className="App"
+          tabIndex="0"
+          onKeyDown={this.handleKeyPress.bind(this)}
         >
-          <div className="header-content">
-            <div className="header-content-left">
-              <Title
-                className={title ? title[0].slice(-3) : ""}
-                text={title ? title[0].slice(0, -4) : ""}
-              />
-              <Title
-                className={title ? title[1].slice(-3) : ""}
-                text={title ? title[1].slice(0, -4) : ""}
-              />
-              <Title
-                className={title ? title[2].slice(-3) : ""}
-                text={title ? title[2].slice(0, -4) : ""}
-              />
-            </div>
-            <div className="header-content-middle">
-              <div className="shifts">
-                <CheckboxShift
-                  id="shiftOne"
-                  lClassName={shiftOne ? shiftOne[0].slice(-3) : ""}
-                  name={"shiftOne"}
-                  shiftActive={shiftBools.shiftOne}
-                  onCheck={this.onCheck.bind(this)}
-                  inputText={shiftOne ? shiftOne[0].slice(0, -4) : ""}
-                  pClassName={shiftOne ? shiftOne[1].slice(-3) : ""}
-                  pText={shiftOne ? shiftOne[1].slice(0, -4) : ""}
+          <div className="App-header">
+            <div className="header-content">
+              <div className="header-content-left">
+                <Title
+                  className={title ? title[0].slice(-3) : ""}
+                  text={title ? title[0].slice(0, -4) : ""}
                 />
-                <CheckboxShift
-                  id="shiftTwo"
-                  lClassName={shiftTwo ? shiftTwo[0].slice(-3) : ""}
-                  name={"shiftTwo"}
-                  shiftActive={shiftBools.shiftTwo}
-                  onCheck={this.onCheck.bind(this)}
-                  inputText={shiftTwo ? shiftTwo[0].slice(0, -4) : ""}
-                  pClassName={shiftTwo ? shiftTwo[1].slice(-3) : ""}
-                  pText={shiftTwo ? shiftTwo[1].slice(0, -4) : ""}
+                <Title
+                  className={title ? title[1].slice(-3) : ""}
+                  text={title ? title[1].slice(0, -4) : ""}
                 />
-                <CheckboxShift
-                  id="shiftThree"
-                  lClassName={shiftThree ? shiftThree[0].slice(-3) : ""}
-                  name={"shiftThree"}
-                  shiftActive={shiftBools.shiftThree}
-                  onCheck={this.onCheck.bind(this)}
-                  inputText={shiftThree ? shiftThree[0].slice(0, -4) : ""}
-                  pClassName={shiftThree ? shiftThree[1].slice(-3) : ""}
-                  pText={shiftThree ? shiftThree[1].slice(0, -4) : ""}
+                <Title
+                  className={title ? title[2].slice(-3) : ""}
+                  text={title ? title[2].slice(0, -4) : ""}
                 />
               </div>
-            </div>
-            <div className="header-content-buttons">
-              <div className="header-content-buttons-row">
-                <Button
-                  id="show-selected"
-                  size="sm"
-                  style={{ width: "100%", margin: "2px 0 2px 0" }}
-                  variant={
-                    this.state.showSelectedOnly ? "primary" : "outline-primary"
-                  }
-                  onClick={() => this.showSelected()}
-                  className=""
-                >
-                  Show <br /> Selected
-                </Button>
+              <div className="header-content-middle">
+                <div className="shifts">
+                  <CheckboxShift
+                    id="shiftOne"
+                    lClassName={shiftOne ? shiftOne[0].slice(-3) : ""}
+                    name={"shiftOne"}
+                    shiftActive={shiftBools.shiftOne}
+                    onCheck={this.onCheck.bind(this)}
+                    inputText={shiftOne ? shiftOne[0].slice(0, -4) : ""}
+                    pClassName={shiftOne ? shiftOne[1].slice(-3) : ""}
+                    pText={shiftOne ? shiftOne[1].slice(0, -4) : ""}
+                    isDisabled={this.state.middleClick || this.state.rightClick}
+                    style={{
+                      color:
+                        this.state.middleClick || this.state.rightClick
+                          ? "grey"
+                          : ""
+                    }}
+                  />
+                  <CheckboxShift
+                    id="shiftTwo"
+                    lClassName={shiftTwo ? shiftTwo[0].slice(-3) : ""}
+                    name={"shiftTwo"}
+                    shiftActive={shiftBools.shiftTwo}
+                    onCheck={this.onCheck.bind(this)}
+                    inputText={shiftTwo ? shiftTwo[0].slice(0, -4) : ""}
+                    pClassName={shiftTwo ? shiftTwo[1].slice(-3) : ""}
+                    pText={shiftTwo ? shiftTwo[1].slice(0, -4) : ""}
+                    isDisabled={this.state.middleClick || this.state.rightClick}
+                    style={{
+                      color:
+                        this.state.middleClick || this.state.rightClick
+                          ? "grey"
+                          : ""
+                    }}
+                  />
+                  <CheckboxShift
+                    id="shiftThree"
+                    lClassName={shiftThree ? shiftThree[0].slice(-3) : ""}
+                    name={"shiftThree"}
+                    shiftActive={shiftBools.shiftThree}
+                    onCheck={this.onCheck.bind(this)}
+                    inputText={shiftThree ? shiftThree[0].slice(0, -4) : ""}
+                    pClassName={shiftThree ? shiftThree[1].slice(-3) : ""}
+                    pText={shiftThree ? shiftThree[1].slice(0, -4) : ""}
+                    isDisabled={this.state.middleClick || this.state.rightClick}
+                    style={{
+                      color:
+                        this.state.middleClick || this.state.rightClick
+                          ? "grey"
+                          : ""
+                    }}
+                  />
+                </div>
               </div>
-              <div className="header-content-buttons-row">
-                <Button
-                  id="hide-selected"
-                  size="sm"
-                  style={{ width: "100%", margin: "2px 0 2px 0" }}
-                  variant={
-                    this.state.hideSelectedOnly ? "primary" : "outline-primary"
-                  }
-                  onClick={() => this.hideSelected()}
-                  className=""
-                >
-                  Hide <br /> Selected
-                </Button>
+              <div className="header-content-buttons">
+                <div className="header-content-buttons-row">
+                  <Button
+                    id="show-selected"
+                    size="sm"
+                    style={{ width: "100%", margin: "2px 0 2px 0" }}
+                    variant={
+                      this.state.showSelectedOnly
+                        ? "primary"
+                        : "outline-primary"
+                    }
+                    onClick={() => this.showSelected()}
+                    className=""
+                    disabled={this.state.middleClick || this.state.rightClick}
+                  >
+                    Show <br /> Selected
+                  </Button>
+                </div>
+                <div className="header-content-buttons-row">
+                  <Button
+                    id="hide-selected"
+                    size="sm"
+                    style={{ width: "100%", margin: "2px 0 2px 0" }}
+                    variant={
+                      this.state.hideSelectedOnly
+                        ? "primary"
+                        : "outline-primary"
+                    }
+                    onClick={() => this.hideSelected()}
+                    className=""
+                    disabled={this.state.middleClick || this.state.rightClick}
+                  >
+                    Hide <br /> Selected
+                  </Button>
+                </div>
               </div>
-            </div>
-            <div className="header-content-buttons-reset">
-              <div className="header-content-buttons-row">
-                {/* <Button
+              <div className="header-content-buttons-reset">
+                <div className="header-content-buttons-row">
+                  {/* <Button
                   id="delete-column"
                   size="sm"
                   variant={this.state.delete ? "danger" : "outline-danger"}
@@ -1484,251 +1572,338 @@ class App extends Component {
                 >
                   Delete <br /> Column
                 </Button> */}
-                <Button
-                  id="reset-columns"
-                  size="sm"
-                  style={{ width: "100%", margin: "2px 0 2px 0" }}
-                  variant="outline-danger"
-                  onClick={() => this.resetColumns()}
-                  className=""
-                >
-                  Reset <br /> Columns
-                </Button>
-              </div>
-              <div className="header-content-buttons-row">
-                <Button
-                  id="reset-flights"
-                  size="sm"
-                  style={{ width: "100%", margin: "2px 0 2px 0" }}
-                  variant="outline-danger"
-                  onClick={() => this.resetFlights()}
-                  className=""
-                >
-                  Reset <br /> Flights
-                </Button>
-              </div>
-            </div>
-            <div className="header-content-buttons-two">
-              <div className="header-content-buttons-row">
-                <Button
-                  id="auto-sizing"
-                  size="sm"
-                  style={{ width: "100%", margin: "2px 0 2px 0" }}
-                  variant={this.state.resizable ? "success" : "outline-success"}
-                  onClick={() =>
-                    this.setState({ resizable: !this.state.resizable }, () =>
-                      resizePage(this.state.resizable)
-                    )
-                  }
-                >
-                  Auto <br /> Sizing
-                </Button>
-              </div>
-              <div className="header-content-buttons-row">
-                <Button
-                  id="auto-refresh"
-                  size="sm"
-                  style={{ width: "100%", margin: "2px 0 2px 0" }}
-                  variant={this.state.refresh ? "success" : "outline-success"}
-                  onClick={() => this.refresh()}
-                >
-                  Auto <br /> Refresh
-                </Button>
-              </div>
-            </div>
-            <div className="header-content-buttons-three">
-              <div className="header-content-buttons-row">
-                <NavLink to={"/home"}>
                   <Button
-                    variant="outline-secondary"
-                    className="home"
+                    id="reset-columns"
                     size="sm"
-                  >
-                    Home
-                  </Button>
-                </NavLink>
-              </div>
-
-              <div
-                style={{
-                  display: "flex",
-                  flexDirection: "row",
-                  marginTop: "12px"
-                }}
-              >
-                <FlightException
-                  checked={otherBool}
-                  onCheckException={this.onCheckException.bind(this)}
-                  className={"BBW"}
-                  exception={
-                    "Flights " +
-                    Object.keys(shiftBools)
-                      .filter(i => shiftBools[i])
-                      .reduce((num, bool) => {
-                        if (bool === "shiftOne") {
-                          num += parseInt(
-                            shiftOne[1].slice(0, -4).replace(/\D/g, "")
-                          );
-                        } else if (bool === "shiftTwo") {
-                          num += parseInt(
-                            shiftTwo[1].slice(0, -4).replace(/\D/g, "")
-                          );
-                        } else if (bool === "shiftThree") {
-                          num += parseInt(
-                            shiftThree[1].slice(0, -4).replace(/\D/g, "")
-                          );
-                        }
-                        return num;
-                      }, 0)
-                  }
-                />
-              </div>
-            </div>
-            <div className="header-content-right">
-              <div className="header-content-right-row-1">
-                <Button
-                  id="print"
-                  size="sm"
-                  style={{ marginRight: "20px" }}
-                  variant="outline-success"
-                  onClick={() => this.handlePrint()}
-                  className={"print-span"}
-                >
-                  {"Print"}
-                </Button>
-                <Time
-                  className={title ? title[0].slice(-3) : ""}
-                  time={
-                    currentTime
-                      ? currentDate.split(";")[0] +
-                        " at " +
-                        currentTime.split(";")[0]
-                      : ""
-                  }
-                />
-              </div>
-
-              <div className="header-content-right-row-2">
-                {location.slice(-5) === "INLET" ||
-                location.slice(-5) === "DEICE" ? (
-                  ""
-                ) : (
-                  <React.Fragment>
-                    <FlightException
-                      checked={maintBool}
-                      onCheckException={this.onCheckException.bind(this)}
-                      style={{ margin: "0 10px 0 0" }}
-                      className={maints ? maints.split(";")[1] : ""}
-                      exception={maints ? maints.split(";")[0] : ""}
-                    />
-                    <FlightException
-                      checked={spareBool}
-                      onCheckException={this.onCheckException.bind(this)}
-                      style={{ margin: "0 10px 0 0" }}
-                      className={spares ? spares.split(";")[1] : ""}
-                      exception={spares ? spares.split(";")[0] : ""}
-                    />
-                    <FlightException
-                      checked={openBool}
-                      onCheckException={this.onCheckException.bind(this)}
-                      className={opens ? opens.split(";")[1] : ""}
-                      exception={opens ? opens.split(";")[0] : ""}
-                    />
-                  </React.Fragment>
-                )}
-              </div>
-              <div className="header-content-right-row-3">
-                <Button
-                  id="left-click"
-                  size="sm"
-                  variant={
-                    this.state.leftClick ? "secondary" : "outline-secondary"
-                  }
-                  onClick={() => this.leftClickMode()}
-                  className=""
-                >
-                  Left
-                  <br /> Click
-                </Button>
-                <Button
-                  id="middle-click"
-                  size="sm"
-                  variant={
-                    this.state.middleClick ? "secondary" : "outline-secondary"
-                  }
-                  onClick={() => this.middleClickMode()}
-                  className=""
-                >
-                  Middle <br /> Click
-                </Button>
-                <Button
-                  id="right-click"
-                  size="sm"
-                  variant={
-                    this.state.rightClick ? "secondary" : "outline-secondary"
-                  }
-                  onClick={() => this.rightClickMode()}
-                  className=""
-                >
-                  Right <br /> Click
-                </Button>
-              </div>
-              {this.state.rightClick && this.state.selectedColumn ? (
-                <div className="header-content-right-row-4">
-                  <Button
-                    id="move-left"
-                    size="sm"
-                    variant={"info"}
-                    onClick={e => this.moveColumnLeft(e)}
+                    style={{ width: "100%", margin: "2px 0 2px 0" }}
+                    variant="outline-danger"
+                    onClick={() => this.resetColumns()}
                     className=""
+                    disabled={this.state.middleClick || this.state.rightClick}
                   >
-                    Move <br /> Left
-                  </Button>
-                  <Button
-                    id="move-right"
-                    size="sm"
-                    variant={"info"}
-                    onClick={e => this.moveColumnRight(e)}
-                    className=""
-                  >
-                    Move <br /> Right
+                    Reset <br /> Columns
                   </Button>
                 </div>
-              ) : (
-                ""
-              )}
+                <div className="header-content-buttons-row">
+                  <Button
+                    id="reset-flights"
+                    size="sm"
+                    style={{ width: "100%", margin: "2px 0 2px 0" }}
+                    variant="outline-danger"
+                    onClick={() => this.resetFlights()}
+                    className=""
+                    disabled={this.state.middleClick || this.state.rightClick}
+                  >
+                    Reset <br /> Flights
+                  </Button>
+                </div>
+              </div>
+              <div className="header-content-buttons-two">
+                <div className="header-content-buttons-row">
+                  <Button
+                    id="auto-sizing"
+                    size="sm"
+                    style={{ width: "100%", margin: "2px 0 2px 0" }}
+                    variant={
+                      this.state.resizable ? "success" : "outline-success"
+                    }
+                    onClick={() =>
+                      this.setState({ resizable: !this.state.resizable }, () =>
+                        resizePage(this.state.resizable)
+                      )
+                    }
+                  >
+                    Auto <br /> Sizing
+                  </Button>
+                </div>
+                <div className="header-content-buttons-row">
+                  <Button
+                    id="auto-refresh"
+                    size="sm"
+                    style={{ width: "100%", margin: "2px 0 2px 0" }}
+                    variant={this.state.refresh ? "success" : "outline-success"}
+                    onClick={() => this.refresh()}
+                    disabled={this.state.middleClick || this.state.rightClick}
+                  >
+                    Auto <br /> Refresh
+                  </Button>
+                </div>
+              </div>
+              <div className="header-content-buttons-three">
+                <div className="header-content-buttons-row">
+                  <NavLink to={"/home"}>
+                    <Button
+                      variant="outline-secondary"
+                      className="home"
+                      size="sm"
+                      disabled={this.state.middleClick || this.state.rightClick}
+                    >
+                      Home
+                    </Button>
+                  </NavLink>
+                </div>
+                <div
+                  style={{ marginTop: "5px" }}
+                  className="header-content-buttons-row"
+                >
+                  <Button
+                    id="ipad-help"
+                    variant={
+                      this.state.iPadHelp ? "warning" : "outline-warning"
+                    }
+                    className="home"
+                    size="sm"
+                    onClick={() =>
+                      this.setState({ iPadHelp: !this.state.iPadHelp })
+                    }
+                    disabled={this.state.middleClick || this.state.rightClick}
+                  >
+                    Help
+                  </Button>
+                </div>
+                <div
+                  style={{
+                    display: "flex",
+                    flexDirection: "row",
+                    marginTop: "12px"
+                  }}
+                >
+                  <FlightException
+                    checked={otherBool}
+                    onCheckException={this.onCheckException.bind(this)}
+                    className={"BBW"}
+                    style={{
+                      color:
+                        this.state.middleClick || this.state.rightClick
+                          ? "grey"
+                          : ""
+                    }}
+                    isDisabled={this.state.middleClick || this.state.rightClick}
+                    exception={
+                      otherBool
+                        ? "Flights " +
+                          content.reduce(
+                            (num, c) =>
+                              !c["FLIGHT;BBW"].startsWith("MAINT") &&
+                              !c["FLIGHT;BBW"].startsWith("SPARE") &&
+                              !c["FLIGHT;BBW"].includes("OPEN")
+                                ? (num += 1)
+                                : (num += 0),
+                            0
+                          )
+                        : "Flights " + availableFlights
+                    }
+                  />
+                </div>
+              </div>
+              <div className="header-content-right">
+                <div style={{ textAlign: "right" }} />
+                <div className="header-content-right-row-1">
+                  <Button
+                    id="print"
+                    size="sm"
+                    style={{ marginRight: "20px" }}
+                    variant="outline-success"
+                    onClick={() => this.handlePrint()}
+                    className={"print-span"}
+                  >
+                    {"Print"}
+                  </Button>
+                  <Time
+                    className={title ? title[0].slice(-3) : ""}
+                    time={
+                      currentTime
+                        ? currentDate.split(";")[0] +
+                          " at " +
+                          currentTime.split(";")[0]
+                        : ""
+                    }
+                  />{" "}
+                  &nbsp;{"v" + version}
+                </div>
 
+                <div className="header-content-right-row-2">
+                  {location.slice(-5) === "INLET" ||
+                  location.slice(-5) === "DEICE" ? (
+                    ""
+                  ) : (
+                    <React.Fragment>
+                      <FlightException
+                        checked={maintBool}
+                        onCheckException={this.onCheckException.bind(this)}
+                        style={{
+                          margin: "0 10px 0 0",
+                          color:
+                            this.state.middleClick || this.state.rightClick
+                              ? "grey"
+                              : ""
+                        }}
+                        className={maints ? maints.split(";")[1] : ""}
+                        // exception={maints ? maints.split(";")[0] : ""}
+                        exception={
+                          maintBool
+                            ? "Maint " +
+                              content.reduce(
+                                (num, c) =>
+                                  c["FLIGHT;BBW"].startsWith("MAINT")
+                                    ? (num += 1)
+                                    : (num += 0),
+                                0
+                              )
+                            : "Maint " + availableMaints
+                        }
+                        isDisabled={
+                          this.state.middleClick || this.state.rightClick
+                        }
+                      />
+                      <FlightException
+                        checked={spareBool}
+                        onCheckException={this.onCheckException.bind(this)}
+                        style={{
+                          margin: "0 10px 0 0",
+                          color:
+                            this.state.middleClick || this.state.rightClick
+                              ? "grey"
+                              : ""
+                        }}
+                        className={spares ? spares.split(";")[1] : ""}
+                        // exception={spares ? spares.split(";")[0] : ""}
+                        exception={
+                          spareBool
+                            ? "Spare " +
+                              content.reduce(
+                                (num, c) =>
+                                  c["FLIGHT;BBW"].startsWith("SPARE")
+                                    ? (num += 1)
+                                    : (num += 0),
+                                0
+                              )
+                            : "Spare " + availableSpares
+                        }
+                        isDisabled={
+                          this.state.middleClick || this.state.rightClick
+                        }
+                      />
+                      <FlightException
+                        checked={openBool}
+                        onCheckException={this.onCheckException.bind(this)}
+                        style={{
+                          color:
+                            this.state.middleClick || this.state.rightClick
+                              ? "grey"
+                              : ""
+                        }}
+                        className={opens ? opens.split(";")[1] : ""}
+                        // exception={opens ? opens.split(";")[0] : ""}
+                        exception={
+                          openBool
+                            ? "Open " +
+                              content.reduce(
+                                (num, c) =>
+                                  c["FLIGHT;BBW"].includes("OPEN")
+                                    ? (num += 1)
+                                    : (num += 0),
+                                0
+                              )
+                            : "Open " + availableOpens
+                        }
+                        isDisabled={
+                          this.state.middleClick || this.state.rightClick
+                        }
+                      />
+                    </React.Fragment>
+                  )}
+                </div>
+                <div className="header-content-right-row-3">
+                  <Button
+                    id="left-click"
+                    size="sm"
+                    variant={
+                      this.state.leftClick ? "secondary" : "outline-secondary"
+                    }
+                    onClick={() => this.leftClickMode()}
+                    className=""
+                  >
+                    Left
+                    <br /> Action
+                  </Button>
+                  <Button
+                    id="middle-click"
+                    size="sm"
+                    variant={
+                      this.state.middleClick ? "secondary" : "outline-secondary"
+                    }
+                    onClick={() => this.middleClickMode()}
+                    className=""
+                  >
+                    Middle <br /> Delete
+                  </Button>
+                  <Button
+                    id="right-click"
+                    size="sm"
+                    variant={
+                      this.state.rightClick ? "secondary" : "outline-secondary"
+                    }
+                    onClick={() => this.rightClickMode()}
+                    className=""
+                  >
+                    Right <br /> Select
+                  </Button>
+                </div>
+                {this.state.rightClick && this.state.selectedColumn ? (
+                  <div className="header-content-right-row-4">
+                    <Button
+                      id="move-left"
+                      size="sm"
+                      variant={"info"}
+                      onClick={e => this.moveColumnLeft(e)}
+                      className=""
+                    >
+                      Move <br /> Left
+                    </Button>
+                    <Button
+                      id="move-right"
+                      size="sm"
+                      variant={"info"}
+                      onClick={e => this.moveColumnRight(e)}
+                      className=""
+                    >
+                      Move <br /> Right
+                    </Button>
+                  </div>
+                ) : (
+                  ""
+                )}
+              </div>
             </div>
-
+            {misc ? (
+              <Misc
+                help={help}
+                misc={misc}
+                displayHelp={this.displayHelp.bind(this)}
+                exportContent={this.exportContent.bind(this)}
+              />
+            ) : (
+              ""
+            )}
+            {iPadHelp ? <IpadHelp /> : ""}
           </div>
-          {misc ? (
-            <Misc
-              help={help}
-              misc={misc}
-              displayHelp={this.displayHelp.bind(this)}
-              exportContent={this.exportContent.bind(this)}
+
+          <div className="App-content">
+            <FlightTableB
+              sorted={this.state.isSorted}
+              secondarySorted={this.state.isSecondarySorted}
+              selected={this.state.selectedColumn}
+              handleRightClickTh={this.handleRightClickTh.bind(this)}
+              handleOnMouseDownTh={this.handleOnMouseDownTh.bind(this)}
+              handleClick={this.handleClick.bind(this)}
+              handleRightClickRow={this.handleRightClickRow.bind(this)}
+              onSort={this.onSort.bind(this)}
+              content={content}
+              selectedRows={selectedRows}
             />
-          ) : (
-            ""
-          )}
-
+          </div>
         </div>
-
-        <div className="App-content">
-          <FlightTableB
-            sorted={this.state.isSorted}
-            secondarySorted={this.state.isSecondarySorted}
-            selected={this.state.selectedColumn}
-            handleRightClickTh={this.handleRightClickTh.bind(this)}
-            handleOnMouseDownTh={this.handleOnMouseDownTh.bind(this)}
-            handleClick={this.handleClick.bind(this)}
-            handleRightClickRow={this.handleRightClickRow.bind(this)}
-            onSort={this.onSort.bind(this)}
-            content={content}
-            selectedRows={selectedRows}
-          />
-        </div>
-      </div>
       </div>
     );
   }

@@ -239,6 +239,10 @@ button {
   display: none;
 }
 
+#ipad-help {
+  display: none;
+}
+
 .app-container {
   display: flex;
   justify-content: center;
@@ -386,6 +390,25 @@ tbody {
     display: block;
     font-size: 8px;
   }
+
+  #ipad-help {
+    display: block;
+  }
+
+  #ipad-help:hover {
+    /* color: #212529;
+    background-color: white; */
+  }
+
+  #ipad-help-div {
+    align-items: flex-start;
+
+    /* font-size: 50px; */
+  }
+
+  #ipad-help-div h6 {
+    font-size: 12px;
+  }
 }
 
 @media only screen and (min-device-width: 768px) and (max-device-width: 1024px) and (orientation: landscape) {
@@ -468,5 +491,13 @@ tbody {
   #right-click {
     display: block;
     font-size: 10px;
+  }
+
+  #ipad-help {
+    display: block;
+  }
+
+  #ipad-help-div h6 {
+    font-size: 16px;
   }
 }

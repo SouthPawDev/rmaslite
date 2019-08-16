@@ -24,6 +24,7 @@ export function FlightException(props) {
         type="checkbox"
         onChange={() => handler(props)}
         checked={props.checked}
+        disabled={props.isDisabled}
       />
       <p style={props.style} className={props.className}>
         {props.exception}
@@ -144,9 +145,10 @@ export function Misc(props) {
         </h5>
         <h5>
           <strong>
-            <u>Delete Column (iPad Only)</u>: <strong>Toggleable: </strong>
+            <u>Flight/Maint/Spare/Open Checkbox</u>:{" "}
           </strong>
-          Turn On to Enable Deleting Columns By Touch
+          Checked Shows Currently Displayed Table Count | Unchecked Shows Total
+          Available
         </h5>
       </TooltipWrapper>
       <StyledMisc>
@@ -182,6 +184,76 @@ export function Misc(props) {
         </div>
       </StyledMisc>
     </div>
+  );
+}
+
+export function IpadHelp(props) {
+  return (
+    <TooltipWrapper id="ipad-help-div">
+      <h6>
+        <u>
+          <strong>Left Action</strong>
+        </u>
+        <strong>:</strong> Column Sorting, Checkbox Actions & Button Actions
+      </h6>
+      <h6>
+        <u>
+          <strong>Middle Delete</strong>
+        </u>
+        <strong>:</strong> Delete Column Headers, Delete Rows
+      </h6>
+      <h6>
+        <u>
+          <strong>Right Select</strong>
+        </u>
+        <strong>:</strong> Select Column Headers, Select Rows
+      </h6>
+      <h6>
+        <u>
+          <strong>Show Selected Button</strong>
+        </u>
+        : <strong>Toggleable: </strong>
+        Show Only Selected Rows (Underlined Rows)
+      </h6>
+      <h6>
+        <u>
+          <strong>Hide Selected Button</strong>
+        </u>
+        : <strong>Toggleable: </strong>
+        Hide Selected Rows (Underlined Rows)
+      </h6>
+      <h6>
+        <strong>
+          <u>Reset Columns Button</u>:{" "}
+        </strong>
+        Reset All Deleted and Rearranged Columns to Original Load
+      </h6>
+      <h6>
+        <strong>
+          <u>Reset Flights Button</u>:{" "}
+        </strong>
+        Reset All Selected, Hidden, Deleted Flights(Rows) to Original Load
+      </h6>
+      <h6>
+        <strong>
+          <u>Auto Refresh Button</u>:{" "}
+        </strong>
+        <strong>Toggleable: </strong>
+        Checks the Server Every 60 Seconds For Fresh Data and Updates Table
+      </h6>
+      <h6>
+        <strong>
+          <u>Home Button</u>:{" "}
+        </strong>
+        Redirects the Page to Home: RMAS Station Selection
+      </h6>
+      <h6>
+        <strong>
+          <u>Flt/Maint/Spare/Open Checkbox</u>:{" "}
+        </strong>
+        Checked: Currently Displayed Count | Unchecked: Shows Total Available
+      </h6>
+    </TooltipWrapper>
   );
 }
 
