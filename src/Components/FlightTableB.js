@@ -6,9 +6,9 @@ import "../../node_modules/bootstrap/dist/css/bootstrap.min.css";
 
 const Th = styled.th`
   border: ${props => (props.isSelected ? "2px solid blue" : "")} !important;
-  color: ${props => (props.isSorted ? "blue" : "")} !important;
-  background-color: ${props =>
-    props.isSecondarySorted ? "lightblue" : ""} !important;
+  background-color: ${props => (props.isSorted ? "lightblue" : "")} !important;
+  color: ${props =>
+    props.isSecondarySorted ? "blue" : ""} !important;
 `;
 
 // border-bottom: ${props => props.isSelectedRow ? "1px solid black" : "none"} !important;
@@ -16,7 +16,8 @@ const Td = styled.td``;
 
 const Tr = styled.tr`
    ${Td} {
-     border-bottom: ${props => props.isSelectedRow ? "1px solid black" : "none"} !important;}
+     border-bottom: ${props =>
+       props.isSelectedRow ? "1px solid black" : ""} !important;}
    }
 `;
 
@@ -30,6 +31,15 @@ class FlightTableB extends Component {
     this.onMouseDownHandlerTh = this.onMouseDownHandlerTh.bind(this);
   }
 
+  columnException(name) {
+    return (
+      name.startsWith("I/R") ||
+      name.startsWith("IN") ||
+      name.startsWith("ON") ||
+      name.startsWith("STD") ||
+      name.startsWith("STA")
+    );
+  }
   sortHandler(item, content, clicked) {
     this.props.onSort(item, content, clicked);
   }
@@ -67,15 +77,15 @@ class FlightTableB extends Component {
                   isSecondarySorted={this.props.secondarySorted === item}
                   key={i}
                   className={[
-                    item.includes(";") ? item.split(";")[1].trim() : "",
-                    item.startsWith("I/R")
-                      ? "IR"
-                      : item.startsWith("EMP#")
-                      ? "EMP"
-                      : item.startsWith("OFF/SEQ")
-                      ? "OFFSEQ"
-                      : item.split(";")[0],
-                    "EE"
+                    item.includes(";") ? item.split(";")[1].trim() : ""
+                    // item.startsWith("I/R")
+                    //   ? "IR"
+                    //   : item.startsWith("EMP#")
+                    //   ? "EMP"
+                    //   : item.startsWith("OFF/SEQ")
+                    //   ? "OFFSEQ"
+                    //   : item.split(";")[0],
+                    // "EE"
                   ].join(" ")}
                   onClick={() =>
                     this.sortHandler(item, this.props.content, true)
@@ -108,27 +118,60 @@ class FlightTableB extends Component {
                     .filter(i => i !== "undefined" && i !== "row")
                     .map((j, jj) => (
                       <Td
-                        title={i[j] ? i[j].split(";")[0] : ""}
+                        style={{
+                          border:
+                            this.props.currentTime ===
+                            i[j]
+                              .split(";")
+                              [i[j].split(";").length - 1].split("@")[
+                              i[j]
+                                .split(";")
+                                [i[j].split(";").length - 1].split("@").length -
+                                1
+                            ]
+                              ? "2.5px solid red"
+                              : ""
+                        }}
+                        title={
+                          i[j].split(";").length > 2 &&
+                          i[j].split(";")[i[j].split(";").length - 1].length !==
+                            3
+                            ? i[j]
+                                .split(";")
+                                [i[j].split(";").length - 1].split(" ")
+                                .reduce((acc, c) => (acc += c + "\n"), "")
+                            : ""
+                        }
                         onContextMenu={e => this.onContextMenuHandler(e, i)}
                         onMouseDown={e => this.onMouseDownHandler(e, i)}
                         key={jj}
                         className={[
-                          i[j]
-                            ? i[j].split(";")[i[j].split(";").length - 1] + " "
-                            : "",
-                          j.startsWith("I/R")
-                            ? "IR"
-                            : j.startsWith("EMP#")
-                            ? "EMP"
-                            : j.startsWith("OFF/SEQ")
-                            ? "OFFSEQ"
-                            : j.split(";")[0],
-                          "EE"
+                          i[j].split(";").filter(k => k.length === 3)
+                          // i[j]
+                          //   ? i[j].split(";")[i[j].split(";").length - 1] + " "
+                          //   : "",
+                          // j.startsWith("I/R")
+                          //   ? "IR"
+                          //   : j.startsWith("EMP#")
+                          //   ? "EMP"
+                          //   : j.startsWith("OFF/SEQ")
+                          //   ? "OFFSEQ"
+                          //   : j.split(";")[0],
+                          // "EE"
                         ].join(" ")}
                       >
-                        {i[j]
+                        {/* {i[j]
                           ? i[j].split(";")[i[j].split(";").length - 2]
-                          : ""}
+                          : ""} */}
+                        {/* {i
+                          ? this.columnException(j)
+                            ? i[j].split(";")[1]
+                            : i[j].split(";")[0]
+                          : ""} */}
+                        {/* <span>{i[j].split(";").length > 2
+                            ? i[j].split(";")[i[j].split(";").length - 1].split(" ").reduce((acc, c) => acc += c + "\n" ,"")
+                            : ""}</span> */}
+                        {i ? i[j].split(";")[0] : ""}
                       </Td>
                     ))}
                 />

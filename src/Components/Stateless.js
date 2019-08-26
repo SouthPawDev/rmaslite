@@ -70,7 +70,14 @@ export function Misc(props) {
             <strong>Column Headers</strong>
           </u>
           : <strong>Left Click:</strong> Sort, <strong>Middle Click:</strong>{" "}
-          Delete, <strong>Right Click:</strong> Select{" "}
+          Delete, <strong>Right Click:</strong> Select
+        </h5>
+        <h5>
+          <u>
+            <strong>Sorted Column Colors</strong>
+          </u>
+          : Primary Sort Column = Lite Blue Background; Secondary Sort Column =
+          Bold Blue Font
         </h5>
         <h5>
           <u>
@@ -84,6 +91,20 @@ export function Misc(props) {
           </u>
           : <strong>Middle Click:</strong> Delete, <strong>Right Click:</strong>{" "}
           Underline/Select
+        </h5>
+        <h5>
+          <u>
+            <strong>Cell Hover Over</strong>
+          </u>
+          : Displays the cell value and the time that this cell changed. Only
+          the last 5 changes are shown per cell.
+        </h5>
+        <h5>
+          <u>
+            <strong>Cell Contents Update Notification</strong>
+          </u>
+          : A red border box will be temporarily placed around the cell with the
+          latest changes.
         </h5>
         <h5>
           <u>
@@ -207,6 +228,27 @@ export function IpadHelp(props) {
           <strong>Right Select</strong>
         </u>
         <strong>:</strong> Select Column Headers, Select Rows
+      </h6>
+      <h6 style={{ fontSize: "10px" }}>
+        <u>
+          <strong>Sorted Column Colors</strong>
+        </u>
+        : Primary Sort Column - Lite Blue Background, Secondary Sort Column -
+        Bold Blue Font
+      </h6>
+      <h6 style={{ fontSize: "10px" }}>
+        <u>
+          <strong>Cell Hover Over</strong>
+        </u>
+        : Displays the cell value and the time that this cell changed. Only the
+        last 5 changes are shown per cell.
+      </h6>
+      <h6 style={{ fontSize: "10px" }}>
+        <u>
+          <strong>Cell Contents Update Notification</strong>
+        </u>
+        : A red border box will be temporarily placed around the cell with the
+        latest changes.
       </h6>
       <h6>
         <u>

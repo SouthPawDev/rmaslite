@@ -12,7 +12,7 @@ import FlightTableB from "./Components/FlightTableB";
 import Button from "react-bootstrap/Button";
 import resizePage from "./Functions/resizePage";
 import { demo } from "./demo";
-import { version, FOLDER } from "./properties";
+import { version, FOLDER, test } from "./properties";
 import "./App.css";
 
 class App extends Component {
@@ -36,7 +36,7 @@ class App extends Component {
       showSelectedOnly: false,
       hideSelectedOnly: false,
       initalLoad: true,
-      demo: false,
+      demo: test,
       iPadHelp: false
     };
   }
@@ -343,7 +343,10 @@ class App extends Component {
           }, 15000)
         })
       )
-      .catch(e => console.log(e));
+      .catch((e) => {
+        this.setState({noFile: true})
+        console.log(e);
+      }) 
   }
 
   filter() {
@@ -630,11 +633,11 @@ class App extends Component {
     let sortedData = content.sort((a, b) => {
       if (a[column]) {
         let nameA = a[column]
-          .split(";")[0]
+          .split(";")[1]
           .toUpperCase()
           .trim();
         let nameB = b[column]
-          .split(";")[0]
+          .split(";")[1]
           .toUpperCase()
           .trim();
         if (nameA === "") {
@@ -649,11 +652,11 @@ class App extends Component {
 
         if (nameA === nameB) {
           nameA = a["FLIGHT;BBW"]
-            .split(";")[0]
+            .split(";")[1]
             .toUpperCase()
             .trim();
           nameB = b["FLIGHT;BBW"]
-            .split(";")[0]
+            .split(";")[1]
             .toUpperCase()
             .trim();
           if (nameA === "") {
@@ -1891,6 +1894,7 @@ class App extends Component {
 
           <div className="App-content">
             <FlightTableB
+              currentTime={this.state.currentTime ? this.state.currentTime.split(";")[0] : ""}
               sorted={this.state.isSorted}
               secondarySorted={this.state.isSecondarySorted}
               selected={this.state.selectedColumn}

@@ -308,6 +308,18 @@ tbody {
   background-color: white;
 }
 
+td:hover span {
+  display: flex;
+  position: absolute;
+  color: cornflowerblue;
+  background-color: gold;
+  
+}
+
+td span {
+  display: none;
+}
+
 @media only screen and (min-device-width: 768px) and (max-device-width: 1024px) {
   .App {
     width: 100vw;
