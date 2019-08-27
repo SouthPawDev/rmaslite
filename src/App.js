@@ -13,6 +13,8 @@ import Button from "react-bootstrap/Button";
 import resizePage from "./Functions/resizePage";
 import { demo } from "./demo";
 import { version, FOLDER, test } from "./properties";
+import {HomeButton} from "./Components/HomeButton"
+
 import "./App.css";
 
 class App extends Component {
@@ -1634,7 +1636,7 @@ class App extends Component {
               </div>
               <div className="header-content-buttons-three">
                 <div className="header-content-buttons-row">
-                  <NavLink to={"/home"}>
+                  {/* <NavLink to={"/home"}>
                     <Button
                       variant="outline-secondary"
                       className="home"
@@ -1643,7 +1645,8 @@ class App extends Component {
                     >
                       Home
                     </Button>
-                  </NavLink>
+                  </NavLink> */}
+                  <HomeButton />
                 </div>
                 <div
                   style={{ marginTop: "5px" }}

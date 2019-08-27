@@ -287,6 +287,7 @@ table {
   width: 100%;
   padding: 10px;
   margin: 0px;
+  
 }
 
 thead,
@@ -294,6 +295,7 @@ tbody tr {
   display: table;
   width: 100%;
   table-layout: fixed;
+  
 }
 
 thead {
@@ -308,17 +310,42 @@ tbody {
   background-color: white;
 }
 
-td:hover span {
-  display: flex;
-  position: absolute;
-  color: cornflowerblue;
-  background-color: gold;
-  
+.tooltip {
+  position: relative;
+  display: table-cell;
+  opacity: 100;
+  text-align: inherit;
+  font: inherit;
 }
 
-td span {
-  display: none;
+.tooltip .tooltiptext {
+  visibility: hidden;
+  height: auto;
+  background-color: black;
+  color: #fff;
+  text-align: center;
+  border-radius: 6px;
+  padding: 5px;
+  display: flex;
+
+  /* Position the tooltip */
+  position: absolute;
+  z-index: 1;
 }
+
+.tooltip:hover .tooltiptext {
+  visibility: visible;
+}
+/* td {
+  position: relative;
+}
+
+td[title]:hover:after {
+  content: attr(title);
+  position: absolute;
+  top: -100%;
+  left: 0;
+} */
 
 @media only screen and (min-device-width: 768px) and (max-device-width: 1024px) {
   .App {
