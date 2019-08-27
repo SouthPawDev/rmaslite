@@ -13,7 +13,7 @@ import Button from "react-bootstrap/Button";
 import resizePage from "./Functions/resizePage";
 import { demo } from "./demo";
 import { version, FOLDER, test } from "./properties";
-import {HomeButton} from "./Components/HomeButton"
+import { StationButton } from "./Components/StationButton";
 
 import "./App.css";
 
@@ -345,10 +345,10 @@ class App extends Component {
           }, 15000)
         })
       )
-      .catch((e) => {
-        this.setState({noFile: true})
+      .catch(e => {
+        this.setState({ noFile: true });
         console.log(e);
-      }) 
+      });
   }
 
   filter() {
@@ -1636,7 +1636,7 @@ class App extends Component {
               </div>
               <div className="header-content-buttons-three">
                 <div className="header-content-buttons-row">
-                  {/* <NavLink to={"/home"}>
+                  <NavLink style={{marginBottom: '5px'}} to={"/home"}>
                     <Button
                       variant="outline-secondary"
                       className="home"
@@ -1645,8 +1645,8 @@ class App extends Component {
                     >
                       Home
                     </Button>
-                  </NavLink> */}
-                  <HomeButton />
+                  </NavLink>
+                  <StationButton />
                 </div>
                 <div
                   style={{ marginTop: "5px" }}
@@ -1897,7 +1897,11 @@ class App extends Component {
 
           <div className="App-content">
             <FlightTableB
-              currentTime={this.state.currentTime ? this.state.currentTime.split(";")[0] : ""}
+              currentTime={
+                this.state.currentTime
+                  ? this.state.currentTime.split(";")[0]
+                  : ""
+              }
               sorted={this.state.isSorted}
               secondarySorted={this.state.isSecondarySorted}
               selected={this.state.selectedColumn}

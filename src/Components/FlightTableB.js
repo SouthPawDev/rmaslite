@@ -145,7 +145,7 @@ class FlightTableB extends Component {
                         onMouseDown={e => this.onMouseDownHandler(e, i)}
                         key={jj}
                         className={[
-                          "tooltip",
+                          // "tooltip",
                           i[j].split(";").filter(k => k.length === 3)
                           // i[j]
                           //   ? i[j].split(";")[i[j].split(";").length - 1] + " "
@@ -168,16 +168,16 @@ class FlightTableB extends Component {
                             ? i[j].split(";")[1]
                             : i[j].split(";")[0]
                           : ""} */}
-                        {/* <span>{i[j].split(";").length > 2
+                        {/* <span className="tooltiptext">{i[j].split(";").length > 2
                             ? i[j].split(";")[i[j].split(";").length - 1].split(" ").reduce((acc, c) => acc += c + "\n" ,"")
                             : ""}</span> */}
                         {
-                          i[j].split(";").length > 2 &&
-                          i[j].split(";")[i[j].split(";").length - 1]
-                            .length !== 3
-                            ? i[j]
-                                .split(";")
-                                [i[j].split(";").length - 1].split(" ").map(k => <span className="tooltiptext">{k}<br/></span> ) : ""
+                          // i[j].split(";").length > 2 &&
+                          // i[j].split(";")[i[j].split(";").length - 1]
+                          //   .length !== 3
+                          //   ? i[j]
+                          //       .split(";")
+                          //       [i[j].split(";").length - 1].split(" ").map(k => <span className="tooltiptext">{k}<br/></span> ) : ""
                           // <span className="tooltiptext">
                           //   {i[j].split(";").length > 2 &&
                           //   i[j].split(";")[i[j].split(";").length - 1]

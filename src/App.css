@@ -26,7 +26,8 @@
 
 .header-content-buttons-row {
   display: flex;
-  justify-content: space-evenly;
+  flex-direction: column;
+  /* justify-content: space-evenly; */
 }
 
 .header-content-buttons-three {
@@ -92,6 +93,7 @@ a {
 
 .header-content-buttons-three {
   display: flex;
+
   height: 100%;
 }
 
@@ -210,9 +212,11 @@ input {
   display: none;
 }
 
-td:hover {
+/* td:hover {
   background-color: lightgrey;
-}
+} */
+
+
 
 #override th {
   padding: 0.015rem;
@@ -320,22 +324,30 @@ tbody {
 
 .tooltip .tooltiptext {
   visibility: hidden;
-  height: auto;
+  /* height: auto; */
   background-color: black;
   color: #fff;
   text-align: center;
   border-radius: 6px;
   padding: 5px;
-  display: flex;
+ 
 
   /* Position the tooltip */
+  font-size: 12px;
   position: absolute;
-  z-index: 1;
+  z-index: -1;
 }
 
 .tooltip:hover .tooltiptext {
   visibility: visible;
 }
+
+
+.dropdown-item {
+  background-color: #212529;
+  color: whitesmoke;
+}
+
 /* td {
   position: relative;
 }
