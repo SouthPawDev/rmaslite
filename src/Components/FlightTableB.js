@@ -8,17 +8,20 @@ const Th = styled.th`
   border: ${props => (props.isSelected ? "2px solid blue" : "")} !important;
   background-color: ${props => (props.isSorted ? "lightblue" : "")} !important;
   color: ${props => (props.isSecondarySorted ? "blue" : "")} !important;
-`;
+`
 
 // border-bottom: ${props => props.isSelectedRow ? "1px solid black" : "none"} !important;
-const Td = styled.td``;
+const Td = styled.td`
+  display: flex;
+`
 
 const Tr = styled.tr`
    ${Td} {
      border-bottom: ${props =>
        props.isSelectedRow ? "1px solid black" : ""} !important;}
    }
-`;
+`
+
 
 class FlightTableB extends Component {
   constructor(props) {
@@ -28,7 +31,18 @@ class FlightTableB extends Component {
     this.onContextMenuHandler = this.onContextMenuHandler.bind(this);
     this.onContextMenuHandlerTh = this.onContextMenuHandlerTh.bind(this);
     this.onMouseDownHandlerTh = this.onMouseDownHandlerTh.bind(this);
+    this.state = {
+    tipVisibility: false
+    }
   }
+
+  setVisibility() {
+    console.log('clicked')
+    this.state = {
+      tipVisibility: !this.state.tipVisibility
+    }
+  }
+  
 
   columnException(name) {
     return (
@@ -59,6 +73,7 @@ class FlightTableB extends Component {
     this.props.handleOnMouseDownTh(e, item);
   }
 
+  
   render() {
     const selectedRowsPK = this.props.selectedRows.map(
       i => i["FLIGHT;BBW"] + i["GATE;BBW"]
@@ -131,21 +146,22 @@ class FlightTableB extends Component {
                               ? "2.5px solid red"
                               : ""
                         }}
-                        title={
-                          i[j].split(";").length > 2 &&
-                          i[j].split(";")[i[j].split(";").length - 1].length !==
-                            3
-                            ? i[j]
-                                .split(";")
-                                [i[j].split(";").length - 1].split(" ")
-                                .reduce((acc, c) => (acc += c + '\n'), '')
-                            : ""
-                        }
+                        // title={
+                        //   i[j].split(";").length > 2 &&
+                        //   i[j].split(";")[i[j].split(";").length - 1].length !==
+                        //     3
+                        //     ? i[j]
+                        //         .split(";")
+                        //         [i[j].split(";").length - 1].split(" ")
+                        //         .reduce((acc, c) => (acc += c + '\n'), '')
+                        //     : ""
+                        // }
                         onContextMenu={e => this.onContextMenuHandler(e, i)}
                         onMouseDown={e => this.onMouseDownHandler(e, i)}
                         key={jj}
+                        onClick={() => this.setVisibility()}
                         className={[
-                          // "tooltip",
+                          "tooltip",
                           i[j].split(";").filter(k => k.length === 3)
                           // i[j]
                           //   ? i[j].split(";")[i[j].split(";").length - 1] + " "
@@ -190,6 +206,16 @@ class FlightTableB extends Component {
                           // </span>
                         }
                         {i ? i[j].split(";")[0] : ""}
+                        <div className="tooltiptext" key={j} style={{
+                          width: '140px',
+                          display:'flex',
+                          alignContent:'center', 
+                          justifyContent:'center',
+                          marginLeft: jj >= 9 ? '-100px' : '0',
+                          visibility: this.state.tipVisibility ? 'visible' : 'hidden'
+                        }} onClick={() => this.setVisibility()}><div>{i[j].split(";").length > 2
+                      ? i[j].split(";")[i[j].split(";").length - 1].split(" ").map((result,x) => <span key={x}>{result}<br/></span>)
+                      : ""}</div></div>
                       </Td>
                     ))}
                 />
