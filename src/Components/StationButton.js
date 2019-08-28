@@ -6,9 +6,9 @@ import Col from "react-bootstrap/Col";
 export function StationButton() {
   return (
     <Dropdown
-    alignRight>
+      alignRight>
       <Dropdown.Toggle
-      
+
         size="sm"
         variant="outline-secondary"
         id="dropdown-basic"
@@ -17,17 +17,17 @@ export function StationButton() {
       </Dropdown.Toggle>
 
       <Dropdown.Menu>
-        <div style={{display: 'flex'}}>
-          <div>
-
+        <div style={{ display: 'flex' }}>
+          <div style={{borderRight: '1px solid white'}}>
             <Dropdown.Item href="#/MEM_SVR_IBLIST">MEM Inbound</Dropdown.Item>
             <Dropdown.Item href="#/MEM_SVR_OBLIST">MEM Outbound</Dropdown.Item>
             <Dropdown.Item href="#/MEM_SVR_SDLIST/INLET">
               MEM SD Inlet
             </Dropdown.Item>
-            <Dropdown.Item href="#/MEM_SVR_SDLIST/DEICE">
+            <Dropdown.Item style={{borderBottom: '1px solid white'}} href="#/MEM_SVR_SDLIST/DEICE">
               MEM SD Deice
             </Dropdown.Item>
+ 
             <Dropdown.Item href="#/IND_SVR_IBLIST">IND Inbound</Dropdown.Item>
             <Dropdown.Item href="#/IND_SVR_OBLIST">IND Outbound</Dropdown.Item>
             <Dropdown.Item href="#/IND_SVR_SDLIST/INLET">
@@ -37,13 +37,13 @@ export function StationButton() {
               IND SD Deice
             </Dropdown.Item>
           </div>
-          <div>
+          <div style={{borderRight: '1px solid white'}}>
             <Dropdown.Item href="#/CDG_SVR_IBLIST">CDG Inbound</Dropdown.Item>
             <Dropdown.Item href="#/CDG_SVR_OBLIST">CDG Outbound</Dropdown.Item>
             <Dropdown.Item href="#/CDG_SVR_SDLIST/INLET">
               CDG SD Inlet
             </Dropdown.Item>
-            <Dropdown.Item href="#/CDG_SVR_SDLIST/DEICE">
+            <Dropdown.Item style={{borderBottom: '1px solid white'}} href="#/CDG_SVR_SDLIST/DEICE">
               CDG SD Deice
             </Dropdown.Item>
             <Dropdown.Item href="#/CAN_SVR_IBLIST">CAN Inbound</Dropdown.Item>
@@ -55,13 +55,13 @@ export function StationButton() {
               CAN SD Deice
             </Dropdown.Item>
           </div>
-          <div>
+          <div style={{borderRight: '1px solid white'}}>
             <Dropdown.Item href="#/EWR_SVR_IBLIST">EWR Inbound</Dropdown.Item>
             <Dropdown.Item href="#/EWR_SVR_OBLIST">EWR Outbound</Dropdown.Item>
             <Dropdown.Item href="#/EWR_SVR_SDLIST/INLET">
               EWR SD Inlet
             </Dropdown.Item>
-            <Dropdown.Item href="#/EWR_SVR_SDLIST/DEICE">
+            <Dropdown.Item style={{borderBottom: '1px solid white'}} href="#/EWR_SVR_SDLIST/DEICE">
               EWR SD Deice
             </Dropdown.Item>
             <Dropdown.Item href="#/AFW_SVR_IBLIST">AFW Inbound</Dropdown.Item>
@@ -77,18 +77,18 @@ export function StationButton() {
             <Dropdown.Item href="#/OAK_SVR_IBLIST">OAK Inbound</Dropdown.Item>
             <Dropdown.Item href="#/OAK_SVR_OBLIST">OAK Outbound</Dropdown.Item>
             <Dropdown.Item href="#/OAK_SVR_SDLIST/INLET">
-            OAK SD Inlet
+              OAK SD Inlet
             </Dropdown.Item>
-            <Dropdown.Item href="#/OAK_SVR_SDLIST/DEICE">
-            OAK SD Deice
+            <Dropdown.Item style={{borderBottom: '1px solid white'}} href="#/OAK_SVR_SDLIST/DEICE">
+              OAK SD Deice
             </Dropdown.Item>
             <Dropdown.Item href="#/GSO_SVR_IBLIST">GSO Inbound</Dropdown.Item>
             <Dropdown.Item href="#/GSO_SVR_OBLIST">GSO Outbound</Dropdown.Item>
             <Dropdown.Item href="#/GSO_SVR_SDLIST/INLET">
-            GSO SD Inlet
+              GSO SD Inlet
             </Dropdown.Item>
             <Dropdown.Item href="#/GSO_SVR_SDLIST/DEICE">
-            GSO SD Deice
+              GSO SD Deice
             </Dropdown.Item>
           </div>
         </div>

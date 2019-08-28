@@ -130,11 +130,13 @@ class FlightTableB extends Component {
                 children={Object.keys(i)
                   .filter(i => i !== "undefined" && i !== "row")
                   .map((j, jj) => {
-                    let tipVisibility = false
+
                     return (
                       <Td
                         isSelectedTd={this.props.isSelectedTd}
                         style={{
+                          position: 'relative',
+                          zIndex: 'auto',
                           border:
                             this.props.currentTime ===
                               i[j]
@@ -214,16 +216,23 @@ class FlightTableB extends Component {
                           // </span>
                         }
                         {i ? i[j].split(";")[0] : ""}
-                        <div className="tooltiptext" key={j} style={{
-                          width: '140px',
-                          display: 'flex',
-                          alignContent: 'center',
-                          justifyContent: 'center',
-                          marginLeft: jj >= 9 ? '-100px' : '0',
-                          visibility: i['row'] + ":" + jj === this.props.selectedTd ? 'visible' : 'hidden'
-                        }}><div>{i[j].split(";").length > 2
-                          ? i[j].split(";")[i[j].split(";").length - 1].split(" ").map((result, x) => <span key={x}>{result}<br /></span>)
-                          : ""}</div></div>
+                        <div className="tooltiptext"
+                          key={j}
+                          style={{
+                            whiteSpace: 'nowrap',
+                            display: 'flex',
+                            alignContent: 'center',
+                            justifyContent: 'center',
+                            zIndex: 50000,
+                            marginLeft: jj >= 9 ? '-100px' : '0',
+                            visibility: i['row'] + ":" + jj === this.props.selectedTd ? 'visible' : 'hidden'
+                          }}>
+                          <div style={{zIndex: 'inherit'}}>
+                            {i[j].split(";").length > 2
+                              ? i[j].split(";")[i[j].split(";").length - 1].split(" ").map((result, x) => <span style={{zIndex: 'inherit'}} key={x}>{result}<br /></span>)
+                              : ""}
+                          </div>
+                        </div>
                       </Td>
                     )
                   })}
