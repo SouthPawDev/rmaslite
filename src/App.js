@@ -1379,6 +1379,10 @@ class App extends Component {
     );
   }
 
+  handleOnClickTd(rowObject, objectKeyIndex) {
+    this.setState({selectedTd: rowObject['row'] + ":" + objectKeyIndex})
+  }
+
   render() {
     const maintBool = this.state.maintBool ? this.state.maintBool : "";
     const spareBool = this.state.spareBool ? this.state.spareBool : "";
@@ -1411,6 +1415,7 @@ class App extends Component {
     const selectedRows = this.state.selectedRows ? this.state.selectedRows : "";
     const iPadHelp = this.state.iPadHelp ? this.state.iPadHelp : "";
     const exception = this.state.exception ? this.state.exception : "";
+    const selectedTd = this.state.selectedTd ? this.state.selectedTd : "";
     const shiftOneFlights = shiftOne
       ? parseInt(shiftOne[1].match(/\d+/)[0])
       : 0;
@@ -1912,9 +1917,11 @@ class App extends Component {
               handleOnMouseDownTh={this.handleOnMouseDownTh.bind(this)}
               handleClick={this.handleClick.bind(this)}
               handleRightClickRow={this.handleRightClickRow.bind(this)}
+              handleOnClickTd={this.handleOnClickTd.bind(this)}
               onSort={this.onSort.bind(this)}
               content={content}
               selectedRows={selectedRows}
+              selectedTd={selectedTd}
             />
           </div>
         </div>

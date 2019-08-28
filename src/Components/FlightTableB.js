@@ -18,7 +18,7 @@ const Td = styled.td`
 const Tr = styled.tr`
    ${Td} {
      border-bottom: ${props =>
-       props.isSelectedRow ? "1px solid black" : ""} !important;}
+    props.isSelectedRow ? "1px solid black" : ""} !important;}
    }
 `
 
@@ -31,11 +31,11 @@ class FlightTableB extends Component {
     this.onContextMenuHandler = this.onContextMenuHandler.bind(this);
     this.onContextMenuHandlerTh = this.onContextMenuHandlerTh.bind(this);
     this.onMouseDownHandlerTh = this.onMouseDownHandlerTh.bind(this);
-    
+
   }
 
-  
-  
+
+
 
   columnException(name) {
     return (
@@ -66,7 +66,13 @@ class FlightTableB extends Component {
     this.props.handleOnMouseDownTh(e, item);
   }
 
-  
+  onClickHandlerTd(rowObject, objectKeyIndex) {
+    console.log(rowObject);
+    console.log(objectKeyIndex);
+    this.props.handleOnClickTd(rowObject, objectKeyIndex);
+  }
+
+
   render() {
     const selectedRowsPK = this.props.selectedRows.map(
       i => i["FLIGHT;BBW"] + i["GATE;BBW"]
@@ -114,30 +120,31 @@ class FlightTableB extends Component {
         <tbody className="tbody-class">
           {this.props.content
             ? this.props.content.map((i, ii) => (
-                <Tr
-                  isSelectedRow={selectedRowsPK.includes(
-                    i["FLIGHT;BBW"] + i["GATE;BBW"]
-                  )}
-                  className={ii % 2 === 1 ? "striped" : ""}
-                  key={"tr" + ii}
-                  id={ii}
-                  children={Object.keys(i)
-                    .filter(i => i !== "undefined" && i !== "row")
-                    .map((j, jj) => {
-                      let tipVisibility = false
-                      return (
+              <Tr
+                isSelectedRow={selectedRowsPK.includes(
+                  i["FLIGHT;BBW"] + i["GATE;BBW"]
+                )}
+                className={ii % 2 === 1 ? "striped" : ""}
+                key={"tr" + ii}
+                id={ii}
+                children={Object.keys(i)
+                  .filter(i => i !== "undefined" && i !== "row")
+                  .map((j, jj) => {
+                    let tipVisibility = false
+                    return (
                       <Td
+                        isSelectedTd={this.props.isSelectedTd}
                         style={{
                           border:
                             this.props.currentTime ===
-                            i[j]
-                              .split(";")
+                              i[j]
+                                .split(";")
                               [i[j].split(";").length - 1].split("@")[
                               i[j]
                                 .split(";")
-                                [i[j].split(";").length - 1].split("@").length -
-                                1
-                            ]
+                              [i[j].split(";").length - 1].split("@").length -
+                              1
+                              ]
                               ? "2.5px solid red"
                               : ""
                         }}
@@ -154,12 +161,13 @@ class FlightTableB extends Component {
                         onContextMenu={e => this.onContextMenuHandler(e, i)}
                         onMouseDown={e => this.onMouseDownHandler(e, i)}
                         key={jj}
-                        onClick={() => {
-                          console.log('clicked')
-                          console.log(`before: ${tipVisibility}`)
-                          tipVisibility = !tipVisibility
-                          console.log(`after: ${tipVisibility}`)
-                        }}
+                        onClick={() =>
+                          // console.log('clicked')
+                          // console.log(`before: ${tipVisibility}`)
+                          // tipVisibility = !tipVisibility
+                          // console.log(`after: ${tipVisibility}`)
+                          this.onClickHandlerTd(i, jj)
+                        }
                         className={[
                           "tooltip",
                           i[j].split(";").filter(k => k.length === 3)
@@ -208,18 +216,19 @@ class FlightTableB extends Component {
                         {i ? i[j].split(";")[0] : ""}
                         <div className="tooltiptext" key={j} style={{
                           width: '140px',
-                          display:'flex',
-                          alignContent:'center', 
-                          justifyContent:'center',
+                          display: 'flex',
+                          alignContent: 'center',
+                          justifyContent: 'center',
                           marginLeft: jj >= 9 ? '-100px' : '0',
-                          visibility: tipVisibility ? 'visible' : 'hidden'
+                          visibility: i['row'] + ":" + jj === this.props.selectedTd ? 'visible' : 'hidden'
                         }}><div>{i[j].split(";").length > 2
-                      ? i[j].split(";")[i[j].split(";").length - 1].split(" ").map((result,x) => <span key={x}>{result}<br/></span>)
-                      : ""}</div></div>
+                          ? i[j].split(";")[i[j].split(";").length - 1].split(" ").map((result, x) => <span key={x}>{result}<br /></span>)
+                          : ""}</div></div>
                       </Td>
-                    )})}
-                />
-              ))
+                    )
+                  })}
+              />
+            ))
             : []}
         </tbody>
       </Table>
