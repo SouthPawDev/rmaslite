@@ -214,10 +214,10 @@ class App extends Component {
         location.slice(-5) === "INLET" || location.slice(-5) === "DEICE"
           ? ""
           : this.setState({
-              availableMaints: parseInt(this.state.maints.match(/\d+/)[0]),
-              availableSpares: parseInt(this.state.spares.match(/\d+/)[0]),
-              availableOpens: parseInt(this.state.opens.match(/\d+/)[0])
-            })
+            availableMaints: parseInt(this.state.maints.match(/\d+/)[0]),
+            availableSpares: parseInt(this.state.spares.match(/\d+/)[0]),
+            availableOpens: parseInt(this.state.opens.match(/\d+/)[0])
+          })
       )
       .then(() => this.filter())
       .then(() => this.setState({ initialState: this.state }))
@@ -282,25 +282,25 @@ class App extends Component {
                       misc: data[3].split(","),
                       maints:
                         location.slice(-5) === "INLET" ||
-                        location.slice(-5) === "DEICE"
+                          location.slice(-5) === "DEICE"
                           ? ""
                           : data[2]
-                              .split(",")
-                              .filter(i => i.includes("Maint"))[0],
+                            .split(",")
+                            .filter(i => i.includes("Maint"))[0],
                       spares:
                         location.slice(-5) === "INLET" ||
-                        location.slice(-5) === "DEICE"
+                          location.slice(-5) === "DEICE"
                           ? ""
                           : data[2]
-                              .split(",")
-                              .filter(i => i.includes("Spare"))[0],
+                            .split(",")
+                            .filter(i => i.includes("Spare"))[0],
                       opens:
                         location.slice(-5) === "INLET" ||
-                        location.slice(-5) === "DEICE"
+                          location.slice(-5) === "DEICE"
                           ? ""
                           : data[2]
-                              .split(",")
-                              .filter(i => i.includes("Open"))[0],
+                            .split(",")
+                            .filter(i => i.includes("Open"))[0],
                       fileLines: data,
                       fileLinesContent: data
                         .filter(
@@ -332,14 +332,14 @@ class App extends Component {
                 location.slice(-5) === "INLET" || location.slice(-5) === "DEICE"
                   ? ""
                   : this.setState({
-                      availableMaints: parseInt(
-                        this.state.maints.match(/\d+/)[0]
-                      ),
-                      availableSpares: parseInt(
-                        this.state.spares.match(/\d+/)[0]
-                      ),
-                      availableOpens: parseInt(this.state.opens.match(/\d+/)[0])
-                    })
+                    availableMaints: parseInt(
+                      this.state.maints.match(/\d+/)[0]
+                    ),
+                    availableSpares: parseInt(
+                      this.state.spares.match(/\d+/)[0]
+                    ),
+                    availableOpens: parseInt(this.state.opens.match(/\d+/)[0])
+                  })
               )
               .then(() => this.filter());
           }, 15000)
@@ -378,92 +378,92 @@ class App extends Component {
       : "";
     let content = this.state.fileLinesContent
       ? this.state.fileLinesContent
-          .reduce((acc, c) => {
-            let weekDay = c["SHIFT;BBW"]
-              ? c["SHIFT;BBW"].split(";")[0].replace("_", "-")
-              : "";
-            if (!deletedRows.includes(c["FLIGHT;BBW"] + " " + c["GATE;BBW"])) {
-              let newObj = Object.keys(c).reduce((newObj, key) => {
-                if (!deletedColumns.includes(key)) {
-                  newObj[key] = c[key];
-                }
-                return newObj;
-              }, {});
+        .reduce((acc, c) => {
+          let weekDay = c["SHIFT;BBW"]
+            ? c["SHIFT;BBW"].split(";")[0].replace("_", "-")
+            : "";
+          if (!deletedRows.includes(c["FLIGHT;BBW"] + " " + c["GATE;BBW"])) {
+            let newObj = Object.keys(c).reduce((newObj, key) => {
+              if (!deletedColumns.includes(key)) {
+                newObj[key] = c[key];
+              }
+              return newObj;
+            }, {});
 
-              if (this.state.shiftBools["shiftOne"]) {
-                if (shiftOneDay.includes(weekDay)) {
-                  acc.push(newObj);
-                }
-              }
-              if (this.state.shiftBools["shiftTwo"]) {
-                if (shiftTwoDay.includes(weekDay)) {
-                  acc.push(newObj);
-                }
-              }
-              if (this.state.shiftBools["shiftThree"]) {
-                if (shiftThreeDay.includes(weekDay)) {
-                  acc.push(newObj);
-                }
+            if (this.state.shiftBools["shiftOne"]) {
+              if (shiftOneDay.includes(weekDay)) {
+                acc.push(newObj);
               }
             }
-            return acc;
-          }, [])
-          .filter(obj => {
-            let flightType = obj["FLIGHT;BBW"]
-              ? obj["FLIGHT;BBW"].split(";")[0].trim()
-              : "";
-            if (!maintBool) {
-              if (flightType === "MAINT") {
-                return false;
+            if (this.state.shiftBools["shiftTwo"]) {
+              if (shiftTwoDay.includes(weekDay)) {
+                acc.push(newObj);
               }
             }
-            if (!spareBool) {
-              if (flightType === "SPARE") {
-                return false;
+            if (this.state.shiftBools["shiftThree"]) {
+              if (shiftThreeDay.includes(weekDay)) {
+                acc.push(newObj);
               }
             }
-            if (!openBool) {
-              if (flightType === "OPEN") {
-                return false;
-              }
+          }
+          return acc;
+        }, [])
+        .filter(obj => {
+          let flightType = obj["FLIGHT;BBW"]
+            ? obj["FLIGHT;BBW"].split(";")[0].trim()
+            : "";
+          if (!maintBool) {
+            if (flightType === "MAINT") {
+              return false;
             }
-            if (!otherBool) {
-              if (
-                flightType !== "MAINT" &&
-                flightType !== "SPARE" &&
-                flightType !== "OPEN"
-              ) {
-                return false;
-              }
+          }
+          if (!spareBool) {
+            if (flightType === "SPARE") {
+              return false;
             }
-            return true;
-          })
-          .reduce((arr, obj) => {
-            if (columnOrder.length > 0) {
-              let newObj = {};
-              columnOrder.forEach(k => (newObj[k] = obj[k]));
-              arr.push(newObj);
-              return arr;
-            } else {
-              arr.push(obj);
-              return arr;
+          }
+          if (!openBool) {
+            if (flightType === "OPEN") {
+              return false;
             }
-          }, [])
-          .filter(i => {
-            if (hideSelectedOnly) {
-              if (selectedRows.includes(i["FLIGHT;BBW"] + i["GATE;BBW"])) {
-                return false;
-              }
-              return true;
+          }
+          if (!otherBool) {
+            if (
+              flightType !== "MAINT" &&
+              flightType !== "SPARE" &&
+              flightType !== "OPEN"
+            ) {
+              return false;
             }
-            if (showSelectedOnly) {
-              if (selectedRows.includes(i["FLIGHT;BBW"] + i["GATE;BBW"])) {
-                return true;
-              }
+          }
+          return true;
+        })
+        .reduce((arr, obj) => {
+          if (columnOrder.length > 0) {
+            let newObj = {};
+            columnOrder.forEach(k => (newObj[k] = obj[k]));
+            arr.push(newObj);
+            return arr;
+          } else {
+            arr.push(obj);
+            return arr;
+          }
+        }, [])
+        .filter(i => {
+          if (hideSelectedOnly) {
+            if (selectedRows.includes(i["FLIGHT;BBW"] + i["GATE;BBW"])) {
               return false;
             }
             return true;
-          })
+          }
+          if (showSelectedOnly) {
+            if (selectedRows.includes(i["FLIGHT;BBW"] + i["GATE;BBW"])) {
+              return true;
+            }
+            return false;
+          }
+          return true;
+        })
       : "";
 
     if (this.state.isSorted) {
@@ -520,25 +520,25 @@ class App extends Component {
                       misc: data[3].split(","),
                       maints:
                         location.slice(-5) === "INLET" ||
-                        location.slice(-5) === "DEICE"
+                          location.slice(-5) === "DEICE"
                           ? ""
                           : data[2]
-                              .split(",")
-                              .filter(i => i.includes("Maint"))[0],
+                            .split(",")
+                            .filter(i => i.includes("Maint"))[0],
                       spares:
                         location.slice(-5) === "INLET" ||
-                        location.slice(-5) === "DEICE"
+                          location.slice(-5) === "DEICE"
                           ? ""
                           : data[2]
-                              .split(",")
-                              .filter(i => i.includes("Spare"))[0],
+                            .split(",")
+                            .filter(i => i.includes("Spare"))[0],
                       opens:
                         location.slice(-5) === "INLET" ||
-                        location.slice(-5) === "DEICE"
+                          location.slice(-5) === "DEICE"
                           ? ""
                           : data[2]
-                              .split(",")
-                              .filter(i => i.includes("Open"))[0],
+                            .split(",")
+                            .filter(i => i.includes("Open"))[0],
                       fileLines: data,
                       fileLinesContent: data
                         .filter(
@@ -1380,7 +1380,8 @@ class App extends Component {
   }
 
   handleOnClickTd(rowObject, objectKeyIndex) {
-    this.setState({selectedTd: rowObject['row'] + ":" + objectKeyIndex})
+    let selectedTd = rowObject['row'] + ":" + objectKeyIndex;
+    this.setState({ selectedTd: this.state.selectedTd === selectedTd ? "" : selectedTd })
   }
 
   render() {
@@ -1433,14 +1434,14 @@ class App extends Component {
           c === "shiftOne"
             ? (num += shiftOneFlights)
             : c === "shiftTwo"
-            ? (num += shiftTwoFlights)
-            : c === "shiftThree"
-            ? (num += shiftThreeFlights)
-            : (num += 0),
+              ? (num += shiftTwoFlights)
+              : c === "shiftThree"
+                ? (num += shiftThreeFlights)
+                : (num += 0),
         0
       );
 
-       
+
     return noFile ? (
       <div
         style={{
@@ -1452,7 +1453,7 @@ class App extends Component {
         }}
       >
         <h1>No File Found</h1>
-        
+
         <NavLink to={"/home"}>
           <Button variant="outline-secondary" className="home">
             Home
@@ -1460,123 +1461,123 @@ class App extends Component {
         </NavLink>
       </div>
     ) : (
-      <div className="app-container">
-        <div
-          id="main"
-          className="App"
-          tabIndex="0"
-          onKeyDown={this.handleKeyPress.bind(this)}
-        >
-          <div className="App-header">
-            <div className="header-content">
-              <div className="header-content-left">
-                <Title
-                  className={title ? title[0].slice(-3) : ""}
-                  text={title ? title[0].slice(0, -4) : ""}
-                />
-                <Title
-                  className={title ? title[1].slice(-3) : ""}
-                  text={title ? title[1].slice(0, -4) : ""}
-                />
-                <Title
-                  className={title ? title[2].slice(-3) : ""}
-                  text={title ? title[2].slice(0, -4) : ""}
-                />
-              </div>
-              <div className="header-content-middle">
-                <div className="shifts">
-                  <CheckboxShift
-                    id="shiftOne"
-                    lClassName={shiftOne ? shiftOne[0].slice(-3) : ""}
-                    name={"shiftOne"}
-                    shiftActive={shiftBools.shiftOne}
-                    onCheck={this.onCheck.bind(this)}
-                    inputText={shiftOne ? shiftOne[0].slice(0, -4) : ""}
-                    pClassName={shiftOne ? shiftOne[1].slice(-3) : ""}
-                    pText={shiftOne ? shiftOne[1].slice(0, -4) : ""}
-                    isDisabled={this.state.middleClick || this.state.rightClick}
-                    style={{
-                      color:
-                        this.state.middleClick || this.state.rightClick
-                          ? "grey"
-                          : ""
-                    }}
+        <div className="app-container">
+          <div
+            id="main"
+            className="App"
+            tabIndex="0"
+            onKeyDown={this.handleKeyPress.bind(this)}
+          >
+            <div className="App-header">
+              <div className="header-content">
+                <div className="header-content-left">
+                  <Title
+                    className={title ? title[0].slice(-3) : ""}
+                    text={title ? title[0].slice(0, -4) : ""}
                   />
-                  <CheckboxShift
-                    id="shiftTwo"
-                    lClassName={shiftTwo ? shiftTwo[0].slice(-3) : ""}
-                    name={"shiftTwo"}
-                    shiftActive={shiftBools.shiftTwo}
-                    onCheck={this.onCheck.bind(this)}
-                    inputText={shiftTwo ? shiftTwo[0].slice(0, -4) : ""}
-                    pClassName={shiftTwo ? shiftTwo[1].slice(-3) : ""}
-                    pText={shiftTwo ? shiftTwo[1].slice(0, -4) : ""}
-                    isDisabled={this.state.middleClick || this.state.rightClick}
-                    style={{
-                      color:
-                        this.state.middleClick || this.state.rightClick
-                          ? "grey"
-                          : ""
-                    }}
+                  <Title
+                    className={title ? title[1].slice(-3) : ""}
+                    text={title ? title[1].slice(0, -4) : ""}
                   />
-                  <CheckboxShift
-                    id="shiftThree"
-                    lClassName={shiftThree ? shiftThree[0].slice(-3) : ""}
-                    name={"shiftThree"}
-                    shiftActive={shiftBools.shiftThree}
-                    onCheck={this.onCheck.bind(this)}
-                    inputText={shiftThree ? shiftThree[0].slice(0, -4) : ""}
-                    pClassName={shiftThree ? shiftThree[1].slice(-3) : ""}
-                    pText={shiftThree ? shiftThree[1].slice(0, -4) : ""}
-                    isDisabled={this.state.middleClick || this.state.rightClick}
-                    style={{
-                      color:
-                        this.state.middleClick || this.state.rightClick
-                          ? "grey"
-                          : ""
-                    }}
+                  <Title
+                    className={title ? title[2].slice(-3) : ""}
+                    text={title ? title[2].slice(0, -4) : ""}
                   />
                 </div>
-              </div>
-              <div className="header-content-buttons">
-                <div className="header-content-buttons-row">
-                  <Button
-                    id="show-selected"
-                    size="sm"
-                    style={{ width: "100%", margin: "2px 0 2px 0" }}
-                    variant={
-                      this.state.showSelectedOnly
-                        ? "primary"
-                        : "outline-primary"
-                    }
-                    onClick={() => this.showSelected()}
-                    className=""
-                    disabled={this.state.middleClick || this.state.rightClick}
-                  >
-                    Show <br /> Selected
+                <div className="header-content-middle">
+                  <div className="shifts">
+                    <CheckboxShift
+                      id="shiftOne"
+                      lClassName={shiftOne ? shiftOne[0].slice(-3) : ""}
+                      name={"shiftOne"}
+                      shiftActive={shiftBools.shiftOne}
+                      onCheck={this.onCheck.bind(this)}
+                      inputText={shiftOne ? shiftOne[0].slice(0, -4) : ""}
+                      pClassName={shiftOne ? shiftOne[1].slice(-3) : ""}
+                      pText={shiftOne ? shiftOne[1].slice(0, -4) : ""}
+                      isDisabled={this.state.middleClick || this.state.rightClick}
+                      style={{
+                        color:
+                          this.state.middleClick || this.state.rightClick
+                            ? "grey"
+                            : ""
+                      }}
+                    />
+                    <CheckboxShift
+                      id="shiftTwo"
+                      lClassName={shiftTwo ? shiftTwo[0].slice(-3) : ""}
+                      name={"shiftTwo"}
+                      shiftActive={shiftBools.shiftTwo}
+                      onCheck={this.onCheck.bind(this)}
+                      inputText={shiftTwo ? shiftTwo[0].slice(0, -4) : ""}
+                      pClassName={shiftTwo ? shiftTwo[1].slice(-3) : ""}
+                      pText={shiftTwo ? shiftTwo[1].slice(0, -4) : ""}
+                      isDisabled={this.state.middleClick || this.state.rightClick}
+                      style={{
+                        color:
+                          this.state.middleClick || this.state.rightClick
+                            ? "grey"
+                            : ""
+                      }}
+                    />
+                    <CheckboxShift
+                      id="shiftThree"
+                      lClassName={shiftThree ? shiftThree[0].slice(-3) : ""}
+                      name={"shiftThree"}
+                      shiftActive={shiftBools.shiftThree}
+                      onCheck={this.onCheck.bind(this)}
+                      inputText={shiftThree ? shiftThree[0].slice(0, -4) : ""}
+                      pClassName={shiftThree ? shiftThree[1].slice(-3) : ""}
+                      pText={shiftThree ? shiftThree[1].slice(0, -4) : ""}
+                      isDisabled={this.state.middleClick || this.state.rightClick}
+                      style={{
+                        color:
+                          this.state.middleClick || this.state.rightClick
+                            ? "grey"
+                            : ""
+                      }}
+                    />
+                  </div>
+                </div>
+                <div className="header-content-buttons">
+                  <div className="header-content-buttons-row">
+                    <Button
+                      id="show-selected"
+                      size="sm"
+                      style={{ width: "100%", margin: "2px 0 2px 0" }}
+                      variant={
+                        this.state.showSelectedOnly
+                          ? "primary"
+                          : "outline-primary"
+                      }
+                      onClick={() => this.showSelected()}
+                      className=""
+                      disabled={this.state.middleClick || this.state.rightClick}
+                    >
+                      Show <br /> Selected
                   </Button>
-                </div>
-                <div className="header-content-buttons-row">
-                  <Button
-                    id="hide-selected"
-                    size="sm"
-                    style={{ width: "100%", margin: "2px 0 2px 0" }}
-                    variant={
-                      this.state.hideSelectedOnly
-                        ? "primary"
-                        : "outline-primary"
-                    }
-                    onClick={() => this.hideSelected()}
-                    className=""
-                    disabled={this.state.middleClick || this.state.rightClick}
-                  >
-                    Hide <br /> Selected
+                  </div>
+                  <div className="header-content-buttons-row">
+                    <Button
+                      id="hide-selected"
+                      size="sm"
+                      style={{ width: "100%", margin: "2px 0 2px 0" }}
+                      variant={
+                        this.state.hideSelectedOnly
+                          ? "primary"
+                          : "outline-primary"
+                      }
+                      onClick={() => this.hideSelected()}
+                      className=""
+                      disabled={this.state.middleClick || this.state.rightClick}
+                    >
+                      Hide <br /> Selected
                   </Button>
+                  </div>
                 </div>
-              </div>
-              <div className="header-content-buttons-reset">
-                <div className="header-content-buttons-row">
-                  {/* <Button
+                <div className="header-content-buttons-reset">
+                  <div className="header-content-buttons-row">
+                    {/* <Button
                   id="delete-column"
                   size="sm"
                   variant={this.state.delete ? "danger" : "outline-danger"}
@@ -1585,348 +1586,348 @@ class App extends Component {
                 >
                   Delete <br /> Column
                 </Button> */}
-                  <Button
-                    id="reset-columns"
-                    size="sm"
-                    style={{ width: "100%", margin: "2px 0 2px 0" }}
-                    variant="outline-danger"
-                    onClick={() => this.resetColumns()}
-                    className=""
-                    disabled={this.state.middleClick || this.state.rightClick}
-                  >
-                    Reset <br /> Columns
-                  </Button>
-                </div>
-                <div className="header-content-buttons-row">
-                  <Button
-                    id="reset-flights"
-                    size="sm"
-                    style={{ width: "100%", margin: "2px 0 2px 0" }}
-                    variant="outline-danger"
-                    onClick={() => this.resetFlights()}
-                    className=""
-                    disabled={this.state.middleClick || this.state.rightClick}
-                  >
-                    Reset <br /> Flights
-                  </Button>
-                </div>
-              </div>
-              <div className="header-content-buttons-two">
-                <div className="header-content-buttons-row">
-                  <Button
-                    id="auto-sizing"
-                    size="sm"
-                    style={{ width: "100%", margin: "2px 0 2px 0" }}
-                    variant={
-                      this.state.resizable ? "success" : "outline-success"
-                    }
-                    onClick={() =>
-                      this.setState({ resizable: !this.state.resizable }, () =>
-                        resizePage(this.state.resizable)
-                      )
-                    }
-                  >
-                    Auto <br /> Sizing
-                  </Button>
-                </div>
-                <div className="header-content-buttons-row">
-                  <Button
-                    id="auto-refresh"
-                    size="sm"
-                    style={{ width: "100%", margin: "2px 0 2px 0" }}
-                    variant={this.state.refresh ? "success" : "outline-success"}
-                    onClick={() => this.refresh()}
-                    disabled={this.state.middleClick || this.state.rightClick}
-                  >
-                    Auto <br /> Refresh
-                  </Button>
-                </div>
-              </div>
-              <div className="header-content-buttons-three">
-                <div className="header-content-buttons-row">
-                  <NavLink style={{marginBottom: '5px'}} to={"/home"}>
                     <Button
-                      variant="outline-secondary"
-                      className="home"
+                      id="reset-columns"
                       size="sm"
+                      style={{ width: "100%", margin: "2px 0 2px 0" }}
+                      variant="outline-danger"
+                      onClick={() => this.resetColumns()}
+                      className=""
                       disabled={this.state.middleClick || this.state.rightClick}
                     >
-                      Home
-                    </Button>
-                  </NavLink>
-                  <StationButton />
-                </div>
-                <div
-                  style={{ marginTop: "5px" }}
-                  className="header-content-buttons-row"
-                >
-                  <Button
-                    id="ipad-help"
-                    variant={
-                      this.state.iPadHelp ? "warning" : "outline-warning"
-                    }
-                    className="home"
-                    size="sm"
-                    onClick={() =>
-                      this.setState({ iPadHelp: !this.state.iPadHelp })
-                    }
-                    disabled={this.state.middleClick || this.state.rightClick}
-                  >
-                    Help
+                      Reset <br /> Columns
                   </Button>
+                  </div>
+                  <div className="header-content-buttons-row">
+                    <Button
+                      id="reset-flights"
+                      size="sm"
+                      style={{ width: "100%", margin: "2px 0 2px 0" }}
+                      variant="outline-danger"
+                      onClick={() => this.resetFlights()}
+                      className=""
+                      disabled={this.state.middleClick || this.state.rightClick}
+                    >
+                      Reset <br /> Flights
+                  </Button>
+                  </div>
                 </div>
-                <div
-                  style={{
-                    display: "flex",
-                    flexDirection: "row",
-                    marginTop: "12px"
-                  }}
-                >
-                  <FlightException
-                    checked={otherBool}
-                    onCheckException={this.onCheckException.bind(this)}
-                    className={"BBW"}
+                <div className="header-content-buttons-two">
+                  <div className="header-content-buttons-row">
+                    <Button
+                      id="auto-sizing"
+                      size="sm"
+                      style={{ width: "100%", margin: "2px 0 2px 0" }}
+                      variant={
+                        this.state.resizable ? "success" : "outline-success"
+                      }
+                      onClick={() =>
+                        this.setState({ resizable: !this.state.resizable }, () =>
+                          resizePage(this.state.resizable)
+                        )
+                      }
+                    >
+                      Auto <br /> Sizing
+                  </Button>
+                  </div>
+                  <div className="header-content-buttons-row">
+                    <Button
+                      id="auto-refresh"
+                      size="sm"
+                      style={{ width: "100%", margin: "2px 0 2px 0" }}
+                      variant={this.state.refresh ? "success" : "outline-success"}
+                      onClick={() => this.refresh()}
+                      disabled={this.state.middleClick || this.state.rightClick}
+                    >
+                      Auto <br /> Refresh
+                  </Button>
+                  </div>
+                </div>
+                <div className="header-content-buttons-three">
+                  <div className="header-content-buttons-row">
+                    <NavLink style={{ marginBottom: '5px' }} to={"/home"}>
+                      <Button
+                        variant="outline-secondary"
+                        className="home"
+                        size="sm"
+                        disabled={this.state.middleClick || this.state.rightClick}
+                      >
+                        Home
+                    </Button>
+                    </NavLink>
+                    <StationButton />
+                  </div>
+                  <div
+                    style={{ marginTop: "5px" }}
+                    className="header-content-buttons-row"
+                  >
+                    <Button
+                      id="ipad-help"
+                      variant={
+                        this.state.iPadHelp ? "warning" : "outline-warning"
+                      }
+                      className="home"
+                      size="sm"
+                      onClick={() =>
+                        this.setState({ iPadHelp: !this.state.iPadHelp })
+                      }
+                      disabled={this.state.middleClick || this.state.rightClick}
+                    >
+                      Help
+                  </Button>
+                  </div>
+                  <div
                     style={{
-                      color:
-                        this.state.middleClick || this.state.rightClick
-                          ? "grey"
-                          : ""
+                      display: "flex",
+                      flexDirection: "row",
+                      marginTop: "12px"
                     }}
-                    isDisabled={this.state.middleClick || this.state.rightClick}
-                    exception={
-                      otherBool
-                        ? "Flights " +
+                  >
+                    <FlightException
+                      checked={otherBool}
+                      onCheckException={this.onCheckException.bind(this)}
+                      className={"BBW"}
+                      style={{
+                        color:
+                          this.state.middleClick || this.state.rightClick
+                            ? "grey"
+                            : ""
+                      }}
+                      isDisabled={this.state.middleClick || this.state.rightClick}
+                      exception={
+                        otherBool
+                          ? "Flights " +
                           content.reduce(
                             (num, c) =>
                               !c["FLIGHT;BBW"].startsWith("MAINT") &&
-                              !c["FLIGHT;BBW"].startsWith("SPARE") &&
-                              !c["FLIGHT;BBW"].includes("OPEN")
+                                !c["FLIGHT;BBW"].startsWith("SPARE") &&
+                                !c["FLIGHT;BBW"].includes("OPEN")
                                 ? (num += 1)
                                 : (num += 0),
                             0
                           )
-                        : "Flights " + availableFlights
-                    }
-                  />
+                          : "Flights " + availableFlights
+                      }
+                    />
+                  </div>
                 </div>
-              </div>
-              <div className="header-content-right">
-                <div style={{ textAlign: "right" }} />
-                <div className="header-content-right-row-1">
-                  <Button
-                    id="print"
-                    size="sm"
-                    style={{ marginRight: "20px" }}
-                    variant="outline-success"
-                    onClick={() => this.handlePrint()}
-                    className={"print-span"}
-                  >
-                    {"Print"}
-                  </Button>
-                  <Time
-                    className={title ? title[0].slice(-3) : ""}
-                    time={
-                      currentTime
-                        ? currentDate.split(";")[0] +
+                <div className="header-content-right">
+                  <div style={{ textAlign: "right" }} />
+                  <div className="header-content-right-row-1">
+                    <Button
+                      id="print"
+                      size="sm"
+                      style={{ marginRight: "20px" }}
+                      variant="outline-success"
+                      onClick={() => this.handlePrint()}
+                      className={"print-span"}
+                    >
+                      {"Print"}
+                    </Button>
+                    <Time
+                      className={title ? title[0].slice(-3) : ""}
+                      time={
+                        currentTime
+                          ? currentDate.split(";")[0] +
                           " at " +
                           currentTime.split(";")[0]
-                        : ""
-                    }
-                  />{" "}
-                  &nbsp;{"v" + version}
-                </div>
+                          : ""
+                      }
+                    />{" "}
+                    &nbsp;{"v" + version}
+                  </div>
 
-                <div className="header-content-right-row-2">
-                  {location.slice(-5) === "INLET" ||
-                  location.slice(-5) === "DEICE" ? (
-                    ""
-                  ) : (
-                    <React.Fragment>
-                      <FlightException
-                        checked={maintBool}
-                        onCheckException={this.onCheckException.bind(this)}
-                        style={{
-                          margin: "0 10px 0 0",
-                          color:
-                            this.state.middleClick || this.state.rightClick
-                              ? "grey"
-                              : ""
-                        }}
-                        className={maints ? maints.split(";")[1] : ""}
-                        // exception={maints ? maints.split(";")[0] : ""}
-                        exception={
-                          maintBool
-                            ? "Maint " +
-                              content.reduce(
-                                (num, c) =>
-                                  c["FLIGHT;BBW"].startsWith("MAINT")
-                                    ? (num += 1)
-                                    : (num += 0),
-                                0
-                              )
-                            : "Maint " + availableMaints
-                        }
-                        isDisabled={
-                          this.state.middleClick || this.state.rightClick
-                        }
-                      />
-                      <FlightException
-                        checked={spareBool}
-                        onCheckException={this.onCheckException.bind(this)}
-                        style={{
-                          margin: "0 10px 0 0",
-                          color:
-                            this.state.middleClick || this.state.rightClick
-                              ? "grey"
-                              : ""
-                        }}
-                        className={spares ? spares.split(";")[1] : ""}
-                        // exception={spares ? spares.split(";")[0] : ""}
-                        exception={
-                          spareBool
-                            ? "Spare " +
-                              content.reduce(
-                                (num, c) =>
-                                  c["FLIGHT;BBW"].startsWith("SPARE")
-                                    ? (num += 1)
-                                    : (num += 0),
-                                0
-                              )
-                            : "Spare " + availableSpares
-                        }
-                        isDisabled={
-                          this.state.middleClick || this.state.rightClick
-                        }
-                      />
-                      <FlightException
-                        checked={openBool}
-                        onCheckException={this.onCheckException.bind(this)}
-                        style={{
-                          color:
-                            this.state.middleClick || this.state.rightClick
-                              ? "grey"
-                              : ""
-                        }}
-                        className={opens ? opens.split(";")[1] : ""}
-                        // exception={opens ? opens.split(";")[0] : ""}
-                        exception={
-                          openBool
-                            ? "Open " +
-                              content.reduce(
-                                (num, c) =>
-                                  c["FLIGHT;BBW"].includes("OPEN")
-                                    ? (num += 1)
-                                    : (num += 0),
-                                0
-                              )
-                            : "Open " + availableOpens
-                        }
-                        isDisabled={
-                          this.state.middleClick || this.state.rightClick
-                        }
-                      />
-                    </React.Fragment>
-                  )}
-                </div>
-                <div className="header-content-right-row-3">
-                  <Button
-                    id="left-click"
-                    size="sm"
-                    variant={
-                      this.state.leftClick ? "secondary" : "outline-secondary"
-                    }
-                    onClick={() => this.leftClickMode()}
-                    className=""
-                  >
-                    Left
+                  <div className="header-content-right-row-2">
+                    {location.slice(-5) === "INLET" ||
+                      location.slice(-5) === "DEICE" ? (
+                        ""
+                      ) : (
+                        <React.Fragment>
+                          <FlightException
+                            checked={maintBool}
+                            onCheckException={this.onCheckException.bind(this)}
+                            style={{
+                              margin: "0 10px 0 0",
+                              color:
+                                this.state.middleClick || this.state.rightClick
+                                  ? "grey"
+                                  : ""
+                            }}
+                            className={maints ? maints.split(";")[1] : ""}
+                            // exception={maints ? maints.split(";")[0] : ""}
+                            exception={
+                              maintBool
+                                ? "Maint " +
+                                content.reduce(
+                                  (num, c) =>
+                                    c["FLIGHT;BBW"].startsWith("MAINT")
+                                      ? (num += 1)
+                                      : (num += 0),
+                                  0
+                                )
+                                : "Maint " + availableMaints
+                            }
+                            isDisabled={
+                              this.state.middleClick || this.state.rightClick
+                            }
+                          />
+                          <FlightException
+                            checked={spareBool}
+                            onCheckException={this.onCheckException.bind(this)}
+                            style={{
+                              margin: "0 10px 0 0",
+                              color:
+                                this.state.middleClick || this.state.rightClick
+                                  ? "grey"
+                                  : ""
+                            }}
+                            className={spares ? spares.split(";")[1] : ""}
+                            // exception={spares ? spares.split(";")[0] : ""}
+                            exception={
+                              spareBool
+                                ? "Spare " +
+                                content.reduce(
+                                  (num, c) =>
+                                    c["FLIGHT;BBW"].startsWith("SPARE")
+                                      ? (num += 1)
+                                      : (num += 0),
+                                  0
+                                )
+                                : "Spare " + availableSpares
+                            }
+                            isDisabled={
+                              this.state.middleClick || this.state.rightClick
+                            }
+                          />
+                          <FlightException
+                            checked={openBool}
+                            onCheckException={this.onCheckException.bind(this)}
+                            style={{
+                              color:
+                                this.state.middleClick || this.state.rightClick
+                                  ? "grey"
+                                  : ""
+                            }}
+                            className={opens ? opens.split(";")[1] : ""}
+                            // exception={opens ? opens.split(";")[0] : ""}
+                            exception={
+                              openBool
+                                ? "Open " +
+                                content.reduce(
+                                  (num, c) =>
+                                    c["FLIGHT;BBW"].includes("OPEN")
+                                      ? (num += 1)
+                                      : (num += 0),
+                                  0
+                                )
+                                : "Open " + availableOpens
+                            }
+                            isDisabled={
+                              this.state.middleClick || this.state.rightClick
+                            }
+                          />
+                        </React.Fragment>
+                      )}
+                  </div>
+                  <div className="header-content-right-row-3">
+                    <Button
+                      id="left-click"
+                      size="sm"
+                      variant={
+                        this.state.leftClick ? "secondary" : "outline-secondary"
+                      }
+                      onClick={() => this.leftClickMode()}
+                      className=""
+                    >
+                      Left
                     <br /> Action
                   </Button>
-                  <Button
-                    id="middle-click"
-                    size="sm"
-                    variant={
-                      this.state.middleClick ? "secondary" : "outline-secondary"
-                    }
-                    onClick={() => this.middleClickMode()}
-                    className=""
-                  >
-                    Middle <br /> Delete
-                  </Button>
-                  <Button
-                    id="right-click"
-                    size="sm"
-                    variant={
-                      this.state.rightClick ? "secondary" : "outline-secondary"
-                    }
-                    onClick={() => this.rightClickMode()}
-                    className=""
-                  >
-                    Right <br /> Select
-                  </Button>
-                </div>
-                {this.state.rightClick && this.state.selectedColumn ? (
-                  <div className="header-content-right-row-4">
                     <Button
-                      id="move-left"
+                      id="middle-click"
                       size="sm"
-                      variant={"info"}
-                      onClick={e => this.moveColumnLeft(e)}
+                      variant={
+                        this.state.middleClick ? "secondary" : "outline-secondary"
+                      }
+                      onClick={() => this.middleClickMode()}
                       className=""
                     >
-                      Move <br /> Left
-                    </Button>
+                      Middle <br /> Delete
+                  </Button>
                     <Button
-                      id="move-right"
+                      id="right-click"
                       size="sm"
-                      variant={"info"}
-                      onClick={e => this.moveColumnRight(e)}
+                      variant={
+                        this.state.rightClick ? "secondary" : "outline-secondary"
+                      }
+                      onClick={() => this.rightClickMode()}
                       className=""
                     >
-                      Move <br /> Right
-                    </Button>
+                      Right <br /> Select
+                  </Button>
                   </div>
-                ) : (
+                  {this.state.rightClick && this.state.selectedColumn ? (
+                    <div className="header-content-right-row-4">
+                      <Button
+                        id="move-left"
+                        size="sm"
+                        variant={"info"}
+                        onClick={e => this.moveColumnLeft(e)}
+                        className=""
+                      >
+                        Move <br /> Left
+                    </Button>
+                      <Button
+                        id="move-right"
+                        size="sm"
+                        variant={"info"}
+                        onClick={e => this.moveColumnRight(e)}
+                        className=""
+                      >
+                        Move <br /> Right
+                    </Button>
+                    </div>
+                  ) : (
+                      ""
+                    )}
+                </div>
+              </div>
+              {misc ? (
+                <Misc
+                  help={help}
+                  misc={misc}
+                  displayHelp={this.displayHelp.bind(this)}
+                  exportContent={this.exportContent.bind(this)}
+                />
+              ) : (
                   ""
                 )}
-              </div>
+              {iPadHelp ? <IpadHelp /> : ""}
             </div>
-            {misc ? (
-              <Misc
-                help={help}
-                misc={misc}
-                displayHelp={this.displayHelp.bind(this)}
-                exportContent={this.exportContent.bind(this)}
-              />
-            ) : (
-              ""
-            )}
-            {iPadHelp ? <IpadHelp /> : ""}
-          </div>
 
-          <div className="App-content">
-            <FlightTableB
-              currentTime={
-                this.state.currentTime
-                  ? this.state.currentTime.split(";")[0]
-                  : ""
-              }
-              sorted={this.state.isSorted}
-              secondarySorted={this.state.isSecondarySorted}
-              selected={this.state.selectedColumn}
-              handleRightClickTh={this.handleRightClickTh.bind(this)}
-              handleOnMouseDownTh={this.handleOnMouseDownTh.bind(this)}
-              handleClick={this.handleClick.bind(this)}
-              handleRightClickRow={this.handleRightClickRow.bind(this)}
-              handleOnClickTd={this.handleOnClickTd.bind(this)}
-              onSort={this.onSort.bind(this)}
-              content={content}
-              selectedRows={selectedRows}
-              selectedTd={selectedTd}
-            />
+            <div className="App-content">
+              <FlightTableB
+                currentTime={
+                  this.state.currentTime
+                    ? this.state.currentTime.split(";")[0]
+                    : ""
+                }
+                sorted={this.state.isSorted}
+                secondarySorted={this.state.isSecondarySorted}
+                selected={this.state.selectedColumn}
+                handleRightClickTh={this.handleRightClickTh.bind(this)}
+                handleOnMouseDownTh={this.handleOnMouseDownTh.bind(this)}
+                handleClick={this.handleClick.bind(this)}
+                handleRightClickRow={this.handleRightClickRow.bind(this)}
+                handleOnClickTd={this.handleOnClickTd.bind(this)}
+                onSort={this.onSort.bind(this)}
+                content={content}
+                selectedRows={selectedRows}
+                selectedTd={selectedTd}
+              />
+            </div>
           </div>
         </div>
-      </div>
-    );
+      );
   }
 }
 
