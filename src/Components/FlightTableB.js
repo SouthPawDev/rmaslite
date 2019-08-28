@@ -31,17 +31,10 @@ class FlightTableB extends Component {
     this.onContextMenuHandler = this.onContextMenuHandler.bind(this);
     this.onContextMenuHandlerTh = this.onContextMenuHandlerTh.bind(this);
     this.onMouseDownHandlerTh = this.onMouseDownHandlerTh.bind(this);
-    this.state = {
-    tipVisibility: false
-    }
+    
   }
 
-  setVisibility() {
-    console.log('clicked')
-    this.state = {
-      tipVisibility: !this.state.tipVisibility
-    }
-  }
+  
   
 
   columnException(name) {
@@ -130,7 +123,9 @@ class FlightTableB extends Component {
                   id={ii}
                   children={Object.keys(i)
                     .filter(i => i !== "undefined" && i !== "row")
-                    .map((j, jj) => (
+                    .map((j, jj) => {
+                      let tipVisibility = false
+                      return (
                       <Td
                         style={{
                           border:
@@ -159,7 +154,12 @@ class FlightTableB extends Component {
                         onContextMenu={e => this.onContextMenuHandler(e, i)}
                         onMouseDown={e => this.onMouseDownHandler(e, i)}
                         key={jj}
-                        onClick={() => this.setVisibility()}
+                        onClick={() => {
+                          console.log('clicked')
+                          console.log(`before: ${tipVisibility}`)
+                          tipVisibility = !tipVisibility
+                          console.log(`after: ${tipVisibility}`)
+                        }}
                         className={[
                           "tooltip",
                           i[j].split(";").filter(k => k.length === 3)
@@ -212,12 +212,12 @@ class FlightTableB extends Component {
                           alignContent:'center', 
                           justifyContent:'center',
                           marginLeft: jj >= 9 ? '-100px' : '0',
-                          visibility: this.state.tipVisibility ? 'visible' : 'hidden'
-                        }} onClick={() => this.setVisibility()}><div>{i[j].split(";").length > 2
+                          visibility: tipVisibility ? 'visible' : 'hidden'
+                        }}><div>{i[j].split(";").length > 2
                       ? i[j].split(";")[i[j].split(";").length - 1].split(" ").map((result,x) => <span key={x}>{result}<br/></span>)
                       : ""}</div></div>
                       </Td>
-                    ))}
+                    )})}
                 />
               ))
             : []}
