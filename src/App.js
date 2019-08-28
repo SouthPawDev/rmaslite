@@ -137,7 +137,7 @@ class App extends Component {
     }
   }
 
-  async getFile() {
+  getFile() {
     let location = this.props.location.pathname;
 
     let formatLocation =
@@ -346,7 +346,8 @@ class App extends Component {
         })
       )
       .catch(e => {
-        this.setState({ noFile: true });
+        this.setState({ noFile: true, exception: e });
+        // alert(e)
         console.log(e);
       });
   }
@@ -1409,7 +1410,7 @@ class App extends Component {
     const help = this.state.help ? this.state.help : "";
     const selectedRows = this.state.selectedRows ? this.state.selectedRows : "";
     const iPadHelp = this.state.iPadHelp ? this.state.iPadHelp : "";
-
+    const exception = this.state.exception ? this.state.exception : "";
     const shiftOneFlights = shiftOne
       ? parseInt(shiftOne[1].match(/\d+/)[0])
       : 0;
@@ -1434,6 +1435,7 @@ class App extends Component {
         0
       );
 
+       
     return noFile ? (
       <div
         style={{
@@ -1445,6 +1447,7 @@ class App extends Component {
         }}
       >
         <h1>No File Found</h1>
+        
         <NavLink to={"/home"}>
           <Button variant="outline-secondary" className="home">
             Home
