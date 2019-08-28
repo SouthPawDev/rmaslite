@@ -22,6 +22,7 @@ const Tr = styled.tr`
    }
 `
 
+
 class FlightTableB extends Component {
   constructor(props) {
     super(props);
@@ -30,7 +31,18 @@ class FlightTableB extends Component {
     this.onContextMenuHandler = this.onContextMenuHandler.bind(this);
     this.onContextMenuHandlerTh = this.onContextMenuHandlerTh.bind(this);
     this.onMouseDownHandlerTh = this.onMouseDownHandlerTh.bind(this);
+    this.state = {
+    tipVisibility: false
+    }
   }
+
+  setVisibility() {
+    console.log('clicked')
+    this.state = {
+      tipVisibility: !this.state.tipVisibility
+    }
+  }
+  
 
   columnException(name) {
     return (
@@ -61,6 +73,7 @@ class FlightTableB extends Component {
     this.props.handleOnMouseDownTh(e, item);
   }
 
+  
   render() {
     const selectedRowsPK = this.props.selectedRows.map(
       i => i["FLIGHT;BBW"] + i["GATE;BBW"]
@@ -146,6 +159,7 @@ class FlightTableB extends Component {
                         onContextMenu={e => this.onContextMenuHandler(e, i)}
                         onMouseDown={e => this.onMouseDownHandler(e, i)}
                         key={jj}
+                        onClick={() => this.setVisibility()}
                         className={[
                           "tooltip",
                           i[j].split(";").filter(k => k.length === 3)
@@ -192,14 +206,15 @@ class FlightTableB extends Component {
                           // </span>
                         }
                         {i ? i[j].split(";")[0] : ""}
-                        <div className="tooltiptext" style={{
+                        <div className="tooltiptext" key={j} style={{
                           width: '140px',
                           display:'flex',
                           alignContent:'center', 
                           justifyContent:'center',
-                          marginLeft: jj >= 9 ? '-100px' : '0'
-                        }}><div>{i[j].split(";").length > 2
-                      ? i[j].split(";")[i[j].split(";").length - 1].split(" ").map(result => <span>{result}<br/></span>)
+                          marginLeft: jj >= 9 ? '-100px' : '0',
+                          visibility: this.state.tipVisibility ? 'visible' : 'hidden'
+                        }} onClick={() => this.setVisibility()}><div>{i[j].split(";").length > 2
+                      ? i[j].split(";")[i[j].split(";").length - 1].split(" ").map((result,x) => <span key={x}>{result}<br/></span>)
                       : ""}</div></div>
                       </Td>
                     ))}

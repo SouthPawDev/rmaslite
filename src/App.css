@@ -338,9 +338,9 @@ tbody {
   z-index: -1;
 }
 
-.tooltip:hover .tooltiptext {
+/* .tooltip:hover .tooltiptext {
   visibility: visible;
-}
+} */
 
 
 .dropdown-item {
