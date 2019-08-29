@@ -1,6 +1,6 @@
 export const version = "1.1";
 // export const FOLDER = "/rmaslite/file/serve?file=";
 export const FOLDER =
-  "http://wtc-3644937-w2:9091/file/serve?file=";
+  "http://wtc-275124-w20.corp.ds.fedex.com:9091/file/serve?file=";
 // export const FOLDER = "http://wtc-275124-w23.corp.ds.fedex.com:7001/external-flight-access-server-build"
 export const test = false;

@@ -316,10 +316,10 @@ tbody {
 }
 
 .tooltip .tooltiptext {
-  visibility: hidden;
+  /* visibility: hidden; */
   background-color: black;
   color: #fff;
-  text-align: center;
+  text-align: right;
   border-radius: 6px;
   padding: 5px;
   z-index: 100;
@@ -337,6 +337,7 @@ tbody {
   color: whitesmoke;
 }
 
+/* iPad portrait mode */
 @media only screen and (min-device-width: 768px) and (max-device-width: 1024px) {
   .App {
     width: 100vw;
@@ -440,6 +441,7 @@ tbody {
   }
 }
 
+/* iPad landscape mode */
 @media only screen and (min-device-width: 768px) and (max-device-width: 1024px) and (orientation: landscape) {
   .App {
   }
@@ -457,6 +459,10 @@ tbody {
     font-size: 10px;
     white-space: nowrap;
   }
+
+  /* .tooltiptext {
+    margin-left: 50px;
+  } */
 
   table {
     margin: 0px;
