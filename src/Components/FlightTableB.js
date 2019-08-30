@@ -15,7 +15,7 @@ const Tr = styled.tr`
    ${Td} {
      border-bottom: ${props =>
        props.isSelectedRow ? '1px solid black' : ''} !important;}
-   }
+   
 `
 
 class FlightTableB extends Component {
