@@ -309,7 +309,7 @@ tbody {
 .tooltip {
   position: relative;
   display: table-cell;
-  opacity: 100;
+  opacity: 1;
   text-align: inherit;
   font: inherit;
 }

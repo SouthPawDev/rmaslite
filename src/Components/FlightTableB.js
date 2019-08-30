@@ -12,7 +12,7 @@ const Th = styled.th`
 
 // border-bottom: ${props => props.isSelectedRow ? "1px solid black" : "none"} !important;
 const Td = styled.td`
-  display: flex;
+  
 `
 
 const Tr = styled.tr`
@@ -21,7 +21,6 @@ const Tr = styled.tr`
     props.isSelectedRow ? "1px solid black" : ""} !important;}
    }
 `
-
 
 class FlightTableB extends Component {
   constructor(props) {
