@@ -145,7 +145,6 @@ a {
 .PEW {
   font-weight: normal;
   color: blue;
-  /* background-color: inherit; */
 }
 
 .PRW {
@@ -327,17 +326,30 @@ tbody {
   /* Position the tooltip */
   font-size: 12px;
   position: absolute;
+
+}
+
+.tooltip .tooltiptext {
+  display: flex;
+  white-space: nowrap;
+  position: absolute;
+}
+
+.tooltiptext > div { 
+  text-align: right;
 }
 
 .dropdown-menu {
   padding: 0;
 }
+
 .dropdown-item {
   background-color: #212529;
   color: whitesmoke;
 }
 
 @media only screen and (min-device-width: 768px) and (max-device-width: 1024px) {
+  
   .App {
     width: 100vw;
   }

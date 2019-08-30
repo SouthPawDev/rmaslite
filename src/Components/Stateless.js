@@ -94,10 +94,9 @@ export function Misc(props) {
         </h5>
         <h5>
           <u>
-            <strong>Cell Hover Over</strong>
+            <strong>Cell History Display</strong>
           </u>
-          : Displays the cell value and the time that this cell changed. Only
-          the last 5 changes are shown per cell.
+          : <strong>Left Click:</strong> Displays Up to 5 of the Most Recent Changes Along with the Time
         </h5>
         <h5>
           <u>
@@ -236,12 +235,11 @@ export function IpadHelp(props) {
         : Primary Sort Column - Lite Blue Background, Secondary Sort Column -
         Bold Blue Font
       </h6>
-      <h6 style={{ fontSize: "10px" }}>
+      <h6>
         <u>
-          <strong>Cell Hover Over</strong>
+          <strong>Cell History Display</strong>
         </u>
-        : Displays the cell value and the time that this cell changed. Only the
-        last 5 changes are shown per cell.
+        : <strong>Left Action:</strong> Displays Up to 5 of the Most Recent Changes Along with the Time
       </h6>
       <h6 style={{ fontSize: "10px" }}>
         <u>

@@ -34,9 +34,6 @@ class FlightTableB extends Component {
 
   }
 
-
-
-
   columnException(name) {
     return (
       name.startsWith("I/R") ||
@@ -66,14 +63,13 @@ class FlightTableB extends Component {
     this.props.handleOnMouseDownTh(e, item);
   }
 
-  onClickHandlerTd(rowObject, objectKeyIndex) {
-    console.log(rowObject);
-    console.log(objectKeyIndex);
-    this.props.handleOnClickTd(rowObject, objectKeyIndex);
+  onClickHandlerTd(rowKeyValue, objectKeyIndex) {
+    this.props.handleOnClickTd(rowKeyValue, objectKeyIndex);
   }
 
 
   render() {
+    let selectedTd = this.props.selectedTd;
     const selectedRowsPK = this.props.selectedRows.map(
       i => i["FLIGHT;BBW"] + i["GATE;BBW"]
     );
@@ -91,14 +87,6 @@ class FlightTableB extends Component {
                   key={i}
                   className={[
                     item.includes(";") ? item.split(";")[1].trim() : ""
-                    // item.startsWith("I/R")
-                    //   ? "IR"
-                    //   : item.startsWith("EMP#")
-                    //   ? "EMP"
-                    //   : item.startsWith("OFF/SEQ")
-                    //   ? "OFFSEQ"
-                    //   : item.split(";")[0],
-                    // "EE"
                   ].join(" ")}
                   onClick={() =>
                     this.sortHandler(item, this.props.content, true)
@@ -133,24 +121,24 @@ class FlightTableB extends Component {
 
                     return (
                       <Td
-                        isSelectedTd={this.props.isSelectedTd}
+                        isSelectedTd={selectedTd}
                         style={{
                           position: 'relative',
                           zIndex: 'auto',
                           border:
-                            this.props.currentTime ===
-                              i[j]
-                                .split(";")
-                              [i[j].split(";").length - 1].split("@")[
-                              i[j]
-                                .split(";")
-                              [i[j].split(";").length - 1].split("@").length -
-                              1
-                              ]
-                              ? "2.5px solid red"
+                            i[j] ?
+                              selectedTd[0] === i['row'] && selectedTd[1] === jj
+                                ?
+                                "2.5px solid black"
+                                :
+                                this.props.currentTime ===
+                                  i[j].split(";")[i[j].split(";").length - 1].split("@")[i[j].split(";")[i[j].split(";").length - 1].split("@").length - 1]
+                                  ? "2.5px solid red"
+                                  : ""
                               : ""
                         }}
                         // title={
+                        //   i[j] ?
                         //   i[j].split(";").length > 2 &&
                         //   i[j].split(";")[i[j].split(";").length - 1].length !==
                         //     3
@@ -159,77 +147,31 @@ class FlightTableB extends Component {
                         //         [i[j].split(";").length - 1].split(" ")
                         //         .reduce((acc, c) => (acc += c + '\n'), '')
                         //     : ""
+                        //     : ""
                         // }
                         onContextMenu={e => this.onContextMenuHandler(e, i)}
                         onMouseDown={e => this.onMouseDownHandler(e, i)}
                         key={jj}
                         onClick={() =>
-                          // console.log('clicked')
-                          // console.log(`before: ${tipVisibility}`)
-                          // tipVisibility = !tipVisibility
-                          // console.log(`after: ${tipVisibility}`)
-                          this.onClickHandlerTd(i, jj)
+                          this.onClickHandlerTd(i['row'], jj)
                         }
                         className={[
                           "tooltip",
-                          i[j].split(";").filter(k => k.length === 3)
-                          // i[j]
-                          //   ? i[j].split(";")[i[j].split(";").length - 1] + " "
-                          //   : "",
-                          // j.startsWith("I/R")
-                          //   ? "IR"
-                          //   : j.startsWith("EMP#")
-                          //   ? "EMP"
-                          //   : j.startsWith("OFF/SEQ")
-                          //   ? "OFFSEQ"
-                          //   : j.split(";")[0],
-                          // "EE"
+                          i[j] ?
+                            i[j].split(";").filter(k => k.length === 3) : ""
                         ].join(" ")}
                       >
-                        {/* {i[j]
-                          ? i[j].split(";")[i[j].split(";").length - 2]
-                          : ""} */}
-                        {/* {i
-                          ? this.columnException(j)
-                            ? i[j].split(";")[1]
-                            : i[j].split(";")[0]
-                          : ""} */}
-                        {/* <span className="tooltiptext">{i[j].split(";").length > 2
-                            ? i[j].split(";")[i[j].split(";").length - 1].split(" ").reduce((acc, c) => acc += c + "\n" ,"")
-                            : ""}</span> */}
-                        {
-                          // i[j].split(";").length > 2 &&
-                          // i[j].split(";")[i[j].split(";").length - 1]
-                          //   .length !== 3
-                          //   ? i[j]
-                          //       .split(";")
-                          //       [i[j].split(";").length - 1].split(" ").map(k => <span className="tooltiptext">{k}<br/></span> ) : ""
-                          // <span className="tooltiptext">
-                          //   {i[j].split(";").length > 2 &&
-                          //   i[j].split(";")[i[j].split(";").length - 1]
-                          //     .length !== 3
-                          //     ? i[j]
-                          //         .split(";")
-                          //         [i[j].split(";").length - 1].split(" ")
-                          //         .reduce((acc, c) => `${acc += c} \n` , ``)
-                          //     : ""}
-                          // </span>
-                        }
-                        {i ? i[j].split(";")[0] : ""}
+                        {i[j] ? i[j].split(";")[0] : ""}
                         <div className="tooltiptext"
-                          key={j}
+                          key={jj}
                           style={{
-                            whiteSpace: 'nowrap',
-                            display: 'flex',
-                            alignContent: 'center',
-                            justifyContent: 'center',
-                            zIndex: 50000,
-                            marginLeft: jj >= 9 ? '-100px' : '0',
-                            visibility: i['row'] + ":" + jj === this.props.selectedTd ? 'visible' : 'hidden'
+                            visibility: i['row'] === selectedTd[0] && jj === selectedTd[1] ? 'visible' : 'hidden',
+                            right: jj > Object.keys(i).length - 5 ? '.5em' : ""
                           }}>
-                          <div style={{zIndex: 'inherit'}}>
-                            {i[j].split(";").length > 2
-                              ? i[j].split(";")[i[j].split(";").length - 1].split(" ").map((result, x) => <span style={{zIndex: 'inherit'}} key={x}>{result}<br /></span>)
+                          <div>
+                            {i[j] ? i[j].split(";").length > 2 && i[j].split(";").length
+                              ? i[j].split(";")[i[j].split(";").length - 1].split(" ").map((result, x) => result.length === 3 ? "" : <span key={x}>{result.includes("_") ? result.replace("_", " ") : result}<br /></span>)
+                              : ""
                               : ""}
                           </div>
                         </div>
