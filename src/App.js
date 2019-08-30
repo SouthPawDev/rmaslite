@@ -1405,7 +1405,10 @@ class App extends Component {
     // let selectedTd = rowObject['row'] + ":" + objectKeyIndex;
     // let selectedTd = [rowObject, objectKeyIndex]
     // this.setState({ selectedTd: this.state.selectedTd[0] === selectedTd[0] && this.state.selectedTd[1] === selectedTd[1] ? "" : selectedTd })
-    this.setState({ selectedTd: this.state.selectedTd ? this.state.selectedTd[0] === rowKeyValue && this.state.selectedTd[1] === objectKeyIndex ? [] : [rowKeyValue, objectKeyIndex] : [rowKeyValue, objectKeyIndex] })
+    if (this.state.leftClick) {
+      this.setState({ selectedTd: this.state.selectedTd ? this.state.selectedTd[0] === rowKeyValue && this.state.selectedTd[1] === objectKeyIndex ? [] : [rowKeyValue, objectKeyIndex] : [rowKeyValue, objectKeyIndex] })
+    }
+    
   }
 
   render() {
