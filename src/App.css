@@ -145,7 +145,6 @@ a {
 .PEW {
   font-weight: normal;
   color: blue;
-  /* background-color: inherit; */
 }
 
 .PRW {
@@ -310,7 +309,7 @@ tbody {
 .tooltip {
   position: relative;
   display: table-cell;
-  opacity: 100;
+  opacity: 1;
   text-align: inherit;
   font: inherit;
 }
@@ -327,11 +326,23 @@ tbody {
   /* Position the tooltip */
   font-size: 12px;
   position: absolute;
+
+}
+
+.tooltip .tooltiptext {
+  display: flex;
+  white-space: nowrap;
+  position: absolute;
+}
+
+.tooltiptext > div { 
+  text-align: right;
 }
 
 .dropdown-menu {
   padding: 0;
 }
+
 .dropdown-item {
   background-color: #212529;
   color: whitesmoke;
@@ -339,6 +350,7 @@ tbody {
 
 /* iPad portrait mode */
 @media only screen and (min-device-width: 768px) and (max-device-width: 1024px) {
+  
   .App {
     width: 100vw;
   }
@@ -427,7 +439,8 @@ tbody {
 
   #ipad-help:hover {
     /* color: #212529;
-    background-color: white; */
+    background-color: white; 
+    */
   }
 
   #ipad-help-div {
@@ -437,7 +450,7 @@ tbody {
   }
 
   #ipad-help-div h6 {
-    font-size: 12px;
+    font-size: 10px;
   }
 }
 
@@ -533,6 +546,6 @@ tbody {
   }
 
   #ipad-help-div h6 {
-    font-size: 16px;
+    font-size: 12px;
   }
 }

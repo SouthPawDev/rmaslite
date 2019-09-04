@@ -8,7 +8,7 @@ import '../../node_modules/bootstrap/dist/css/bootstrap.min.css'
 
 // border-bottom: ${props => props.isSelectedRow ? "1px solid black" : "none"} !important;
 const Td = styled.td`
-  display: flex;
+  
 `
 
 const Tr = styled.tr`
@@ -57,13 +57,12 @@ class FlightTableB extends Component {
     this.props.handleOnMouseDownTh(e, item)
   }
 
-  onClickHandlerTd(rowObject, objectKeyIndex) {
-    console.log(rowObject)
-    console.log(objectKeyIndex)
-    this.props.handleOnClickTd(rowObject, objectKeyIndex)
+  onClickHandlerTd(rowKeyValue, objectKeyIndex) {
+    this.props.handleOnClickTd(rowKeyValue, objectKeyIndex);
   }
 
   render() {
+    let selectedTd = this.props.selectedTd;
     const selectedRowsPK = this.props.selectedRows.map(
       i => i['FLIGHT;BBW'] + i['GATE;BBW']
     )
@@ -80,16 +79,8 @@ class FlightTableB extends Component {
                   isSecondarySorted={this.props.secondarySorted === item}
                   key={i}
                   className={[
-                    item.includes(';') ? item.split(';')[1].trim() : ''
-                    // item.startsWith("I/R")
-                    //   ? "IR"
-                    //   : item.startsWith("EMP#")
-                    //   ? "EMP"
-                    //   : item.startsWith("OFF/SEQ")
-                    //   ? "OFFSEQ"
-                    //   : item.split(";")[0],
-                    // "EE"
-                  ].join(' ')}
+                    item.includes(";") ? item.split(";")[1].trim() : ""
+                  ].join(" ")}
                   onClick={() =>
                     this.sortHandler(item, this.props.content, true)
                   }
@@ -110,130 +101,78 @@ class FlightTableB extends Component {
         <tbody className="tbody-class">
           {this.props.content
             ? this.props.content.map((i, ii) => (
-                <Tr
-                  isSelectedRow={selectedRowsPK.includes(
-                    i['FLIGHT;BBW'] + i['GATE;BBW']
-                  )}
-                  className={ii % 2 === 1 ? 'striped' : ''}
-                  key={'tr' + ii}
-                  id={ii}
-                  children={Object.keys(i)
-                    .filter(i => i !== 'undefined' && i !== 'row')
-                    .map((j, jj) => {
-                      return (
-                        <Td
-                          isSelectedTd={this.props.isSelectedTd}
-                          style={{
-                            position: 'relative',
-                            zIndex: 'auto',
-                            border:
-                              this.props.currentTime ===
-                              i[j]
-                                .split(';')
-                                [i[j].split(';').length - 1].split('@')[
-                                i[j]
-                                  .split(';')
-                                  [i[j].split(';').length - 1].split('@')
-                                  .length - 1
-                              ]
-                                ? '2.5px solid red'
-                                : ''
-                          }}
-                          // title={
-                          //   i[j].split(";").length > 2 &&
-                          //   i[j].split(";")[i[j].split(";").length - 1].length !==
-                          //     3
-                          //     ? i[j]
-                          //         .split(";")
-                          //         [i[j].split(";").length - 1].split(" ")
-                          //         .reduce((acc, c) => (acc += c + '\n'), '')
-                          //     : ""
-                          // }
-                          onContextMenu={e => this.onContextMenuHandler(e, i)}
-                          onMouseDown={e => this.onMouseDownHandler(e, i)}
+              <Tr
+                isSelectedRow={selectedRowsPK.includes(
+                  i["FLIGHT;BBW"] + i["GATE;BBW"]
+                )}
+                className={ii % 2 === 1 ? "striped" : ""}
+                key={"tr" + ii}
+                id={ii}
+                children={Object.keys(i)
+                  .filter(i => i !== "undefined" && i !== "row")
+                  .map((j, jj) => {
+
+                    return (
+                      <Td
+                        isSelectedTd={selectedTd}
+                        style={{
+                          position: 'relative',
+                          zIndex: 'auto',
+                          border:
+                            i[j] ?
+                              selectedTd[0] === i['row'] && selectedTd[1] === jj
+                                ?
+                                "2.5px solid black"
+                                :
+                                this.props.currentTime ===
+                                  i[j].split(";")[i[j].split(";").length - 1].split("@")[i[j].split(";")[i[j].split(";").length - 1].split("@").length - 1]
+                                  ? "2.5px solid red"
+                                  : ""
+                              : ""
+                        }}
+                        // title={
+                        //   i[j] ?
+                        //   i[j].split(";").length > 2 &&
+                        //   i[j].split(";")[i[j].split(";").length - 1].length !==
+                        //     3
+                        //     ? i[j]
+                        //         .split(";")
+                        //         [i[j].split(";").length - 1].split(" ")
+                        //         .reduce((acc, c) => (acc += c + '\n'), '')
+                        //     : ""
+                        //     : ""
+                        // }
+                        onContextMenu={e => this.onContextMenuHandler(e, i)}
+                        onMouseDown={e => this.onMouseDownHandler(e, i)}
+                        key={jj}
+                        onClick={() =>
+                          this.onClickHandlerTd(i['row'], jj)
+                        }
+                        className={[
+                          "tooltip",
+                          i[j] ?
+                            i[j].split(";").filter(k => k.length === 3) : ""
+                        ].join(" ")}
+                      >
+                        {i[j] ? i[j].split(";")[0] : ""}
+                        <div className="tooltiptext"
                           key={jj}
-                          onClick={() =>
-                            // console.log('clicked')
-                            // console.log(`before: ${tipVisibility}`)
-                            // tipVisibility = !tipVisibility
-                            // console.log(`after: ${tipVisibility}`)
-                            this.onClickHandlerTd(i, jj)
-                          }
-                          className={[
-                            'tooltip',
-                            i[j].split(';').filter(k => k.length === 3)
-                            // i[j]
-                            //   ? i[j].split(";")[i[j].split(";").length - 1] + " "
-                            //   : "",
-                            // j.startsWith("I/R")
-                            //   ? "IR"
-                            //   : j.startsWith("EMP#")
-                            //   ? "EMP"
-                            //   : j.startsWith("OFF/SEQ")
-                            //   ? "OFFSEQ"
-                            //   : j.split(";")[0],
-                            // "EE"
-                          ].join(' ')}
-                        >
-                          {/* {i[j]
-                          ? i[j].split(";")[i[j].split(";").length - 2]
-                          : ""} */}
-                          {/* {i
-                          ? this.columnException(j)
-                            ? i[j].split(";")[1]
-                            : i[j].split(";")[0]
-                          : ""} */}
-                          {/* <span className="tooltiptext">{i[j].split(";").length > 2
-                            ? i[j].split(";")[i[j].split(";").length - 1].split(" ").reduce((acc, c) => acc += c + "\n" ,"")
-                            : ""}</span> */}
-                          {
-                            // i[j].split(";").length > 2 &&
-                            // i[j].split(";")[i[j].split(";").length - 1]
-                            //   .length !== 3
-                            //   ? i[j]
-                            //       .split(";")
-                            //       [i[j].split(";").length - 1].split(" ").map(k => <span className="tooltiptext">{k}<br/></span> ) : ""
-                            // <span className="tooltiptext">
-                            //   {i[j].split(";").length > 2 &&
-                            //   i[j].split(";")[i[j].split(";").length - 1]
-                            //     .length !== 3
-                            //     ? i[j]
-                            //         .split(";")
-                            //         [i[j].split(";").length - 1].split(" ")
-                            //         .reduce((acc, c) => `${acc += c} \n` , ``)
-                            //     : ""}
-                            // </span>
-                          }
-                          {i ? i[j].split(';')[0] : ''}
-                          <TipDiv
-                            i={i}
-                            jj={jj}
-                            selectedTd={this.props.selectedTd}
-                            className="tooltiptext"
-                            key={j}
-                          >
-                            <div style={{ zIndex: 'inherit' }}>
-                              {i[j].split(';').length > 2
-                                ? i[j]
-                                    .split(';')
-                                    [i[j].split(';').length - 1].split(' ')
-                                    .map((result, x) => (
-                                      <span
-                                        style={{ zIndex: 'inherit' }}
-                                        key={x}
-                                      >
-                                        {result}
-                                        <br />
-                                      </span>
-                                    ))
-                                : ''}
-                            </div>
-                          </TipDiv>
-                        </Td>
-                      )
-                    })}
-                />
-              ))
+                          style={{
+                            visibility: i['row'] === selectedTd[0] && jj === selectedTd[1] ? 'visible' : 'hidden',
+                            right: jj > Object.keys(i).length - 5 ? '.5em' : ""
+                          }}>
+                          <div>
+                            {i[j] ? i[j].split(";").length > 2 && i[j].split(";").length
+                              ? i[j].split(";")[i[j].split(";").length - 1].split(" ").map((result, x) => result.length === 3 ? "" : <span key={x}>{result.includes("_") ? result.replace("_", " ") : result}<br /></span>)
+                              : ""
+                              : ""}
+                          </div>
+                        </div>
+                      </Td>
+                    )
+                  })}
+              />
+            ))
             : []}
         </tbody>
       </Table>

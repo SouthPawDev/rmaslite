@@ -69,108 +69,107 @@ export function Misc(props) {
           <u>
             <strong>Column Headers</strong>
           </u>
-          : <strong>Left Click:</strong> Sort, <strong>Middle Click:</strong>{" "}
+          : <strong>Left Click:</strong> Sort, <strong>Middle Click:</strong>{' '}
           Delete, <strong>Right Click:</strong> Select
-        </h5>
+ </h5>
         <h5>
           <u>
             <strong>Sorted Column Colors</strong>
           </u>
           : Primary Sort Column = Lite Blue Background; Secondary Sort Column =
           Bold Blue Font
-        </h5>
+ </h5>
         <h5>
           <u>
-            <strong>Selected Column:</strong>
-          </u>{" "}
+            <strong>Selected Column</strong>
+          </u>:{' '}
           Left/Right Arrows Keys Rearrange
-        </h5>
+ </h5>
         <h5>
           <u>
             <strong>Rows</strong>
           </u>
-          : <strong>Middle Click:</strong> Delete, <strong>Right Click:</strong>{" "}
+          : <strong>Middle Click:</strong> Delete, <strong>Right Click:</strong>{' '}
           Underline/Select
-        </h5>
+ </h5>
         <h5>
           <u>
-            <strong>Cell Hover Over</strong>
-          </u>
-          : Displays the cell value and the time that this cell changed. Only
-          the last 5 changes are shown per cell.
-        </h5>
+            <strong>Cell History Display</strong>
+          </u>:{' '}
+          <strong>Left Click:</strong> Displays up to the last 10 cell value history changes/time.
+ </h5>
         <h5>
           <u>
             <strong>Cell Contents Update Notification</strong>
           </u>
-          : A red border box will be temporarily placed around the cell with the
-          latest changes.
-        </h5>
+          : A red border box will be placed around the cell if recently updated/refreshed.
+ </h5>
         <h5>
           <u>
-            <strong>Show Selected Button</strong>
+            <strong>Show Selected Toggle Button</strong>
           </u>
-          : <strong>Toggleable: </strong>
-          Show Only Selected Rows (Underlined Rows)
-        </h5>
+          : Show Only Selected Rows (Underlined Rows)
+ </h5>
         <h5>
           <u>
-            <strong>Hide Selected Button</strong>
+            <strong>Hide Selected Toggle Button</strong>
           </u>
-          : <strong>Toggleable: </strong>
-          Hide Selected Rows (Underlined Rows)
-        </h5>
+          : Hide Selected Rows (Underlined Rows)
+ </h5>
         <h5>
           <strong>
-            <u>Reset Columns Button</u>:{" "}
+            <u>Reset Columns Button</u>:{' '}
           </strong>
           Reset All Deleted and Rearranged Columns to Original Load
-        </h5>
+ </h5>
         <h5>
           <strong>
-            <u>Reset Flights Button</u>:{" "}
+            <u>Reset Flights Button</u>:{' '}
           </strong>
-          Reset All Selected, Hidden, Deleted Flights(Rows) to Original Load
-        </h5>
+          Reset All Selected, Hidden, Deleted Flights (Rows) to Original Load
+ </h5>
         <h5>
           <strong>
-            <u>Auto Sizing Button</u>:{" "}
+            <u>Auto Sizing Toggle Button</u>:{' '}
           </strong>
-          <strong>Toggleable: </strong>
-          Makes the Website Resizable For Dynamic Screen Sizes
-        </h5>
+          Makes the Website Resizable for Dynamic Screen Sizes
+ </h5>
         <h5>
           <strong>
-            <u>Auto Refresh Button</u>:{" "}
+            <u>Auto Refresh Toggle Button</u>:{' '}
           </strong>
-          <strong>Toggleable: </strong>
-          Checks the Server Every 60 Seconds For Fresh Data and Updates Table
-        </h5>
+          Check every minute for List Updates
+ </h5>
         <h5>
           <strong>
-            <u>Home Button</u>:{" "}
+            <u>Home Button</u>:{' '}
           </strong>
-          Redirects the Page to Home: RMAS Station Selection
-        </h5>
+          Redirects to the RMAS Lite Site Selection Page
+ </h5>
         <h5>
           <strong>
-            <u>Print Button</u>:{" "}
+            <u>Other Lists Drop Down</u>:{' '}
+          </strong>
+          Allows for quick selection of other RMAS Lite lists
+ </h5>
+        <h5>
+          <strong>
+            <u>Print Button</u>:{' '}
           </strong>
           Prints the Entire Table Except for Hidden/Deleted Rows and Columns
-        </h5>
+ </h5>
         <h5>
           <strong>
-            <u>Export Button</u>:{" "}
+            <u>Export Button</u>:{' '}
           </strong>
           Exports the Currently Displayed Table to a CSV File
-        </h5>
+ </h5>
         <h5>
           <strong>
-            <u>Flight/Maint/Spare/Open Checkbox</u>:{" "}
+            <u>Flight/Maint/Spare/Open Checkbox</u>:{' '}
           </strong>
-          Checked Shows Currently Displayed Table Count | Unchecked Shows Total
-          Available
-        </h5>
+          Shows Displayed Table Count or Unchecked Shows Total Available
+ </h5>
       </TooltipWrapper>
       <StyledMisc>
         <MiscArrayDiv>
@@ -215,86 +214,98 @@ export function IpadHelp(props) {
         <u>
           <strong>Left Action</strong>
         </u>
-        <strong>:</strong> Column Sorting, Checkbox Actions & Button Actions
-      </h6>
+        <strong>:</strong> Column Sorting, Checkbox Actions and Button Actions
+ </h6>
       <h6>
         <u>
           <strong>Middle Delete</strong>
         </u>
         <strong>:</strong> Delete Column Headers, Delete Rows
-      </h6>
+ </h6>
       <h6>
         <u>
           <strong>Right Select</strong>
         </u>
         <strong>:</strong> Select Column Headers, Select Rows
-      </h6>
-      <h6 style={{ fontSize: "10px" }}>
+ </h6>
+      <h6>
         <u>
           <strong>Sorted Column Colors</strong>
         </u>
-        : Primary Sort Column - Lite Blue Background, Secondary Sort Column -
-        Bold Blue Font
-      </h6>
-      <h6 style={{ fontSize: "10px" }}>
-        <u>
-          <strong>Cell Hover Over</strong>
-        </u>
-        : Displays the cell value and the time that this cell changed. Only the
-        last 5 changes are shown per cell.
-      </h6>
-      <h6 style={{ fontSize: "10px" }}>
-        <u>
-          <strong>Cell Contents Update Notification</strong>
-        </u>
-        : A red border box will be temporarily placed around the cell with the
-        latest changes.
-      </h6>
+        : Primary Sort Column = Lite Blue Background; Secondary Sort Column = Bold Blue Font
+ </h6>
       <h6>
         <u>
-          <strong>Show Selected Button</strong>
+          <strong>Selected Column</strong>
         </u>
-        : <strong>Toggleable: </strong>
-        Show Only Selected Rows (Underlined Rows)
-      </h6>
+        : Left/Right Buttons Rearrange
+ </h6>
       <h6>
         <u>
-          <strong>Hide Selected Button</strong>
+          <strong>Cell History Display :</strong>
         </u>
-        : <strong>Toggleable: </strong>
-        Hide Selected Rows (Underlined Rows)
-      </h6>
+        <strong>Left Action</strong>: Displays up to the last 10 cell value history changes/time.
+ </h6>
+      <h6>
+        <u>
+          <strong>Cell Contents Notification</strong>
+        </u>
+        : A red border box will be placed around the cell if recently updated/refreshed.
+ </h6>
+      <h6>
+        <u>
+          <strong>Show Selected Toggle Button</strong>
+        </u>
+        : Show Only Selected Rows (Underlined Rows)
+ </h6>
+      <h6>
+        <u>
+          <strong>Hide Selected Toggle Button</strong>
+        </u>
+        : Hide Selected Rows (Underlined Rows)
+ </h6>
       <h6>
         <strong>
-          <u>Reset Columns Button</u>:{" "}
+          <u>Reset Columns Button</u>:{' '}
         </strong>
         Reset All Deleted and Rearranged Columns to Original Load
-      </h6>
+ </h6>
       <h6>
         <strong>
-          <u>Reset Flights Button</u>:{" "}
+          <u>Reset Flights Button</u>:{' '}
         </strong>
-        Reset All Selected, Hidden, Deleted Flights(Rows) to Original Load
-      </h6>
+        Reset All Selected, Hidden, Deleted Flights (Rows) to Original Load
+ </h6>
       <h6>
         <strong>
-          <u>Auto Refresh Button</u>:{" "}
+          <u>Auto Sizing Toggle Button</u>:{' '}
         </strong>
-        <strong>Toggleable: </strong>
-        Checks the Server Every 60 Seconds For Fresh Data and Updates Table
-      </h6>
+        Makes the Website Resizable for Dynamic Screen Sizes
+ </h6>
       <h6>
         <strong>
-          <u>Home Button</u>:{" "}
+          <u>Auto Refresh Toggle Button</u>:{' '}
         </strong>
-        Redirects the Page to Home: RMAS Station Selection
-      </h6>
+        Check every minute for List Updates
+ </h6>
       <h6>
         <strong>
-          <u>Flt/Maint/Spare/Open Checkbox</u>:{" "}
+          <u>Home Button</u>:{' '}
         </strong>
-        Checked: Currently Displayed Count | Unchecked: Shows Total Available
-      </h6>
+        Redirects to the RMAS Lite Site Selection Page
+ </h6>
+      <h6>
+        <strong>
+          <u>Other Lists Drop Down</u>:{' '}
+        </strong>
+        Allows for quick selection of other RMAS Lite lists
+ </h6>
+      <h6>
+        <strong>
+          <u>Flight/Maint/Spare/Open Checkboxs</u>:{' '}
+        </strong>
+        Shows Displayed Table Count or Unchecked Shows Total Available
+ </h6>
     </TooltipWrapper>
   );
 }
