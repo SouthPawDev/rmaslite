@@ -1,6 +1,6 @@
 {
-  "homepage": "https://southpawdev.github.io/rmaslite",
-  "comment": "http://stage-omni-cluster.ute.fedex.com/rmaslite",
+  "comment": "https://southpawdev.github.io/rmaslite",
+  "homepage": "http://stage-omni-cluster.ute.fedex.com/rmaslite",
   "name": "rmaslite",
   "version": "0.1.0",
   "private": true,
