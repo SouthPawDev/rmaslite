@@ -1408,7 +1408,7 @@ class App extends Component {
     if (this.state.leftClick) {
       this.setState({ selectedTd: this.state.selectedTd ? this.state.selectedTd[0] === rowKeyValue && this.state.selectedTd[1] === objectKeyIndex ? [] : [rowKeyValue, objectKeyIndex] : [rowKeyValue, objectKeyIndex] })
     }
-    
+
   }
 
   render() {
@@ -1682,7 +1682,9 @@ class App extends Component {
                         Home
                     </Button>
                     </NavLink>
-                    <StationButton />
+                    <StationButton
+                      isDisabled={this.state.middleClick || this.state.rightClick}
+                    />
                   </div>
                   <div
                     style={{ marginTop: "5px" }}
@@ -1726,8 +1728,8 @@ class App extends Component {
                           ? "Flights " +
                           content.reduce(
                             (num, c) =>
-                              c["FLIGHT;BBW"] && 
-                              !c["FLIGHT;BBW"].startsWith("MAINT") &&
+                              c["FLIGHT;BBW"] &&
+                                !c["FLIGHT;BBW"].startsWith("MAINT") &&
                                 !c["FLIGHT;BBW"].startsWith("SPARE") &&
                                 !c["FLIGHT;BBW"].includes("OPEN")
                                 ? (num += 1)

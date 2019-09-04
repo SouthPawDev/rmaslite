@@ -1,12 +1,14 @@
 import React from "react";
 import Dropdown from "react-bootstrap/Dropdown";
+import DropdownButton from 'react-bootstrap/DropdownButton'
 
-export function StationButton() {
+export function StationButton(props) {
   return (
     <Dropdown
+
       alignRight>
       <Dropdown.Toggle
-
+        disabled={props.isDisabled}
         size="sm"
         variant="outline-secondary"
         id="dropdown-basic"
