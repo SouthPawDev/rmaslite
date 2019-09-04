@@ -1,12 +1,9 @@
-import React from "react";
-import Dropdown from "react-bootstrap/Dropdown";
-import DropdownButton from 'react-bootstrap/DropdownButton'
+import React from 'react'
+import Dropdown from 'react-bootstrap/Dropdown'
 
 export function StationButton(props) {
   return (
-    <Dropdown
-
-      alignRight>
+    <Dropdown alignRight>
       <Dropdown.Toggle
         disabled={props.isDisabled}
         size="sm"
@@ -24,7 +21,10 @@ export function StationButton(props) {
             <Dropdown.Item href="#/MEM_SVR_SDLIST/INLET">
               MEM SD Inlet
             </Dropdown.Item>
-            <Dropdown.Item style={{ borderBottom: '1px solid white' }} href="#/MEM_SVR_SDLIST/DEICE">
+            <Dropdown.Item
+              style={{ borderBottom: '1px solid white' }}
+              href="#/MEM_SVR_SDLIST/DEICE"
+            >
               MEM SD Deice
             </Dropdown.Item>
             <Dropdown.Item href="#/IND_SVR_IBLIST">IND Inbound</Dropdown.Item>
@@ -42,7 +42,10 @@ export function StationButton(props) {
             <Dropdown.Item href="#/CDG_SVR_SDLIST/INLET">
               CDG SD Inlet
             </Dropdown.Item>
-            <Dropdown.Item style={{ borderBottom: '1px solid white' }} href="#/CDG_SVR_SDLIST/DEICE">
+            <Dropdown.Item
+              style={{ borderBottom: '1px solid white' }}
+              href="#/CDG_SVR_SDLIST/DEICE"
+            >
               CDG SD Deice
             </Dropdown.Item>
             <Dropdown.Item href="#/CAN_SVR_IBLIST">CAN Inbound</Dropdown.Item>
@@ -60,7 +63,10 @@ export function StationButton(props) {
             <Dropdown.Item href="#/EWR_SVR_SDLIST/INLET">
               EWR SD Inlet
             </Dropdown.Item>
-            <Dropdown.Item style={{ borderBottom: '1px solid white' }} href="#/EWR_SVR_SDLIST/DEICE">
+            <Dropdown.Item
+              style={{ borderBottom: '1px solid white' }}
+              href="#/EWR_SVR_SDLIST/DEICE"
+            >
               EWR SD Deice
             </Dropdown.Item>
             <Dropdown.Item href="#/AFW_SVR_IBLIST">AFW Inbound</Dropdown.Item>
@@ -78,7 +84,10 @@ export function StationButton(props) {
             <Dropdown.Item href="#/OAK_SVR_SDLIST/INLET">
               OAK SD Inlet
             </Dropdown.Item>
-            <Dropdown.Item style={{ borderBottom: '1px solid white' }} href="#/OAK_SVR_SDLIST/DEICE">
+            <Dropdown.Item
+              style={{ borderBottom: '1px solid white' }}
+              href="#/OAK_SVR_SDLIST/DEICE"
+            >
               OAK SD Deice
             </Dropdown.Item>
             <Dropdown.Item href="#/GSO_SVR_IBLIST">GSO Inbound</Dropdown.Item>
@@ -93,5 +102,5 @@ export function StationButton(props) {
         </div>
       </Dropdown.Menu>
     </Dropdown>
-  );
+  )
 }

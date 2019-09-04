@@ -1,5 +1,5 @@
-import React, { Component } from "react";
-import { Link } from "react-router-dom";
+import React, { Component } from 'react'
+import { Link } from 'react-router-dom'
 
 class Station extends Component {
   render() {
@@ -12,7 +12,7 @@ class Station extends Component {
           <li>
             <Link
               // to={this.props.station + "/" + this.props.station + "_SVR_IBLIST"}
-              to={this.props.station + "_SVR_IBLIST"}
+              to={this.props.station + '_SVR_IBLIST'}
             >
               Inbound
             </Link>
@@ -20,7 +20,7 @@ class Station extends Component {
           <li>
             <Link
               // to={this.props.station + "/" + this.props.station + "_SVR_OBLIST"}
-              to={this.props.station + "_SVR_OBLIST"}
+              to={this.props.station + '_SVR_OBLIST'}
             >
               Outbound
             </Link>
@@ -34,7 +34,7 @@ class Station extends Component {
               //   this.props.station +
               //   "_SVR_SDLIST/INLET"
               // }
-              to={this.props.station + "_SVR_SDLIST/INLET"}
+              to={this.props.station + '_SVR_SDLIST/INLET'}
             >
               Snow Desk(Inlet)
             </Link>
@@ -47,7 +47,7 @@ class Station extends Component {
               //   this.props.station +
               //   "_SVR_SDLIST/DEICE"
               // }
-              to={this.props.station + "_SVR_SDLIST/DEICE"}
+              to={this.props.station + '_SVR_SDLIST/DEICE'}
             >
               Snow Desk(Deice)
             </Link>
@@ -57,8 +57,8 @@ class Station extends Component {
         {/* <Route exact path="/outbound" component={App} /> */}
         {/* <Route exact path="/snow" component={App} /> */}
       </div>
-    );
+    )
   }
 }
 
-export default Station;
+export default Station

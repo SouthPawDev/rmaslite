@@ -1,12 +1,10 @@
 import React, { Component } from 'react'
 import Table from 'react-bootstrap/Table'
 import styled from 'styled-components'
-import TipDiv from '../Elements/TipDiv'
 import Th from '../Elements/Th'
 
 import '../../node_modules/bootstrap/dist/css/bootstrap.min.css'
 
-// border-bottom: ${props => props.isSelectedRow ? "1px solid black" : "none"} !important;
 const Td = styled.td``
 
 const Tr = styled.tr`
@@ -132,18 +130,6 @@ class FlightTableB extends Component {
                                 : ''
                               : ''
                           }}
-                          // title={
-                          //   i[j] ?
-                          //   i[j].split(";").length > 2 &&
-                          //   i[j].split(";")[i[j].split(";").length - 1].length !==
-                          //     3
-                          //     ? i[j]
-                          //         .split(";")
-                          //         [i[j].split(";").length - 1].split(" ")
-                          //         .reduce((acc, c) => (acc += c + '\n'), '')
-                          //     : ""
-                          //     : ""
-                          // }
                           onContextMenu={e => this.onContextMenuHandler(e, i)}
                           onMouseDown={e => this.onMouseDownHandler(e, i)}
                           key={jj}

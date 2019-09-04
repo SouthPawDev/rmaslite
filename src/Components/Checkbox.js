@@ -1,18 +1,18 @@
-import React, { Component } from "react";
+import React, { Component } from 'react'
 
 class CheckboxShift extends Component {
   constructor(props) {
-    super(props);
-    this.handler = this.handler.bind(this);
+    super(props)
+    this.handler = this.handler.bind(this)
   }
 
   handler() {
-    this.props.onCheck(this.props.name);
+    this.props.onCheck(this.props.name)
   }
 
   render() {
     return (
-      <div id={this.props.id} className={"shift"}>
+      <div id={this.props.id} className={'shift'}>
         <label style={this.props.style} className={this.props.lClassName}>
           <input
             type="checkbox"
@@ -27,8 +27,8 @@ class CheckboxShift extends Component {
           {this.props.pText}
         </p>
       </div>
-    );
+    )
   }
 }
 
-export default CheckboxShift;
+export default CheckboxShift

@@ -2,10 +2,6 @@ import React from 'react'
 import Button from 'react-bootstrap/Button'
 import styled from 'styled-components'
 
-export default function Hello(props) {
-  return <h1>Hello World!</h1>
-}
-
 export function Title(props) {
   return <p className={props.className}>{props.text}</p>
 }

@@ -1,49 +1,49 @@
-import React, { Component } from "react";
-import Station from "./Station";
-import { version } from "./properties";
+import React, { Component } from 'react'
+import Station from './Station'
+import { version } from './properties'
 
-import "./Home.css";
+import './Home.css'
 
 class Home extends Component {
   constructor(props) {
-    super(props);
+    super(props)
 
     this.state = {
-      file: ""
-    };
+      file: ''
+    }
   }
 
   handleUpload(e) {
-    let reader = new FileReader();
-    let file = e.target.files[0];
+    let reader = new FileReader()
+    let file = e.target.files[0]
 
-    var load = document.getElementById("load");
-    var notAllowed = document.getElementById("notAllowed");
+    var load = document.getElementById('load')
+    var notAllowed = document.getElementById('notAllowed')
 
     if (file) {
-      if (file.name.slice(-3) === "csv") {
-        if (!notAllowed.classList.contains("hidden")) {
-          notAllowed.classList.add("hidden");
+      if (file.name.slice(-3) === 'csv') {
+        if (!notAllowed.classList.contains('hidden')) {
+          notAllowed.classList.add('hidden')
         }
 
         reader.onloadend = () => {
           this.setState({
-            file: reader.result.split("\n")
-          });
-        };
-
-        reader.readAsText(file);
-        load.classList.remove("hidden");
-      } else {
-        if (!load.classList.contains("hidden")) {
-          load.classList.add("hidden");
+            file: reader.result.split('\n')
+          })
         }
-        notAllowed.classList.remove("hidden");
+
+        reader.readAsText(file)
+        load.classList.remove('hidden')
+      } else {
+        if (!load.classList.contains('hidden')) {
+          load.classList.add('hidden')
+        }
+        notAllowed.classList.remove('hidden')
       }
     }
     if (!file) {
-      load.classList.add("hidden");
-      notAllowed.classList.add("hidden");
+      load.classList.add('hidden')
+      notAllowed.classList.add('hidden')
     }
   }
 
@@ -52,19 +52,16 @@ class Home extends Component {
       <div className="Home">
         <div className="row">
           <h1>
-            RMAS{" "}
+            RMAS{' '}
             <i>
               Lite
               <br />
             </i>
           </h1>
-          <div style={{ display: "flex", alignItems: "flex-end" }}>
-            <p> {"v" + version} </p>
+          <div style={{ display: 'flex', alignItems: 'flex-end' }}>
+            <p> {'v' + version} </p>
           </div>
         </div>
-        {/* <div className="row">
-          <h1>Stations:</h1>
-        </div> */}
 
         <div className="row">
           <Station station="MEM" />
@@ -79,41 +76,9 @@ class Home extends Component {
           <Station station="CAN" />
           <Station station="GSO" />
         </div>
-
-        {/* <div className="row">
-          <h1>Or...</h1>
-        </div>
-        <div className="row">
-          <h1>Upload a File Instead</h1>
-        </div>
-        <div className="row">
-          <input
-            onChange={e => this.handleUpload(e)}
-            type="file"
-            id="fileInput"
-            disabled={true}
-          />
-        </div>
-        <div className="row">
-          <pre id="fileDisplayArea" />
-        </div>
-        <div className="row">
-          <h1 id="notAllowed" className="hidden">
-            File Type Not Allowed
-          </h1>
-        </div>
-        <div className="row">
-          <span id={"load"} className="hidden">
-            <Link
-              to={{ pathname: "/upload", state: { file: this.state.file } }}
-            >
-              <p>Load</p>
-            </Link>
-          </span>
-        </div> */}
       </div>
-    );
+    )
   }
 }
 
-export default Home;
+export default Home
